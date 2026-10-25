@@ -715,15 +715,20 @@
   const HATS = [
     { id: 'none', name: 'Sans chapeau', price: 0 },
     { id: 'pompon', name: 'Bonnet à pompon', price: 30 },
+    { id: 'casquette', name: 'Casquette à l’envers', price: 45 },
     { id: 'bob', name: 'Bob de pêcheur', price: 60 },
     { id: 'toque', name: 'Toque de chef', price: 90 },
+    { id: 'fleurs', name: 'Couronne de fleurs', price: 110 },
     { id: 'pasteque', name: 'Pastèque', price: 120 },
     { id: 'beret', name: 'Béret baguette', price: 150 },
     { id: 'cowboy', name: 'Cow-boy', price: 200 },
+    { id: 'pompier', name: 'Casque de pompier', price: 230 },
     { id: 'hautdeforme', name: 'Haut-de-forme', price: 260 },
     { id: 'couronne', name: 'Couronne', price: 320 },
+    { id: 'pirate', name: 'Chapeau de pirate', price: 350 },
     { id: 'bonnetnuit', name: 'Bonnet de nuit', price: 380 },
     { id: 'antenne', name: 'Mini-antenne', price: 420 },
+    { id: 'helice', name: 'Bonnet à hélice', price: 450 },
     { id: 'ramoneur', name: 'Casque de ramoneur', price: 480 },
     { id: 'sorciere', name: 'Sorcière', price: 560 },
     { id: 'viking', name: 'Viking', price: 650 },
@@ -747,14 +752,23 @@
     { id: 'roux', name: 'Roux', price: 0, fur: '#f5a04a', paw: '#ffd3a1', stripe: '#c4661f', outline: '#5a2d12' },
     { id: 'gris', name: 'Gris', price: 50, fur: '#9a9fb0', paw: '#d9dce6', stripe: '#6c7184', outline: '#2e3140' },
     { id: 'noir', name: 'Noir', price: 80, fur: '#2b2b36', paw: '#3d3d4c', stripe: null, outline: '#0d0d12', earTip: '#5a4458' },
+    { id: 'creme', name: 'Crème', price: 100, fur: '#f3dcb0', paw: '#fff3dc', stripe: '#e0b67a', outline: '#6b4a22', earTip: '#f2b8c6' },
     { id: 'blanc', name: 'Blanc', price: 120, fur: '#f6f4f0', paw: '#ffffff', stripe: null, outline: '#6b6872', earTip: '#f2b8c6' },
     { id: 'brun', name: 'Tigré brun', price: 160, fur: '#a8774a', paw: '#d9b48c', stripe: '#5e3b1f', outline: '#3a220f' },
+    { id: 'argente', name: 'Tigré argenté', price: 200, fur: '#c9ced8', paw: '#eef0f5', stripe: '#5d6372', outline: '#2a2e3a', collar: '#e8445a' },
     { id: 'tuxedo', name: 'Tuxedo', price: 250, fur: '#25252f', paw: '#ffffff', stripe: null, outline: '#0d0d12', tailTip: '#ffffff', earTip: '#5a4458', collar: '#3d7bff' },
+    { id: 'chartreux', name: 'Chartreux', price: 300, fur: '#7f8da3', paw: '#a9b5c8', stripe: null, outline: '#2c3444', earTip: '#5f6b80', collar: '#ffb43a' },
     { id: 'siamois', name: 'Siamois', price: 350, fur: '#f1e3c8', paw: '#5b3a2a', stripe: null, outline: '#5b3a2a', ear: '#6e4a36', tail: '#6e4a36', earTip: '#4a2c1e', collar: '#2fb7a5' },
     { id: 'calico', name: 'Calico', price: 450, fur: '#fbf7f0', paw: '#ffffff', stripe: null, outline: '#5a4a40', tailTip: '#2e2a2f', earTip: '#f08a3c',
       patches: [[-11, -31, 11, 9, '#f08a3c'], [10, -17, 10, 8, '#2e2a2f'], [8, -38, 7, 5, '#f08a3c']],
       headPatches: [[-8, -6, 9, 8, '#f08a3c'], [9, -9, 7, 6, '#2e2a2f']] },
+    { id: 'ecaille', name: 'Écaille de tortue', price: 500, fur: '#3a2a26', paw: '#5a4038', stripe: null, outline: '#140c0a', earTip: '#e0782c', collar: '#9ad5ff',
+      patches: [[-11, -31, 10, 8, '#e0782c'], [10, -19, 9, 7, '#b8551e'], [5, -39, 6, 4, '#f0a050']],
+      headPatches: [[-8, -6, 8, 7, '#e0782c'], [8, -10, 5, 4, '#b8551e']] },
     { id: 'rose', name: 'Rose', price: 550, fur: '#ff9ccf', paw: '#ffd6ec', stripe: '#e8569f', outline: '#7a1f4f', collar: '#ffffff' },
+    { id: 'bengal', name: 'Bengal', price: 600, fur: '#e8a85a', paw: '#f8dcae', stripe: null, outline: '#4a2a10', collar: '#2fb7a5',
+      patches: [[-12, -32, 4, 3, '#5a3418'], [-2, -37, 3.5, 2.6, '#5a3418'], [9, -31, 4, 3, '#5a3418'], [-7, -22, 3.5, 2.6, '#5a3418'], [6, -17, 4, 3, '#5a3418'], [14, -40, 3, 2.4, '#5a3418'], [-15, -14, 3, 2.4, '#5a3418']],
+      headPatches: [[-7, -8, 2.4, 2, '#5a3418'], [6, -10, 2.4, 2, '#5a3418'], [0, -14, 2, 1.6, '#5a3418']] },
     { id: 'nuit', name: 'Bleu nuit', price: 650, fur: '#2f4fb0', paw: '#7d9cff', stripe: '#1b2c6e', outline: '#0b1440', sparkles: true, collar: '#ffd34d' },
     { id: 'dore', name: 'Doré', price: 800, fur: '#f2c14e', paw: '#fff0b8', stripe: '#c8901c', outline: '#6b4706', shimmer: true, collar: '#c0392b' },
     { id: 'arcenciel', name: 'Arc-en-ciel', price: 1000, fur: '#ffffff', paw: '#ffffff', stripe: '#ff5e5e', outline: '#4a3a6a', rainbow: true, collar: '#ffffff' },
@@ -2780,6 +2794,72 @@
       c.beginPath(); c.ellipse(0, y, 14, 4, 0, 0, TAU); c.stroke();
       c.restore();
     },
+    casquette(c) {
+      // Worn backwards: the visor faces the camera
+      const dome = () => { c.beginPath(); c.moveTo(-14, 1); c.quadraticCurveTo(-14, -17, 0, -17); c.quadraticCurveTo(14, -17, 14, 1); c.closePath(); };
+      dome(); hatPath(c, '#2a5bd7', '#0f2a6e');
+      c.save(); dome(); c.clip();
+      c.strokeStyle = '#1c47b8'; c.lineWidth = 1.2;
+      for (const x of [-7, 7]) { c.beginPath(); c.moveTo(0, -17); c.quadraticCurveTo(x * 0.9, -9, x, 1); c.stroke(); }
+      c.fillStyle = '#0f2a6e'; c.beginPath(); c.roundRect(-5, -6, 10, 7, 3); c.fill();
+      c.restore();
+      ell(c, 0, -17, 2.4, 1.8, '#ffd34d', '#8a5a00');
+      c.beginPath(); c.moveTo(-12, 0); c.quadraticCurveTo(0, 10, 12, 0); c.quadraticCurveTo(0, 3, -12, 0); c.closePath();
+      hatPath(c, '#ffd34d', '#8a5a00');
+    },
+    fleurs(c, t) {
+      c.strokeStyle = '#4a8a3a'; c.lineWidth = 2.6;
+      c.beginPath(); c.ellipse(0, -2, 15, 4, 0, Math.PI, TAU); c.stroke();
+      for (const [x, y, r] of [[-11, -5, -0.6], [4, -7, 0.4], [11, -5, 0.8]]) ell(c, x, y, 3.6, 1.8, '#6cc04a', '#2f6a22', r);
+      [[-14, -2, '#ff8fc7'], [-7, -6, '#fff19a'], [0, -7, '#ff6a6a'], [7, -6, '#9ad5ff'], [14, -2, '#ffffff']].forEach(([x, y, col], i) => {
+        c.save(); c.translate(x, y); c.rotate(Math.sin(t * 3 + i) * 0.25);
+        for (let k = 0; k < 5; k++) { const a = k / 5 * TAU; ell(c, Math.cos(a) * 2.8, Math.sin(a) * 2.8, 2.4, 2.4, col, '#8a5a6a'); }
+        ell(c, 0, 0, 1.7, 1.7, '#ffcc33', '#8a5a00');
+        c.restore();
+      });
+    },
+    pompier(c) {
+      // Long back brim, red dome and a golden crest
+      ell(c, 0, 2, 20, 5.5, '#b81c1c', '#4a0808');
+      const dome = () => { c.beginPath(); c.moveTo(-15, 2); c.quadraticCurveTo(-15, -19, 0, -19); c.quadraticCurveTo(15, -19, 15, 2); c.closePath(); };
+      dome(); hatPath(c, '#e02a2a', '#5a0a0a');
+      c.save(); dome(); c.clip();
+      c.fillStyle = '#ffe066'; c.fillRect(-16, -6, 32, 3);
+      c.fillStyle = 'rgba(255, 255, 255, 0.3)'; c.beginPath(); c.ellipse(-7, -12, 3.5, 2, -0.6, 0, TAU); c.fill();
+      c.restore();
+      c.beginPath(); c.roundRect(-2.5, -23, 5, 22, 2.5); hatPath(c, '#ffcc33', '#8a5a00');
+    },
+    pirate(c, t) {
+      const sway = Math.sin(t * 3) * 1.5;
+      c.beginPath(); c.moveTo(13, -13); c.quadraticCurveTo(22 + sway, -30, 30 + sway, -25); c.quadraticCurveTo(23, -21, 16, -10); c.closePath();
+      hatPath(c, '#e8445a', '#7a0a2a');
+      c.beginPath(); c.moveTo(-24, -4); c.quadraticCurveTo(-14, -25, 0, -20); c.quadraticCurveTo(14, -25, 24, -4); c.quadraticCurveTo(12, 4, 0, 2); c.quadraticCurveTo(-12, 4, -24, -4); c.closePath();
+      hatPath(c, '#22202a', '#000');
+      c.strokeStyle = '#ffcc33'; c.lineWidth = 1.6;
+      c.beginPath(); c.moveTo(-22, -5); c.quadraticCurveTo(-12, 1, 0, -1); c.quadraticCurveTo(12, 1, 22, -5); c.stroke();
+      // Skull and crossbones
+      c.strokeStyle = '#fbfbff'; c.lineWidth = 1.8;
+      c.beginPath(); c.moveTo(-6, -4); c.lineTo(6, -14); c.moveTo(-6, -14); c.lineTo(6, -4); c.stroke();
+      ell(c, 0, -11, 4.5, 4, '#fbfbff', '#3a3a4a');
+      c.fillStyle = '#fbfbff'; c.beginPath(); c.roundRect(-2.6, -8.5, 5.2, 3.5, 1); c.fill();
+      c.fillStyle = '#1d1630';
+      for (const x of [-1.8, 1.8]) { c.beginPath(); c.arc(x, -11.5, 1.2, 0, TAU); c.fill(); }
+    },
+    helice(c, t) {
+      const dome = () => { c.beginPath(); c.moveTo(-14, 2); c.quadraticCurveTo(-14, -18, 0, -18); c.quadraticCurveTo(14, -18, 14, 2); c.closePath(); };
+      dome(); hatPath(c, '#e8445a');
+      c.save(); dome(); c.clip();
+      ['#e8445a', '#ffd34d', '#3d7bff', '#3fbf6a'].forEach((col, k) => { c.fillStyle = col; c.fillRect(-14 + k * 7, -19, 7, 22); });
+      c.restore();
+      dome(); c.strokeStyle = '#1d1630'; c.lineWidth = 1.8; c.stroke();
+      c.beginPath(); c.roundRect(-15, -3, 30, 6, 3); hatPath(c, '#fff1e6');
+      c.beginPath(); c.rect(-1.2, -25, 2.4, 8); hatPath(c, '#9aa3b5', '#3a3f50');
+      // Spinning propeller: the blades shrink as they turn edge-on
+      const w = Math.cos(t * 18) * 7;
+      ell(c, w, -26, Math.abs(w) + 0.8, 2.2, '#3d7bff', '#16205c');
+      ell(c, -w, -26, Math.abs(w) + 0.8, 2.2, '#e8445a', '#5a0a1a');
+      ell(c, 0, -26, 1.8, 1.8, '#ffd34d', '#8a5a00');
+    },
     santa(c, t) {
       const flop = Math.sin(t * 3) * 2;
       c.beginPath();
@@ -3510,6 +3590,91 @@
     ['en', 4, 'Complète : « There ___ many cats on the roof. »', ['are', 'is', 'be'], 'Avec un nom au pluriel, on dit « there are ».'],
     ['en', 4, 'Que veut dire le mot anglais « actually » ?', ['En fait', 'Actuellement', 'Activement'], 'C’est un faux ami : « actually » veut dire « en fait ». Actuellement se dit « currently ».'],
     ['en', 4, 'Complète : « I have never ___ a shooting star. »', ['seen', 'saw', 'see'], 'Avec « have », on utilise le participe passé : see, saw, seen.'],
+    // ---------- Questions added later (appended to keep saved question numbers valid) ----------
+    // Les chats
+    ['chat', 1, 'Comment appelle-t-on la maman du chaton ?', ['La chatte', 'La chienne', 'La jument'], 'La femelle du chat s’appelle la chatte.'],
+    ['chat', 1, 'Où un chat aime-t-il souvent dormir ?', ['Dans un coin chaud et calme', 'Dans l’eau', 'Sous la pluie'], 'Les chats dorment beaucoup et cherchent des endroits chauds et tranquilles.'],
+    ['chat', 1, 'Que fait un chat pour entretenir ses griffes ?', ['Il gratte un griffoir ou un tronc', 'Il les lime avec ses dents', 'Il les coupe avec des ciseaux'], 'En grattant, le chat use ses griffes et laisse aussi son odeur.'],
+    ['chat', 1, 'Comment s’appelle le cri du chat ?', ['Le miaulement', 'Le bêlement', 'Le meuglement'], 'Le chat miaule, le mouton bêle et la vache meugle.'],
+    ['chat', 1, 'Le chat voit-il mieux que nous quand il fait sombre ?', ['Oui', 'Non', 'Il ne voit rien du tout'], 'Les yeux du chat captent très bien la faible lumière. Mais dans le noir complet, il ne voit pas non plus.'],
+    ['chat', 1, 'Où le chat fait-il ses besoins à la maison ?', ['Dans sa litière', 'Dans sa gamelle', 'Dans son panier'], 'Le chat est propre : il utilise une caisse remplie de litière et recouvre ses besoins.'],
+    ['chat', 2, 'Combien d’heures par jour un chat dort-il environ ?', ['Entre 12 et 16 heures', '2 heures', '24 heures'], 'Les chats dorment beaucoup, souvent entre 12 et 16 heures par jour, en plusieurs siestes.'],
+    ['chat', 2, 'Que montre un chat qui « pétrit » avec ses pattes avant ?', ['Qu’il se sent bien', 'Qu’il prépare du pain', 'Qu’il a mal aux pattes'], 'Le chat pétrit comme quand il tétait sa mère : c’est souvent un signe de bien-être.'],
+    ['chat', 2, 'Comment s’appellent les petits coussins sous les pattes du chat ?', ['Les coussinets', 'Les sabots', 'Les ongles'], 'Les coussinets amortissent les sauts et rendent la marche du chat silencieuse.'],
+    ['chat', 2, 'Pourquoi un chat se frotte-t-il contre tes jambes ?', ['Pour te marquer de son odeur', 'Parce qu’il a froid', 'Pour se nettoyer les moustaches'], 'Le chat a des glandes sur les joues : en se frottant, il dépose son odeur, comme pour dire que tu fais partie de sa famille.'],
+    ['chat', 2, 'Combien de chatons une chatte a-t-elle en général dans une portée ?', ['De 3 à 5', 'Un seul, toujours', 'Plus de 20'], 'Une portée compte souvent 3 à 5 chatons, parfois un peu plus ou un peu moins.'],
+    ['chat', 2, 'Que fait un chat qui a très peur ou qui est en colère ?', ['Il hérisse ses poils et crache', 'Il ronronne doucement', 'Il se roule sur le dos'], 'Le chat gonfle ses poils pour paraître plus gros, souffle et crache.'],
+    ['chat', 3, 'Un chat peut-il tourner ses oreilles ?', ['Oui, chaque oreille séparément', 'Non, elles ne bougent pas', 'Seulement les deux en même temps'], 'Grâce à de nombreux muscles, chaque oreille du chat se tourne vers les sons, indépendamment de l’autre.'],
+    ['chat', 3, 'Le chat entend-il des sons plus aigus que nous ?', ['Oui, beaucoup plus aigus', 'Non, moins aigus', 'Exactement les mêmes'], 'Le chat entend des ultrasons, comme les petits cris des souris, que nos oreilles ne perçoivent pas.'],
+    ['chat', 3, 'Quelle plante attire beaucoup de chats ?', ['L’herbe à chat', 'Le cactus', 'Le persil'], 'L’herbe à chat, ou cataire, contient une substance qui excite ou détend beaucoup de chats.'],
+    ['chat', 3, 'Combien de dents a un chat adulte ?', ['30', '12', '42'], 'Le chat adulte a 30 dents. Le chien en a 42 et l’être humain adulte 32.'],
+    ['chat', 3, 'Quel chat apparaît et disparaît dans « Alice au pays des merveilles » ?', ['Le chat du Cheshire', 'Garfield', 'Le Chat botté'], 'Le chat du Cheshire peut disparaître en ne laissant que son grand sourire.'],
+    ['chat', 3, 'Comment s’appelle la race de chat souvent sans queue, venue de l’île de Man ?', ['Le Manx', 'Le Persan', 'Le Bengal'], 'Beaucoup de chats Manx n’ont pas de queue, ou seulement une toute petite.'],
+    ['chat', 4, 'Comment s’appelle la grimace d’un chat qui entrouvre la bouche pour analyser une odeur ?', ['Le flehmen', 'Le ronron', 'Le feulement'], 'Le chat envoie l’odeur vers un organe placé dans son palais. Le feulement, lui, est le souffle de colère.'],
+    ['chat', 4, 'Pourquoi le chat a-t-il des pupilles en fente verticale ?', ['Pour régler très finement la lumière qui entre', 'Pour voir en couleurs', 'Pour dormir les yeux ouverts'], 'Une fente se ferme beaucoup plus qu’une pupille ronde : le chat est protégé en plein soleil et voit bien la nuit.'],
+    ['chat', 4, 'Quelle est la température normale d’un chat ?', ['Environ 38,5 °C', 'Environ 35 °C', 'Environ 41,5 °C'], 'Le chat a une température un peu plus élevée que la nôtre, entre 38 et 39 °C.'],
+    ['chat', 4, 'Le chat est un carnivore strict. Qu’est-ce que cela veut dire ?', ['Il doit manger de la viande ou du poisson pour vivre', 'Il ne mange que des légumes', 'Il peut manger de tout sans problème'], 'Le chat a besoin de nutriments qu’on trouve surtout dans la viande, comme la taurine.'],
+    ['chat', 4, 'Quel félin sauvage, cousin du chat, vit encore dans certaines forêts de France ?', ['Le chat forestier', 'Le guépard', 'Le jaguar'], 'Le chat forestier ressemble à un gros chat tigré à la queue épaisse. On le trouve surtout dans l’est de la France.'],
+    ['chat', 4, 'Combien d’os compte environ le squelette d’un chat ?', ['Environ 240', 'Environ 50', 'Environ 1 000'], 'Le chat a environ 240 os, plus que nous (206), dont beaucoup dans la colonne et la queue.'],
+    // Anglais
+    ['en', 1, 'Comment dit-on « poisson » en anglais ?', ['Fish', 'Dish', 'Wish'], 'Fish = poisson. Dish veut dire plat et wish souhait.'],
+    ['en', 1, 'Que veut dire « yellow » ?', ['Jaune', 'Violet', 'Blanc'], 'Yellow = jaune, purple = violet, white = blanc.'],
+    ['en', 1, 'Comment dit-on « au revoir » en anglais ?', ['Goodbye', 'Hello', 'Good morning'], '« Good morning » veut dire bonjour, le matin.'],
+    ['en', 1, 'Que veut dire « sun » ?', ['Soleil', 'Lune', 'Étoile'], 'Sun = soleil, moon = lune, star = étoile.'],
+    ['en', 1, 'Comment dit-on « dix » en anglais ?', ['Ten', 'Two', 'Twelve'], 'Two = 2, ten = 10, twelve = 12.'],
+    ['en', 1, 'Que veut dire « bird » ?', ['Oiseau', 'Ours', 'Poisson'], 'Bird = oiseau. L’ours se dit « bear ».'],
+    ['en', 2, 'Comment dit-on « la pomme » en anglais ?', ['The apple', 'The orange', 'The banana'], 'Apple = pomme. Orange et banana ressemblent au français.'],
+    ['en', 2, 'Que veut dire « I like cats » ?', ['J’aime les chats', 'J’ai des chats', 'Je suis un chat'], 'To like = aimer. « I have cats » voudrait dire j’ai des chats.'],
+    ['en', 2, 'Comment dit-on « la tête » en anglais ?', ['The head', 'The hand', 'The foot'], 'Head = tête, hand = main, foot = pied.'],
+    ['en', 2, 'Que veut dire « Sit down, please » ?', ['Assieds-toi, s’il te plaît', 'Lève-toi, s’il te plaît', 'Tais-toi, s’il te plaît'], 'Sit down = s’asseoir, stand up = se lever.'],
+    ['en', 2, 'Complète : « I ___ a cat. » (verbe avoir)', ['have', 'has', 'am'], 'On dit « I have », mais « he has » ou « she has ».'],
+    ['en', 2, 'Comment dit-on « grand-mère » en anglais ?', ['Grandmother', 'Godmother', 'Stepmother'], 'Grandmother (ou grandma) = grand-mère. Godmother veut dire marraine.'],
+    ['en', 3, 'Complète : « She ___ milk every morning. » (drink)', ['drinks', 'drink', 'drinking'], 'Au présent simple, avec he, she ou it, on ajoute un « s » au verbe.'],
+    ['en', 3, 'Comment dit-on « décembre » en anglais ?', ['December', 'Decembre', 'Dicember'], 'En anglais, les mois prennent une majuscule : January, February… December.'],
+    ['en', 3, 'Que veut dire « What time is it? » ?', ['Quelle heure est-il ?', 'Quel temps fait-il ?', 'Quel jour sommes-nous ?'], 'Pour demander le temps qu’il fait, on dit « What’s the weather like? ».'],
+    ['en', 3, 'Quel est le pluriel de « mouse » ?', ['mice', 'mouses', 'mousies'], 'C’est un pluriel irrégulier : one mouse, two mice.'],
+    ['en', 3, 'Complète : « Look! The cat ___ on the roof. » (run, en ce moment)', ['is running', 'runs', 'run'], 'Pour une action en train de se passer, on utilise be + verbe en -ing.'],
+    ['en', 3, 'Que veut dire « behind » ?', ['Derrière', 'Devant', 'À côté de'], 'Behind = derrière, in front of = devant, next to = à côté de.'],
+    ['en', 4, 'Complète : « The cat is ___ than the mouse. » (big)', ['bigger', 'more big', 'biggest'], 'Pour un adjectif court, on ajoute -er : big, bigger. « Biggest » est le superlatif.'],
+    ['en', 4, 'Que veut dire « library » ?', ['Bibliothèque', 'Librairie', 'Liberté'], 'C’est un faux ami : « library » est une bibliothèque. Une librairie se dit « bookshop ».'],
+    ['en', 4, 'Complète : « I ___ TV when the phone rang. »', ['was watching', 'watched', 'am watching'], '« Was watching » décrit une action en cours, interrompue par une autre au prétérit.'],
+    ['en', 4, 'Quel est le participe passé de « write » ?', ['written', 'wrote', 'writed'], 'Write, wrote, written : c’est un verbe irrégulier.'],
+    ['en', 4, 'Complète : « You ___ wear a helmet: it is the rule. »', ['must', 'mustn’t', 'might'], '« Must » exprime une obligation, « mustn’t » une interdiction et « might » une possibilité.'],
+    ['en', 4, 'Que veut dire le mot anglais « sensible » ?', ['Raisonnable', 'Sensible', 'Sensationnel'], 'C’est un faux ami : « sensible » veut dire raisonnable. Sensible se dit « sensitive ».'],
+    // Arts et culture
+    ['art', 1, 'Que donne le mélange du rouge et du bleu ?', ['Du violet', 'Du vert', 'De l’orange'], 'Rouge et bleu donnent du violet.'],
+    ['art', 1, 'Dans quel conte une jeune fille perd-elle sa pantoufle de verre ?', ['Cendrillon', 'Blanche-Neige', 'Raiponce'], 'Cendrillon perd sa pantoufle en quittant le bal à minuit.'],
+    ['art', 1, 'Quel instrument se joue avec des baguettes ?', ['La batterie', 'Le violon', 'La flûte'], 'On frappe la batterie avec des baguettes. Le violon se joue avec un archet.'],
+    ['art', 1, 'Combien de nains vivent avec Blanche-Neige ?', ['7', '3', '12'], 'Blanche-Neige se cache dans la maison des sept nains.'],
+    ['art', 1, 'Dans quel sport utilise-t-on une raquette et un volant ?', ['Le badminton', 'Le judo', 'Le rugby'], 'Au badminton, on se renvoie un volant par-dessus un filet.'],
+    ['art', 2, 'Avec quoi joue-t-on du violon ?', ['Un archet', 'Une baguette', 'Un marteau'], 'On frotte les cordes du violon avec un archet garni de crins de cheval.'],
+    ['art', 2, 'Qui a écrit les contes « Le Petit Chaperon rouge » et « Cendrillon » en France ?', ['Charles Perrault', 'Jules Verne', 'Molière'], 'Charles Perrault a publié ses contes en 1697.'],
+    ['art', 2, 'Combien de couleurs compte-t-on dans l’arc-en-ciel ?', ['7', '3', '12'], 'Rouge, orange, jaune, vert, bleu, indigo et violet.'],
+    ['art', 2, 'Quel sport se joue sur la glace avec une crosse et un palet ?', ['Le hockey sur glace', 'Le tennis', 'Le golf'], 'Au hockey sur glace, les joueurs patinent et frappent un palet avec leur crosse.'],
+    ['art', 2, 'Comment s’appelle un tableau qui représente une personne ?', ['Un portrait', 'Un paysage', 'Une nature morte'], 'Un paysage montre la nature et une nature morte représente des objets.'],
+    ['art', 3, 'Qui a sculpté « Le Penseur » ?', ['Auguste Rodin', 'Michel-Ange', 'Camille Claudel'], 'Le Penseur est une célèbre statue en bronze d’Auguste Rodin.'],
+    ['art', 3, 'Qui a composé « Le Carnaval des animaux » ?', ['Camille Saint-Saëns', 'Mozart', 'Vivaldi'], 'Dans cette œuvre, chaque morceau imite un animal : le lion, le cygne, les poissons…'],
+    ['art', 3, 'Comment s’appelle l’art japonais du pliage de papier ?', ['L’origami', 'Le judo', 'Le manga'], 'Avec l’origami, on plie une feuille sans la couper pour faire des animaux ou des fleurs.'],
+    ['art', 3, 'Quel héros gaulois devient très fort grâce à une potion magique ?', ['Astérix', 'Tintin', 'Spirou'], 'Astérix a été créé par Goscinny et Uderzo. La potion est préparée par le druide Panoramix.'],
+    ['art', 3, 'Quel chat de bande dessinée adore les lasagnes et déteste les lundis ?', ['Garfield', 'Gros Minet', 'Tom'], 'Garfield a été créé par l’Américain Jim Davis en 1978.'],
+    ['art', 4, 'Qui a peint « La Liberté guidant le peuple » ?', ['Eugène Delacroix', 'Jacques-Louis David', 'Édouard Manet'], 'Delacroix a peint ce tableau en 1830, après la révolution des Trois Glorieuses.'],
+    ['art', 4, 'Qui a écrit la nouvelle fantastique « Le Chat noir » ?', ['Edgar Allan Poe', 'Charles Dickens', 'Alexandre Dumas'], 'Edgar Allan Poe, écrivain américain, l’a publiée en 1843. Baudelaire l’a traduite en français.'],
+    ['art', 4, 'Quel poète a écrit « Les Fleurs du mal », où plusieurs poèmes parlent de chats ?', ['Charles Baudelaire', 'Paul Verlaine', 'Arthur Rimbaud'], 'Baudelaire aimait les chats : deux poèmes de ce recueil s’intitulent « Le Chat » et un autre « Les Chats ».'],
+    ['art', 4, 'Quel peintre a inventé le cubisme avec Georges Braque ?', ['Pablo Picasso', 'Claude Monet', 'Salvador Dalí'], 'Le cubisme montre les objets sous plusieurs angles à la fois, avec des formes géométriques.'],
+    ['art', 4, 'Quel compositeur polonais a écrit de nombreux nocturnes pour piano ?', ['Frédéric Chopin', 'Jean-Sébastien Bach', 'Claude Debussy'], 'Chopin est né en Pologne en 1810 et a vécu une grande partie de sa vie à Paris.'],
+    // Français
+    ['fr', 1, 'Combien de syllabes y a-t-il dans le mot « souris » ?', ['2', '1', '3'], 'On découpe : sou-ris. Il y a deux syllabes.'],
+    ['fr', 1, 'Quel est le contraire de « chaud » ?', ['Froid', 'Doux', 'Mouillé'], 'Chaud et froid sont des contraires.'],
+    ['fr', 1, 'Quel mot commence par le même son que « chat » ?', ['Chemin', 'Lapin', 'Souris'], '« Chat » et « chemin » commencent tous les deux par le son « ch ».'],
+    ['fr', 2, 'Quel est le féminin de « chat » ?', ['Chatte', 'Chatonne', 'Chate'], 'La femelle du chat est la chatte, avec deux « t ».'],
+    ['fr', 2, 'Quel est le pluriel de « un œil » ?', ['Des yeux', 'Des œils', 'Des œuils'], '« Œil » a un pluriel irrégulier : des yeux.'],
+    ['fr', 2, 'Complète : « Tu ___ un beau chat. » (verbe avoir)', ['as', 'a', 'es'], 'Avec « tu », le verbe avoir s’écrit « as » : tu as.'],
+    ['fr', 3, 'Choisis le bon mot : « Le chat joue ___ la balle. »', ['à', 'a', 'as'], 'On écrit « à » avec un accent quand on ne peut pas le remplacer par « avait ».'],
+    ['fr', 3, 'Quel est l’infinitif du verbe dans « nous prenions » ?', ['Prendre', 'Prenir', 'Apprendre'], '« Prenions » est le verbe prendre à l’imparfait.'],
+    ['fr', 3, 'Lequel de ces mots est un nom commun ?', ['Toit', 'Neko', 'Paris'], 'Neko et Paris sont des noms propres : ils commencent par une majuscule.'],
+    ['fr', 4, 'Complète : « Si j’avais des ailes, je ___ au-dessus des toits. » (voler)', ['volerais', 'volerai', 'vole'], 'Après « si » suivi de l’imparfait, on utilise le conditionnel présent : je volerais.'],
+    ['fr', 4, 'Que veut dire l’expression « donner sa langue au chat » ?', ['Renoncer à trouver la réponse', 'Parler beaucoup trop', 'Garder un secret'], 'On donne sa langue au chat quand on abandonne et qu’on demande la solution.'],
+    ['fr', 4, 'Que veut dire l’expression « avoir un chat dans la gorge » ?', ['Être enroué', 'Avoir très faim', 'Avoir peur'], 'On a « un chat dans la gorge » quand la voix est enrouée.'],
   ];
 
   const SUBJECTS = { sci: 'Sciences et nature', hist: 'Histoire et géographie', fr: 'Français et maths', art: 'Arts et culture', chat: 'Les chats', en: 'Anglais' };
@@ -4701,6 +4866,10 @@
     { id: 'rockstar', name: 'Rock star', theme: 'musique' },
     { id: 'sardine', name: 'Sardine', theme: 'avril' },
     { id: 'superchat', name: 'Super-chat', theme: 'chats' },
+    { id: 'fantome', name: 'Fantôme', theme: 'halloween' },
+    { id: 'lutin', name: 'Lutin', theme: 'noel' },
+    { id: 'abeille', name: 'Abeille', theme: 'paques' },
+    { id: 'marin', name: 'Marin', theme: 'ete' },
   ];
   const COSTUME_PRICE = 6;
   const POWERS = [
@@ -4972,6 +5141,86 @@
       for (const x of [-1, 0, 1]) { c.beginPath(); c.moveTo(x, -33); c.lineTo(x, 8); c.stroke(); }
       c.restore();
     },
+    fantome(c, layer, g) {
+      if (layer !== 'body') return;
+      // A sheet over the back, with eye holes looking at the player
+      const sw = Math.sin(g.t * 6) * 2;
+      c.beginPath();
+      c.moveTo(-13, g.hy + 14); c.quadraticCurveTo(-25, g.by - 4, -24, g.by + 20 + sw);
+      for (let k = 0; k < 4; k++) { const x0 = -24 + k * 12; c.quadraticCurveTo(x0 + 6, g.by + 28 - sw, x0 + 12, g.by + 20 + (k % 2 ? sw : -sw)); }
+      c.quadraticCurveTo(25, g.by - 4, 13, g.hy + 14); c.closePath();
+      cosShape(c, 'rgba(250, 250, 255, 0.95)', '#8a86a8');
+      c.strokeStyle = 'rgba(138, 134, 168, 0.45)'; c.lineWidth = 1.2;
+      for (const x of [-12, 12]) { c.beginPath(); c.moveTo(x * 0.6, g.hy + 18); c.quadraticCurveTo(x, g.by + 6, x * 1.1, g.by + 18); c.stroke(); }
+      c.fillStyle = '#1d1630';
+      for (const sd of [-1, 1]) { c.beginPath(); c.ellipse(sd * 6, g.by - 3, 2.8, 4, 0, 0, TAU); c.fill(); }
+      c.beginPath(); c.ellipse(0, g.by + 6, 2.6, 3.2, 0, 0, TAU); c.fill();
+    },
+    lutin(c, layer, g) {
+      if (layer !== 'body') return;
+      const tunic = () => { c.beginPath(); c.ellipse(0, g.by, 21, 20, 0, 0, TAU); };
+      tunic(); cosShape(c, '#2f9e4a', '#145a26');
+      c.save(); tunic(); c.clip();
+      c.fillStyle = '#3a2a1a'; c.fillRect(-22, g.by + 5, 44, 5);
+      c.restore();
+      c.beginPath(); c.roundRect(-4, g.by + 4, 8, 7, 1.5); cosShape(c, '#ffd34d', '#8a5a00', 1.2);
+      // Pointed collar with little bells
+      for (let k = -3; k <= 3; k++) {
+        const x = k * 4.6;
+        c.beginPath(); c.moveTo(x - 3, g.hy + 14); c.lineTo(x * 1.25, g.hy + 23); c.lineTo(x + 3, g.hy + 14); c.closePath();
+        cosShape(c, k % 2 ? '#d42a2a' : '#3fbf6a', '#5a0a0a', 1.2);
+        const ring = Math.sin(g.t * 9 + k) * 0.8;
+        c.beginPath(); c.arc(x * 1.25 + ring, g.hy + 24, 1.6, 0, TAU); cosShape(c, '#ffd34d', '#8a5a00', 0.8);
+      }
+    },
+    abeille(c, layer, g) {
+      if (layer === 'back') {
+        const flap = Math.sin(g.t * 30) * 0.3;
+        c.globalAlpha = 0.85;
+        for (const sd of [-1, 1]) {
+          c.save(); c.translate(sd * 8, g.by - 12); c.rotate(sd * (0.5 + flap));
+          c.beginPath(); c.ellipse(sd * 10, -6, 12, 7, 0, 0, TAU); cosShape(c, '#e8f6ff', '#7aa8c8', 1.4);
+          c.beginPath(); c.ellipse(sd * 7, 3, 8, 5, 0.3 * sd, 0, TAU); cosShape(c, '#e8f6ff', '#7aa8c8', 1.4);
+          c.restore();
+        }
+        c.globalAlpha = 1;
+      } else if (layer === 'body') {
+        const body = () => { c.beginPath(); c.ellipse(0, g.by, 21, 20, 0, 0, TAU); };
+        body(); cosShape(c, '#ffcf2e', '#5a3a00');
+        c.save(); body(); c.clip();
+        c.fillStyle = '#2a2018';
+        for (const y of [-11, -1, 9]) c.fillRect(-22, g.by + y, 44, 5);
+        c.restore();
+        body(); c.strokeStyle = '#2a2018'; c.lineWidth = 1.8; c.stroke();
+        c.beginPath(); c.moveTo(-3, g.by + 18); c.lineTo(0, g.by + 25); c.lineTo(3, g.by + 18); c.closePath(); cosShape(c, '#2a2018', '#000', 1);
+      } else if (layer === 'head') {
+        const bob = Math.sin(g.t * 6) * 1.5;
+        c.strokeStyle = '#2a2018'; c.lineWidth = 1.6;
+        for (const sd of [-1, 1]) {
+          c.beginPath(); c.moveTo(sd * 4, g.hy - 16); c.quadraticCurveTo(sd * 6, g.hy - 28, sd * 12, g.hy - 32 + bob); c.stroke();
+          c.beginPath(); c.arc(sd * 12, g.hy - 32 + bob, 2.6, 0, TAU); cosShape(c, '#ffcf2e', '#2a2018', 1.2);
+        }
+      }
+    },
+    marin(c, layer, g) {
+      if (layer !== 'body') return;
+      // Striped top and a square sailor collar on the back
+      const top = () => { c.beginPath(); c.ellipse(0, g.by, 21, 20, 0, 0, TAU); };
+      top(); cosShape(c, '#ffffff', '#1f3f9a');
+      c.save(); top(); c.clip();
+      c.fillStyle = '#2f5fd0';
+      for (let y = -6; y < 22; y += 6) c.fillRect(-22, g.by + y, 44, 2.6);
+      c.restore();
+      c.beginPath(); c.moveTo(-13, g.hy + 14); c.lineTo(13, g.hy + 14); c.lineTo(14, g.by + 1); c.lineTo(-14, g.by + 1); c.closePath();
+      cosShape(c, '#1f3f9a', '#0b1a4a');
+      c.strokeStyle = '#ffffff'; c.lineWidth = 1.2;
+      c.beginPath(); c.rect(-10.5, g.hy + 16, 21, g.by - g.hy - 18); c.stroke();
+      const sw = Math.sin(g.t * 6) * 1.5;
+      for (const sd of [-1, 1]) {
+        c.beginPath(); c.moveTo(sd * 2, g.hy + 15); c.lineTo(sd * 5 + sw, g.hy + 27); c.lineTo(sd * 8 + sw, g.hy + 25); c.closePath();
+        cosShape(c, '#e8263a', '#6a0a14', 1.2);
+      }
+    },
     sardine(c, layer, g) {
       if (layer !== 'body') return;
       scales(c, g.by, '#4aa8e0', '#1f5a8a');
@@ -5043,7 +5292,7 @@
     if (!COSTUMES.some(cs => cs.theme === THEME_ID)) {
       const p = document.createElement('p');
       p.className = 'small-text full';
-      p.textContent = 'Chaque fête a son déguisement. Le prochain arrivera avec la prochaine fête.';
+      p.textContent = 'Chaque fête a ses déguisements. Les prochains arriveront avec la prochaine fête.';
       grid.append(p);
     }
 

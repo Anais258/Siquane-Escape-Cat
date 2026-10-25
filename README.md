@@ -67,17 +67,17 @@ L'album montre tous les chats et tous les chapeaux, avec des silhouettes pour ce
 Les poissons d'or sont des objets très rares : il y a **1 chance sur 25** qu'un poisson d'or se cache dans chaque quartier (chaque kilomètre). Il brille et flotte au-dessus du toit, et rapporte aussi 100 points. On les garde d'une partie à l'autre.
 
 - **Seconde chance** : quand le chat perd, une fenêtre propose pendant 10 secondes d'utiliser 1 poisson d'or pour repartir au même endroit (l'obstacle disparaît, un bouclier protège 2 secondes, puis compte à rebours 3-2-1). C'est possible **une seule fois par partie**. Un bouton « Passer » permet de refuser.
-- **Déguisements de fête** (6 poissons d'or) : un par fête, en vente seulement pendant sa fête, gardé ensuite toute l'année. Ils se portent avec n'importe quel chat et n'importe quel chapeau.
+- **Déguisements de fête** (6 poissons d'or) : un ou deux par fête, en vente seulement pendant sa fête, gardé ensuite toute l'année. Ils se portent avec n'importe quel chat et n'importe quel chapeau.
 
 | Fête | Déguisement |
 | --- | --- |
-| Halloween | Vampire (cape et col) |
-| Noël | Renne (bois et écharpe) |
-| Pâques | Poussin |
+| Halloween | Vampire (cape et col), Fantôme (drap avec des yeux) |
+| Noël | Renne (bois et écharpe), Lutin (tunique et col à grelots) |
+| Pâques | Poussin, Abeille (rayures, ailes et antennes) |
 | Saint-Valentin | Cupidon (ailes et carquois) |
 | Nouvel An chinois | Dragon (écailles et crête) |
 | Nouvel An | Tenue de soirée |
-| Été et 14 Juillet | Bouée |
+| Été et 14 Juillet | Bouée, Marin (marinière et col de marin) |
 | Fête de la musique | Rock star (guitare) |
 | Poisson d'avril | Sardine (écailles et nageoires) |
 | Journée du chat | Super-chat (cape) |
@@ -136,12 +136,17 @@ Pour que la collection dure, on peut avoir **au maximum 5 chats le premier jour 
 | Roux | offert |
 | Gris | 50 |
 | Noir | 80 |
+| Crème | 100 |
 | Blanc | 120 |
 | Tigré brun | 160 |
+| Tigré argenté | 200 |
 | Tuxedo | 250 |
+| Chartreux | 300 |
 | Siamois | 350 |
 | Calico | 450 |
+| Écaille de tortue | 500 |
 | Rose | 550 |
+| Bengal (tacheté) | 600 |
 | Bleu nuit (avec des étoiles) | 650 |
 | Doré (qui brille) | 800 |
 | Arc-en-ciel (qui change de couleur) | 1000 |
@@ -153,15 +158,20 @@ Dans l'onglet **Chapeaux** de la boutique, les croquettes servent aussi à achet
 | Chapeau | Prix |
 | --- | --- |
 | Bonnet à pompon | 30 |
+| Casquette à l'envers | 45 |
 | Bob de pêcheur (avec un petit poisson qui pend) | 60 |
 | Toque de chef | 90 |
+| Couronne de fleurs | 110 |
 | Pastèque | 120 |
 | Béret baguette | 150 |
 | Cow-boy | 200 |
+| Casque de pompier | 230 |
 | Haut-de-forme | 260 |
 | Couronne | 320 |
+| Chapeau de pirate | 350 |
 | Bonnet de nuit étoilé | 380 |
 | Mini-antenne (avec une lumière qui clignote) | 420 |
+| Bonnet à hélice (qui tourne) | 450 |
 | Casque de ramoneur (avec une lampe qui éclaire devant) | 480 |
 | Sorcière | 560 |
 | Viking | 650 |
