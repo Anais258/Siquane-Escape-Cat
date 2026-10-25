@@ -223,6 +223,41 @@
   .toggle .state { color: var(--cat); }
   .toggle.off .state { color: var(--muted); }
   .toggle:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
+  .player { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: baseline; gap: 2px 10px; }
+  .player b { font-family: var(--font-display); font-weight: 400; font-size: 1.3rem; }
+  .player span:not(.xp-bar) { color: var(--muted); font-weight: 800; font-size: 0.85rem; }
+  .xp-bar, .pb-bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+  .xp-bar { width: 180px; justify-self: center; }
+  .xp-bar i, .pb-bar i { display: block; height: 100%; width: 0; background: #7affc4; border-radius: 3px; transition: width 0.6s ease-out; }
+  .pb-bar.kib i { background: var(--kibble); }
+  .progress-box { display: grid; gap: 6px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); text-align: left; }
+  .pb-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.9rem; }
+  .pb-head span { color: #7affc4; font-weight: 800; }
+  .chapter-box { border: 1px solid var(--cat); }
+  .center { text-align: center; }
+  .btn.glow { border-color: var(--cat); color: var(--cat); }
+  a.btn { text-decoration: none; text-align: center; }
+  .story-text { color: var(--ink); text-align: left; }
+  .name-input { font-family: var(--font-display); font-size: 1.4rem; padding: 10px 14px; border-radius: 12px; border: 2px solid var(--line); background: rgba(255, 255, 255, 0.06); color: var(--ink); width: 100%; box-sizing: border-box; text-align: center; -webkit-user-select: text; user-select: text; }
+  .name-input:focus { outline: none; border-color: var(--cat); }
+  .rename { display: grid; gap: 6px; }
+  .rename-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .rename-row .name-input { font-size: 1.1rem; padding: 8px 10px; }
+  .card.story { text-align: left; max-width: 560px; }
+  .card.story h2 { text-align: center; }
+  .chapters { display: grid; gap: 10px; }
+  .chapter { padding: 12px 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); }
+  .chapter h3 { margin: 0 0 6px; font-family: var(--font-display); font-weight: 400; font-size: 1.1rem; color: var(--cat); }
+  .chapter p { color: var(--ink); }
+  .chapter.locked { opacity: 0.55; }
+  .chapter.locked h3 { color: var(--muted); }
+  .chapter.locked p { color: var(--muted); }
+  .album-count { font-family: var(--font-display); font-size: 1.2rem; color: var(--kibble); }
+  .album-item { display: grid; justify-items: center; gap: 2px; padding: 8px 6px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); min-width: 0; }
+  .album-item canvas { width: 76px; height: 76px; }
+  .album-item.missing .skin-name { color: var(--muted); }
+  .album-sub { font-size: 0.72rem; color: var(--muted); font-weight: 700; text-align: center; }
+  .share-img { width: 100%; max-height: 52vh; object-fit: contain; border-radius: 14px; }
   .unlock { color: var(--kibble); font-weight: 800; }
   .card.shop { max-width: 560px; }
   .bank { justify-self: center; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; color: var(--kibble); font-variant-numeric: tabular-nums; }
@@ -298,7 +333,12 @@
   <div class="overlay" id="startScreen">
     <div class="card">
       <h1><small>Siquane</small>Escape Cat</h1>
-      <p>Cours sur les toits la nuit, attrape les croquettes et ne mets surtout pas les pattes dans l'eau.</p>
+      <div class="player">
+        <b id="playerName">Siquane</b>
+        <span id="playerLevel">Niveau 1</span>
+        <span class="xp-bar"><i id="xpBar"></i></span>
+      </div>
+      <p>Perdu dans une ville inconnue, ton chat court de toit en toit pour retrouver sa famille. Attrape les croquettes et ne mets surtout pas les pattes dans l'eau !</p>
 
       <p>Record : <span class="best" id="bestStart">0</span> · Tirelire : <span class="best" id="bankStart">0</span> croquettes</p>
       <div class="event" id="eventBanner" hidden>
@@ -317,6 +357,10 @@
       <button class="btn" id="playBtn">Jouer</button>
       <div class="btn-row">
         <button class="btn ghost" id="shopBtnStart">Chats et chapeaux</button>
+        <button class="btn ghost" id="albumBtn">Album</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn ghost" id="storyBtn">Histoire</button>
         <button class="btn ghost" id="gradeBtn">Classe</button>
       </div>
       <div class="btn-row sound-row">
@@ -386,6 +430,7 @@
       <h2 id="overTitle">Plouf !</h2>
       <p id="overText">Le chat est tombé dans une flaque d'eau.</p>
       <div class="badge" id="newBest" hidden>Nouveau record !</div>
+      <p class="small-text center" id="catBest"></p>
       <div class="results">
         <div class="result"><span>Score</span><strong id="finalScore">0</strong></div>
         <div class="result"><span>Croquettes</span><strong id="finalKibbles">0</strong></div>
@@ -393,14 +438,75 @@
       </div>
       <p class="near" id="nearBest" hidden></p>
       <p id="levelOver"></p>
+      <div class="progress-box">
+        <div class="pb-head"><b id="xpLevel">Siquane · niveau 1</b><span id="xpGain">+0 XP</span></div>
+        <div class="pb-bar"><i id="xpBarOver"></i></div>
+        <p class="unlock" id="levelUp" hidden></p>
+      </div>
+      <div class="progress-box chapter-box" id="chapterBox" hidden>
+        <div class="pb-head"><b id="chapterTitle">Nouveau chapitre</b><button class="btn small" id="chapterRead">Lire</button></div>
+      </div>
+      <div class="progress-box" id="nextBox" hidden>
+        <div class="pb-head"><b id="nextText"></b></div>
+        <div class="pb-bar kib"><i id="nextBar"></i></div>
+      </div>
       <p class="unlock" id="missionsGain" hidden></p>
       <p>Tirelire : <span class="best" id="bankOver">0</span> croquettes</p>
       <p class="unlock" id="unlockHint" hidden>Tu as assez de croquettes pour débloquer un chat ou un chapeau !</p>
       <button class="btn" id="againBtn">Rejouer</button>
-      <button class="btn ghost" id="shopBtnOver">Boutique</button>
+      <div class="btn-row">
+        <button class="btn ghost" id="shopBtnOver">Boutique</button>
+        <button class="btn ghost" id="shareBtnOver">Partager mon score</button>
+      </div>
       <p class="hint kbd-only">ou appuie sur Espace</p>
       <div class="label">Missions</div>
       <div class="missions" id="missionsOver"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="introScreen" hidden>
+    <form class="card" id="introForm">
+      <h1><small>Siquane</small>Escape Cat</h1>
+      <p class="story-text">Une nuit d'orage, un petit chat s'est abrité dans un camion de livraison. À son réveil, il était au cœur d'une ville inconnue, très loin de sa famille. Du haut d'un toit, il aperçoit au loin le clocher de son quartier. Pour rentrer, il n'y a qu'un chemin : courir de toit en toit !</p>
+      <label class="label" for="nameInput">Comment s'appelle ton chat ?</label>
+      <input class="name-input" id="nameInput" maxlength="16" autocomplete="off" spellcheck="false">
+      <button class="btn" type="submit" id="introGo">C'est parti !</button>
+    </form>
+  </div>
+
+  <div class="overlay" id="storyScreen" hidden>
+    <div class="card story">
+      <h2>Histoire</h2>
+      <form class="rename" id="renameForm">
+        <label class="label" for="renameInput">Nom de ton chat</label>
+        <div class="rename-row"><input class="name-input" id="renameInput" maxlength="16" autocomplete="off" spellcheck="false"><button class="btn small" type="submit">Renommer</button></div>
+      </form>
+      <p class="small-text">Un nouveau chapitre se débloque quand ton niveau de joueur monte. Chaque partie te donne de l'expérience.</p>
+      <div class="chapters" id="chapterList"></div>
+      <button class="btn" id="storyBack">Retour</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="albumScreen" hidden>
+    <div class="card shop">
+      <h2>Album</h2>
+      <p class="album-count" id="albumCount"></p>
+      <div class="label">Chats</div>
+      <div class="skins" id="albumCats"></div>
+      <div class="label">Chapeaux</div>
+      <div class="skins" id="albumHats"></div>
+      <button class="btn" id="albumBack">Retour</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="shareScreen" hidden>
+    <div class="card">
+      <h2>Ton score</h2>
+      <img class="share-img" id="shareImg" alt="Image du score avec ton chat">
+      <button class="btn" id="shareNative" hidden>Partager</button>
+      <a class="btn ghost" id="shareSave" href="#" download="siquane-escape-cat.png">Enregistrer l'image</a>
+      <p class="small-text center">Sur téléphone, tu peux aussi faire un appui long sur l'image pour l'enregistrer ou la partager.</p>
+      <button class="btn ghost" id="shareBack">Retour</button>
     </div>
   </div>
 
@@ -1336,6 +1442,8 @@
     right: () => { tone(660, 0.1, 'triangle', 0.1); tone(990, 0.16, 'triangle', 0.1, null, 0.09); },
     wrong: () => tone(300, 0.3, 'sawtooth', 0.05, 180),
     beep: hi => tone(hi ? 880 : 520, 0.12, 'square', 0.05),
+    flap: () => { noise(0.18, 0.06, 2600); noise(0.12, 0.05, 2200, 0.09); },
+    chime: () => [1568, 2093, 2637].forEach((f, i) => tone(f, 0.25, 'triangle', 0.05, null, i * 0.08)),
   };
 
   // ---------- Background music: a small chiptune sequencer ----------
@@ -1591,6 +1699,7 @@
   let speed, dist, elapsed, kibbles, nextRowZ, deathCause, deathT, time = 0;
   let bonusPts = 0, level = 1, comboMult = 1, recordShown = false, lastOufT = -9, nextBonusAt = 6;
   let active = {}, shakeT = 0, shakeMag = 0, slowT = 0, popups = [];
+  let decos = [], strayAt = 25, starAt = 30, shootStar = null, quizRight = 0;
   let best = 0;
   try { best = parseInt(localStorage.getItem(BEST_KEY), 10) || 0; } catch (e) {}
 
@@ -1600,6 +1709,7 @@
     speed = START_SPEED; dist = 0; elapsed = 0; kibbles = 0;
     bonusPts = 0; level = 1; comboMult = 1; recordShown = false; lastOufT = -9; nextBonusAt = 6;
     active = {}; shakeT = 0; slowT = 0; kibCombo = 0;
+    decos = []; strayAt = rand(18, 30); starAt = rand(22, 35); shootStar = null; quizRight = 0;
     nextRowZ = 1100;
     deathCause = null; deathT = 0;
   }
@@ -1634,6 +1744,7 @@
     if (types.every(t => t === null) && Math.random() < 0.6) types[Math.floor(Math.random() * 3)] = pickType(diff);
 
     types.forEach((t, i) => { if (t) addObstacle(t, i - 1, z); });
+    if (Math.random() < 0.2) spawnPigeon(z + rand(0, 200));
 
     // A bonus now and then, in a free lane
     let bonusLane = -9;
@@ -1784,6 +1895,7 @@
     }
 
     for (const o of objs) if (!o.passed && o.z + o.d < -18) { o.passed = true; passedObstacle(o); }
+    updateSurprises(dt, dz);
 
     kibComboT -= dt;
     if (kibComboT <= 0) { kibCombo = 0; comboMult = 1; }
@@ -1823,6 +1935,7 @@
       if (Math.abs(cat.x - k.x) > 42) continue;
       if (k.y < cat.y - 16 || k.y > cat.y + h + 16) continue;
       k.taken = true;
+      if (k.star) { catchStar(k); continue; }
       if (k.bonus) { activateBonus(k.bonus); continue; }
       const gain = active.double ? 2 : 1;
       kibbles += gain;
@@ -2060,6 +2173,7 @@
   function drawKibble(k) {
     if (k.z < -CAM_D * 0.6) return;
     if (k.bonus) return drawBonusItem(k);
+    if (k.star) return drawStarItem(k);
     const bob = Math.sin(time * 4 + k.p) * 4;
     const p = proj(k.x, k.y + bob, k.z), gnd = proj(k.x, 0, k.z), s = p.s;
     ctx.globalAlpha = fade(k.z);
@@ -2591,6 +2705,7 @@
     ctx.save();
     if (shakeT > 0) ctx.translate(rand(-1, 1) * shakeMag, rand(-1, 1) * shakeMag);
     drawSky();
+    drawShootingStar();
     drawRoof();
     // Ground decals first
     for (const o of objs) if (o.type === 'puddle' && o.z < FAR) drawPuddle(o);
@@ -2598,11 +2713,13 @@
     const list = [];
     for (const o of objs) if (o.type !== 'puddle') list.push({ z: o.z + o.d / 2, o });
     for (const k of kibs) if (!k.taken) list.push({ z: k.z, k });
+    for (const d of decos) list.push({ z: d.z, d });
     list.push({ z: 0, cat: true });
     list.sort((a, b) => b.z - a.z);
     for (const it of list) {
       if (it.cat) drawCat();
       else if (it.k) drawKibble(it.k);
+      else if (it.d) drawDeco(it.d);
       else DRAWERS[it.o.type](it.o);
     }
     drawParticles();
@@ -2627,7 +2744,7 @@
   }
 
   function show(id) {
-    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen']) $(s).hidden = s !== id;
+    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen']) $(s).hidden = s !== id;
   }
 
   function startGame() {
@@ -2660,7 +2777,7 @@
     const [title, text, cls] = DEATHS[deathCause] || DEATHS.puddle;
     $('overTitle').textContent = title;
     $('overTitle').className = cls;
-    $('overText').textContent = text;
+    $('overText').textContent = text.replace(/^Le chat/, catName());
     $('finalScore').textContent = sc;
     $('finalKibbles').textContent = kibbles;
     $('finalBest').textContent = best;
@@ -2668,6 +2785,8 @@
     $('bestStart').textContent = best;
     bank += kibbles;
     track('meters', Math.floor(dist / 10));
+    lastRun = { score: sc, kibbles, level };
+    endOfRun(sc);
     saveProgress();
     updateBank();
     $('unlockHint').hidden = !canUnlockSomething();
@@ -2701,6 +2820,7 @@
     hud.hidden = true;
     $('bestStart').textContent = best;
     renderPanels();
+    renderPlayer();
     show('startScreen');
   }
 
@@ -3484,6 +3604,7 @@
     if (ok) {
       kibbles += 1;
       bonusPts += 10;
+      quizRight++;
       track('quiz');
       sfx.right();
       fb.innerHTML = '<b>Bravo ! +1 croquette</b>';
@@ -3533,12 +3654,454 @@
     if (n !== lastCount) { lastCount = n; el.textContent = n; sfx.beep(false); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
   }
 
+  // ---------- Profile: cat name, player level, record per cat, story ----------
+  const PROFILE_KEY = 'siquane-escape-cat-profile';
+  let profile = load(PROFILE_KEY, null);
+  if (!profile || typeof profile !== 'object') profile = { name: '', xp: 0, level: 1, bestByCat: {}, read: 0 };
+  profile.bestByCat = profile.bestByCat || {};
+  const catName = () => profile.name || 'Siquane';
+  const xpNeed = L => 100 + 50 * (L - 1);
+  const saveProfile = () => store(PROFILE_KEY, profile);
+
+  // One chapter unlocks at each of these player levels.
+  const CHAPTERS = [
+    [1, 'La nuit de l’orage', "Une nuit d'orage, {name} s'est abrité dans un camion de livraison. À son réveil, le camion était arrivé au cœur d'une ville inconnue, très loin de chez lui et de sa famille. Du haut d'un toit, {name} aperçoit au loin le clocher de son quartier. Pour rentrer, il n'y a qu'un chemin : courir de toit en toit !"],
+    [2, 'Gaston le pigeon', "Sur une antenne, un vieux pigeon nommé Gaston lisse ses plumes. « Une chatte rousse avec trois chatons ? Je les ai vus passer près de la rivière, vers le nord. » {name} remercie Gaston et repart, le cœur plus léger."],
+    [3, 'Filou, le chat errant', "Un chat gris et maigre se met à courir à côté de {name}. C'est Filou, un chat errant qui connaît tous les raccourcis de la ville. « Suis les croquettes, lui dit-il. Elles mènent toujours chez quelqu'un de gentil. »"],
+    [4, 'Le ruban rouge', "Au bord de la rivière, {name} trouve un petit ruban rouge accroché à une gouttière. C'est celui du collier de Plume, sa petite sœur ! Elle est passée par ici. {name} court plus vite que jamais."],
+    [6, 'Le marché de nuit', "Les toits du marché sentent bon le poisson grillé. Une marchande raconte qu'une famille de chats vient chaque soir chercher des restes… mais cette nuit, elle est partie vers la colline aux cheminées."],
+    [8, 'L’étoile filante', "Une étoile filante dorée traverse le ciel. {name} ferme les yeux et fait un vœu : retrouver sa famille avant l'hiver. Gaston, qui passait par là, assure que les étoiles filantes portent bonheur aux chats courageux."],
+    [10, 'La colline aux cheminées', "Sur la colline, les cheminées fument et les toits sont serrés les uns contre les autres. Soudain, {name} entend un miaulement qu'il reconnaîtrait entre mille, très loin devant lui."],
+    [12, 'Plume', "Contre une cheminée tiède, {name} découvre une petite boule de poils blottie : c'est Plume ! En cherchant son grand frère, elle s'était perdue elle aussi. Les deux chats se frottent le museau, puis repartent ensemble."],
+    [15, 'Le clocher', "Le clocher du quartier est maintenant tout proche. Plume reconnaît l'odeur des croissants de la boulangerie d'en bas. Encore quelques toits, quelques antennes, quelques flaques…"],
+    [18, 'La maison', "Sur le rebord d'une fenêtre bien connue, Maman Chat et les deux autres chatons attendent. Toute la famille se blottit sous la couverture. {name} est enfin rentré à la maison. Mais la nuit, sur les toits, l'aventure continue…"],
+  ];
+  const fillName = t => t.replace(/\{name\}/g, catName());
+  const unlockedChapters = () => CHAPTERS.filter(c => c[0] <= profile.level).length;
+
+  function renderPlayer() {
+    $('playerName').textContent = catName();
+    $('playerLevel').textContent = `Niveau ${profile.level}`;
+    $('xpBar').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
+    const fresh = unlockedChapters() > (profile.read || 0);
+    $('storyBtn').textContent = fresh ? 'Histoire (nouveau !)' : 'Histoire';
+    $('storyBtn').classList.toggle('glow', fresh);
+  }
+
+  // ---------- Intro and story screens ----------
+  function openIntro() {
+    $('nameInput').value = profile.name || 'Siquane';
+    show('introScreen');
+    $('nameInput').focus({ preventScroll: true });
+    $('nameInput').select();
+  }
+  function cleanName(v) {
+    const n = (v || '').replace(/\s+/g, ' ').trim().slice(0, 16);
+    return n || 'Siquane';
+  }
+  function finishIntro() {
+    profile.name = cleanName($('nameInput').value);
+    profile.read = Math.max(profile.read || 0, 1);
+    saveProfile();
+    renderPlayer();
+    if (!quizState.grade) openClass('startScreen');
+    else { show('startScreen'); $('playBtn').focus({ preventScroll: true }); }
+  }
+  let storyReturn = 'startScreen';
+  function openStory(ret, focusChapter) {
+    storyReturn = ret || 'startScreen';
+    $('renameInput').value = catName();
+    const list = $('chapterList');
+    list.textContent = '';
+    CHAPTERS.forEach(([lvl, title, text], i) => {
+      const open = lvl <= profile.level;
+      const el = document.createElement('article');
+      el.className = 'chapter' + (open ? '' : ' locked');
+      el.id = 'chapter-' + (i + 1);
+      const h = document.createElement('h3');
+      h.textContent = open ? `Chapitre ${i + 1} · ${title}` : `Chapitre ${i + 1}`;
+      const p = document.createElement('p');
+      p.textContent = open ? fillName(text) : `Se débloque au niveau ${lvl} du joueur.`;
+      el.append(h, p);
+      list.append(el);
+    });
+    profile.read = unlockedChapters();
+    saveProfile();
+    renderPlayer();
+    show('storyScreen');
+    const target = focusChapter ? $('chapter-' + focusChapter) : null;
+    if (target) target.scrollIntoView({ block: 'center' });
+    $('storyBack').focus({ preventScroll: true });
+  }
+  function rename() {
+    profile.name = cleanName($('renameInput').value);
+    $('renameInput').value = profile.name;
+    saveProfile();
+    renderPlayer();
+    openStory(storyReturn);
+    toast(`Ton chat s'appelle maintenant ${profile.name} !`);
+  }
+
+  // ---------- Album ----------
+  const ALBUM_HATS = () => HATS.filter(h => h.id !== 'none');
+  function renderAlbum() {
+    const cats = SKINS.filter(s => owned.includes(s.id)).length;
+    const hats = ALBUM_HATS().filter(h => ownedHats.includes(h.id)).length;
+    $('albumCount').textContent = `${cats}/${SKINS.length} chats · ${hats}/${ALBUM_HATS().length} chapeaux`;
+    const build = (gridId, items, kind) => {
+      const grid = $(gridId);
+      grid.textContent = '';
+      for (const it of items) {
+        const has = kind === 'cat' ? owned.includes(it.id) : ownedHats.includes(it.id);
+        const card = document.createElement('div');
+        card.className = 'album-item' + (has ? '' : ' missing');
+        const cv = document.createElement('canvas');
+        cv.width = cv.height = Math.round(76 * dpr);
+        const name = document.createElement('div');
+        name.className = 'skin-name';
+        name.textContent = has ? it.name : '???';
+        const sub = document.createElement('div');
+        sub.className = 'album-sub';
+        if (kind === 'cat') {
+          const rec = profile.bestByCat[it.id];
+          sub.textContent = has ? (rec ? `Record : ${rec}` : 'Pas encore de record') : `${it.price} croquettes`;
+        } else if (has) {
+          sub.textContent = it.theme ? 'Édition limitée' : 'Obtenu';
+        } else {
+          sub.textContent = it.theme ? `Pendant : ${THEMES[it.theme].name}` : `${it.price} croquettes`;
+        }
+        card.append(cv, name, sub);
+        grid.append(card);
+        drawAlbumTile(cv, kind, it, has);
+      }
+    };
+    build('albumCats', SKINS, 'cat');
+    build('albumHats', ALBUM_HATS(), 'hat');
+  }
+  function drawAlbumTile(cv, kind, it, has) {
+    const c = cv.getContext('2d');
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, 76, 76);
+    if (kind === 'cat') {
+      c.translate(38, 71); c.scale(0.7, 0.7);
+      drawCatRun(c, skinPaint(it, 0), { ph: 0, air: false, still: true, t: 0, wet: false });
+    } else {
+      c.translate(38, 54); c.scale(1.5, 1.5);
+      drawHat(c, it.id, 0);
+    }
+    if (!has) {
+      // Silhouette for what is still missing
+      c.setTransform(1, 0, 0, 1, 0, 0);
+      c.globalCompositeOperation = 'source-atop';
+      c.fillStyle = '#2a3066';
+      c.fillRect(0, 0, cv.width, cv.height);
+      c.globalCompositeOperation = 'source-over';
+    }
+  }
+  let albumReturn = 'startScreen';
+  function openAlbum(ret) {
+    albumReturn = ret || 'startScreen';
+    renderAlbum();
+    show('albumScreen');
+    $('albumBack').focus({ preventScroll: true });
+  }
+
+  // ---------- End of run: XP, next unlock, record per cat ----------
+  function nextUnlock() {
+    const cat = SKINS.filter(s => !owned.includes(s.id)).sort((a, b) => a.price - b.price)[0];
+    if (cat) return { kind: 'le chat', it: cat };
+    const hat = HATS.filter(h => !h.theme && !ownedHats.includes(h.id)).sort((a, b) => a.price - b.price)[0];
+    return hat ? { kind: 'le chapeau', it: hat } : null;
+  }
+  function endOfRun(sc) {
+    // Record with this cat
+    const prev = profile.bestByCat[skinId] || 0;
+    if (sc > prev) profile.bestByCat[skinId] = sc;
+    const sk = currentSkin();
+    $('catBest').textContent = sc > prev && prev > 0
+      ? `Nouveau record pour le chat ${sk.name} : ${sc} !`
+      : `Record avec le chat ${sk.name} : ${Math.max(sc, prev)}`;
+
+    // Experience
+    const gain = Math.floor(dist / 10 / 20) + kibbles * 2 + quizRight * 10 + runMissions * 25;
+    profile.xp += gain;
+    let reward = 0, newChapter = 0;
+    const before = unlockedChapters();
+    while (profile.xp >= xpNeed(profile.level)) {
+      profile.xp -= xpNeed(profile.level);
+      profile.level++;
+      reward += 15 + 5 * profile.level;
+    }
+    if (unlockedChapters() > before) newChapter = unlockedChapters();
+    if (reward) { bank += reward; saveProgress(); updateBank(); }
+    saveProfile();
+    $('xpGain').textContent = `+${gain} XP`;
+    $('xpLevel').textContent = `${catName()} · niveau ${profile.level}`;
+    $('xpBarOver').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
+    $('levelUp').hidden = !reward;
+    $('levelUp').textContent = `Niveau supérieur ! +${reward} croquettes`;
+    if (reward) { sfx.fanfare(); }
+    $('chapterBox').hidden = !newChapter;
+    if (newChapter) {
+      $('chapterTitle').textContent = `Nouveau chapitre : ${CHAPTERS[newChapter - 1][1]}`;
+      $('chapterRead').onclick = () => openStory('overScreen', newChapter);
+    }
+
+    // Next thing to unlock
+    const nx = nextUnlock();
+    $('nextBox').hidden = !nx;
+    if (nx) {
+      const left = nx.it.price - bank;
+      $('nextText').textContent = left > 0
+        ? `Encore ${left} croquettes avant ${nx.kind} ${nx.it.name}`
+        : `Tu peux débloquer ${nx.kind} ${nx.it.name} dans la boutique !`;
+      $('nextBar').style.width = Math.min(100, 100 * bank / nx.it.price) + '%';
+    }
+    renderPlayer();
+  }
+
+  // ---------- Score picture to share ----------
+  let lastRun = null;
+  function makeShareCanvas() {
+    const r = lastRun || { score: best, kibbles: 0, level: 1 };
+    const Wc = 1080, Hc = 1350, cv = document.createElement('canvas');
+    cv.width = Wc; cv.height = Hc;
+    const c = cv.getContext('2d');
+    const hz = 860;
+    const sky = c.createLinearGradient(0, 0, 0, hz);
+    sky.addColorStop(0, P.sky[0]); sky.addColorStop(0.6, P.sky[1]); sky.addColorStop(1, P.sky[2]);
+    c.fillStyle = sky; c.fillRect(0, 0, Wc, Hc);
+    for (let i = 0; i < 140; i++) {
+      c.globalAlpha = 0.3 + 0.7 * hash(i * 3.1);
+      c.fillStyle = P.star;
+      c.fillRect(hash(i) * Wc, hash(i + 77) * hz * 0.9, 2.5, 2.5);
+    }
+    c.globalAlpha = 1;
+    glow(c, 860, 640, 180, '255, 244, 214', 0.3);
+    c.fillStyle = P.moon; c.beginPath(); c.arc(860, 640, 58, 0, TAU); c.fill();
+    // Skyline with lit windows
+    let x = 0, i = 0;
+    while (x < Wc) {
+      const w = 80 + hash(i * 5.7) * 110, top = hz - 60 - hash(i * 2.3) * 220;
+      c.fillStyle = P.near; c.fillRect(x, top, w, Hc - top);
+      for (let wy = top + 20; wy < Hc; wy += 34) for (let wx = x + 12; wx < x + w - 16; wx += 26) {
+        if (hash(wx * 0.37 + wy * 1.3) < 0.25) { c.fillStyle = P.windows[0]; c.fillRect(wx, wy, 11, 15); }
+      }
+      x += w + 8; i++;
+    }
+    // Rooftop in perspective
+    c.fillStyle = P.roof[1];
+    c.beginPath(); c.moveTo(60, Hc); c.lineTo(Wc - 60, Hc); c.lineTo(640, hz); c.lineTo(440, hz); c.closePath(); c.fill();
+    c.strokeStyle = P.parTop; c.lineWidth = 10;
+    c.beginPath(); c.moveTo(60, Hc); c.lineTo(440, hz); c.moveTo(Wc - 60, Hc); c.lineTo(640, hz); c.stroke();
+    // The cat with its hat
+    c.save();
+    c.fillStyle = 'rgba(5, 6, 20, 0.45)';
+    c.beginPath(); c.ellipse(540, 1250, 120, 30, 0, 0, TAU); c.fill();
+    c.translate(540, 1250); c.scale(4.4, 4.4);
+    drawCatRun(c, skinPaint(currentSkin(), time), { ph: 0, air: false, still: true, t: time, wet: false, hat: hatId });
+    c.restore();
+    // Text panel
+    c.fillStyle = 'rgba(10, 14, 40, 0.72)';
+    c.beginPath(); c.roundRect(110, 70, 860, 470, 40); c.fill();
+    c.textAlign = 'center';
+    c.fillStyle = '#ffa24c';
+    c.font = '44px "Lilita One", "Arial Rounded MT Bold", sans-serif';
+    c.fillText('SIQUANE ESCAPE CAT', 540, 150);
+    c.fillStyle = '#f4f1ff';
+    c.font = '78px "Lilita One", "Arial Rounded MT Bold", sans-serif';
+    c.fillText(catName(), 540, 250);
+    c.font = '170px "Lilita One", "Arial Rounded MT Bold", sans-serif';
+    c.fillStyle = '#ffd27a';
+    c.fillText(String(r.score), 540, 420);
+    c.fillStyle = '#c9cbef';
+    c.font = 'bold 38px Nunito, system-ui, sans-serif';
+    c.fillText(`points · niveau ${r.level} atteint · ${r.kibbles} croquettes`, 540, 490);
+    if (THEME_ID) {
+      c.fillStyle = TH.accent;
+      c.font = '40px "Lilita One", "Arial Rounded MT Bold", sans-serif';
+      c.lineWidth = 8; c.strokeStyle = 'rgba(10, 8, 30, 0.8)'; c.lineJoin = 'round';
+      c.strokeText('Spécial ' + TH.name, 540, 610);
+      c.fillText('Spécial ' + TH.name, 540, 610);
+    }
+    return cv;
+  }
+  let shareBlob = null;
+  function openShare() {
+    const cv = makeShareCanvas();
+    const url = cv.toDataURL('image/png');
+    $('shareImg').src = url;
+    $('shareSave').href = url;
+    $('shareSave').download = `${catName()}-${(lastRun && lastRun.score) || best}.png`;
+    shareBlob = null;
+    cv.toBlob(b => { shareBlob = b; });
+    const canShareFiles = !!(navigator.canShare && window.File);
+    $('shareNative').hidden = !canShareFiles;
+    show('shareScreen');
+    $('shareBack').focus({ preventScroll: true });
+  }
+  async function shareNative() {
+    if (!shareBlob) return;
+    const file = new File([shareBlob], 'siquane-escape-cat.png', { type: 'image/png' });
+    try {
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Siquane Escape Cat', text: `${catName()} a fait ${(lastRun && lastRun.score) || best} points à Siquane Escape Cat !` });
+      } else {
+        toast("Ton appareil ne permet pas de partager l'image ici. Enregistre-la plutôt.");
+      }
+    } catch (e) {
+      if (e && e.name !== 'AbortError') toast("Le partage n'a pas fonctionné. Enregistre l'image plutôt.");
+    }
+  }
+
+  // ---------- Rooftop surprises: pigeons, a stray cat, shooting stars ----------
+  const STRAY = { fur: '#8a8d9c', paw: '#c9ccd8', stripe: '#5a5d6c', outline: '#25273a', earTip: '#5a5d6c', collar: '#3fbf6a' };
+  function spawnPigeon(z) {
+    decos.push({ type: 'pigeon', side: Math.random() < 0.5 ? -1 : 1, z, y: 0, xo: 0, fly: false, ph: Math.random() * TAU });
+  }
+  function updateSurprises(dt, dz) {
+    for (const d of decos) {
+      if (d.type === 'pigeon') {
+        d.z -= dz;
+        if (!d.fly && d.z < 280) { d.fly = true; sfx.flap(); }
+        if (d.fly) { d.y += 170 * dt; d.xo += d.side * 70 * dt; d.z += dz * 0.55; }
+      } else if (d.type === 'stray') {
+        d.t += dt;
+        if (d.t < 1) d.z = -160 + 220 * d.t;
+        else if (d.t < 5.5) d.z = 60 + Math.sin(d.t * 1.3) * 25;
+        else d.z += 500 * dt;
+        if (d.t > 5.5 && !d.bye) { d.bye = true; bonusPts += 30; popup('Filou te salue ! +30', '#c9ccd8', 22); }
+      }
+    }
+    decos = decos.filter(d => d.z > -CAM_D * 0.7 && d.z < FAR && d.y < 600);
+
+    if (elapsed >= strayAt) {
+      strayAt = elapsed + rand(40, 70);
+      decos.push({ type: 'stray', side: Math.random() < 0.5 ? -1 : 1, z: -160, t: 0, y: 0 });
+      popup('Un chat errant !', '#c9ccd8', 24);
+      meow(false);
+    }
+    if (elapsed >= starAt && !shootStar) {
+      starAt = elapsed + rand(35, 60);
+      const zLand = FAR - 300;
+      const lanes = [-1, 0, 1].filter(l => !objs.some(o => o.lane === l && o.type === 'chimney' && Math.abs(o.z - zLand) < 260));
+      const lane = pick(lanes.length ? lanes : [0]);
+      const end = proj(lane * LANE_W, 88, zLand);
+      shootStar = { t: 0, lane, zLand, sx: W * (Math.random() < 0.5 ? 0.05 : 0.95), sy: H * 0.05, ex: end.x, ey: end.y };
+      sfx.chime();
+    }
+    if (shootStar) {
+      shootStar.t += dt;
+      shootStar.zLand -= dz;
+      if (shootStar.t >= 1.1) {
+        kibs.push({ x: shootStar.lane * LANE_W, y: 88, z: shootStar.zLand, p: 0, star: true });
+        shootStar = null;
+      }
+    }
+  }
+  function drawShootingStar() {
+    if (!shootStar || state === 'start' || state === 'over') return;
+    const k = Math.min(1, shootStar.t / 1.1);
+    const e = k * k;
+    const x = shootStar.sx + (shootStar.ex - shootStar.sx) * e, y = shootStar.sy + (shootStar.ey - shootStar.sy) * e;
+    const ang = Math.atan2(shootStar.ey - shootStar.sy, shootStar.ex - shootStar.sx);
+    const tail = 140;
+    const g = ctx.createLinearGradient(x, y, x - Math.cos(ang) * tail, y - Math.sin(ang) * tail);
+    g.addColorStop(0, 'rgba(255, 223, 120, 0.95)');
+    g.addColorStop(1, 'rgba(255, 223, 120, 0)');
+    ctx.strokeStyle = g; ctx.lineWidth = 4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - Math.cos(ang) * tail, y - Math.sin(ang) * tail); ctx.stroke();
+    glow(ctx, x, y, 26, '255, 223, 120', 0.7);
+    drawStar(ctx, x, y, 9, '#fff3b0');
+  }
+  function drawStarItem(k) {
+    const bob = Math.sin(time * 4) * 5;
+    const p = proj(k.x, k.y + bob, k.z), gnd = proj(k.x, 0, k.z), s = p.s;
+    ctx.globalAlpha = fade(k.z);
+    ctx.fillStyle = 'rgba(5, 6, 20, 0.3)';
+    ctx.beginPath(); ctx.ellipse(gnd.x, gnd.y, 14 * s, 5 * s, 0, 0, TAU); ctx.fill();
+    glow(ctx, p.x, p.y, 60 * s, '255, 214, 90', 0.6);
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(time * 2);
+    drawStar(ctx, 0, 0, 22 * s, '#ffd24a');
+    ctx.strokeStyle = '#8a5a00'; ctx.lineWidth = Math.max(1, 2 * s); ctx.stroke();
+    drawStar(ctx, 0, 0, 10 * s, '#fff7d0');
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+  function catchStar(k) {
+    const gain = active.double ? 50 : 25;
+    kibbles += gain;
+    track('kib', gain);
+    bonusPts += 250;
+    popup(`Étoile filante ! +${gain}`, '#ffd24a', 30);
+    sfx.record();
+    shake(4, 0.2);
+    burst(k.x, k.y, k.z, 24, { colors: ['#ffd24a', '#fff7d0', '#ffffff'], spread: 160, vyMin: 60, vyMax: 260, life: 0.8, size: 4, g: 250, kind: 'star' });
+  }
+  function drawDeco(d) {
+    if (d.type === 'pigeon') return drawPigeon(d);
+    // Stray cat running on the parapet
+    const p = proj(d.side * (ROOF_HALF - 6), 16, d.z), s = p.s * 0.8;
+    ctx.globalAlpha = fade(d.z) * (d.t > 5.5 ? Math.max(0, 1 - (d.t - 5.5)) : 1);
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.scale(s, s);
+    drawCatRun(ctx, STRAY, { ph: time * 14 + 1, air: false, still: false, t: time + 1.3, wet: false });
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+  function drawPigeon(d) {
+    const p = proj(d.side * (ROOF_HALF - 6) + d.xo, 16 + d.y, d.z), s = p.s, dir = -d.side;
+    ctx.globalAlpha = fade(d.z);
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.scale(s * dir, s);
+    if (!d.fly) {
+      ctx.strokeStyle = '#d0605a'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(-2, -2); ctx.lineTo(-2, 1); ctx.moveTo(2, -2); ctx.lineTo(2, 1); ctx.stroke();
+    }
+    ctx.fillStyle = '#7d8399';
+    ctx.beginPath(); ctx.moveTo(-8, -7); ctx.lineTo(-15, -4); ctx.lineTo(-8, -3); ctx.fill();
+    ctx.fillStyle = '#9aa0b5';
+    ctx.beginPath(); ctx.ellipse(0, -7, 9, 6, -0.15, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#5aa88a';
+    ctx.beginPath(); ctx.ellipse(5, -11, 4, 3, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#6f7590';
+    ctx.beginPath(); ctx.arc(7, -15, 4, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#e8c27a';
+    ctx.beginPath(); ctx.moveTo(10.5, -15.5); ctx.lineTo(14, -14.5); ctx.lineTo(10.5, -13.5); ctx.fill();
+    ctx.fillStyle = '#ffb347';
+    ctx.beginPath(); ctx.arc(8, -16, 1, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#868ca3';
+    if (d.fly) {
+      const f = Math.sin(time * 28 + d.ph);
+      ctx.beginPath(); ctx.moveTo(-3, -9); ctx.lineTo(-8, -9 - 14 * f); ctx.lineTo(4, -9 - 10 * f); ctx.closePath(); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.ellipse(-1, -8, 6, 3.5, -0.2, 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  $('introForm').addEventListener('submit', e => { e.preventDefault(); initAudio(); finishIntro(); });
+  $('renameForm').addEventListener('submit', e => { e.preventDefault(); rename(); });
+  $('storyBtn').addEventListener('click', () => openStory('startScreen'));
+  $('storyBack').addEventListener('click', () => show(storyReturn));
+  $('albumBtn').addEventListener('click', () => openAlbum('startScreen'));
+  $('albumBack').addEventListener('click', () => show(albumReturn));
+  $('shareBtnOver').addEventListener('click', openShare);
+  $('shareBack').addEventListener('click', () => { show('overScreen'); $('againBtn').focus({ preventScroll: true }); });
+  $('shareNative').addEventListener('click', shareNative);
   $('giftBtn').addEventListener('click', openGift);
   $('gradeBtn').addEventListener('click', () => openClass('startScreen'));
   $('quizNext').addEventListener('click', quizNext);
   $('quizResume').addEventListener('click', endQuiz);
   renderPanels();
-  if (!quizState.grade) openClass('startScreen');
+  renderPlayer();
+  if (!profile.name) openIntro();
+  else if (!quizState.grade) openClass('startScreen');
 
   // Test hooks, only with #debug in the address
   let debugGod = false;
@@ -3550,6 +4113,7 @@
       setDist(v) { dist = v; },
       god(v) { debugGod = v; },
       bonus(t) { activateBonus(t); },
+      surprises() { strayAt = elapsed; starAt = elapsed; spawnPigeon(600); },
       // Peak and average level of the music over the last frame (0 to 1)
       musicLevel() {
         if (!musicBus) return null;
@@ -3565,8 +4129,12 @@
 
   // ---------- Keyboard ----------
   window.addEventListener('keydown', e => {
+    if (e.target && e.target.tagName === 'INPUT') return;
     const k = e.key.toLowerCase();
     const code = e.code;
+    for (const [scr, back] of [['storyScreen', () => show(storyReturn)], ['albumScreen', () => show(albumReturn)], ['shareScreen', () => show('overScreen')], ['introScreen', null]]) {
+      if (!$(scr).hidden) { if (code === 'Escape' && back) back(); return; }
+    }
     const isJump = code === 'ArrowUp' || code === 'Space' || k === 'z' || k === 'w';
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(code)) e.preventDefault();
 

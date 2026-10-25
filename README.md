@@ -25,6 +25,33 @@ Pendant un saut, la roulade fait retomber le chat plus vite et il roule dès qu'
 
 La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreux. Le score compte la distance parcourue et les croquettes. Le meilleur score est enregistré dans le navigateur.
 
+## L'histoire
+
+Une nuit d'orage, un petit chat s'abrite dans un camion de livraison et se réveille au cœur d'une ville inconnue, loin de sa famille. Pour rentrer, il court de toit en toit. Au premier lancement, le joueur donne un nom à son chat (« Siquane » par défaut). Il peut le changer ensuite dans l'écran **Histoire**.
+
+L'histoire compte 10 chapitres, qui se débloquent avec le **niveau du joueur** : Gaston le pigeon, Filou le chat errant, le ruban rouge, Plume la petite sœur… jusqu'au retour à la maison.
+
+## Niveau du joueur
+
+Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Chaque nouveau niveau rapporte des croquettes et peut débloquer un chapitre de l'histoire.
+
+## Écran de fin de partie
+
+- L'expérience gagnée et la barre du niveau du joueur.
+- « Encore 48 croquettes avant le chat Gris » : ce qu'il manque pour débloquer le prochain chat (puis le prochain chapeau).
+- Le record avec le chat utilisé : chaque chat a son propre record.
+- **Partager mon score** : une image avec le chat, son chapeau, son nom et le score, à enregistrer ou à partager.
+
+## Album
+
+L'album montre tous les chats et tous les chapeaux, avec des silhouettes pour ceux qui manquent, un compteur (par exemple « 5/12 chats · 7/25 chapeaux ») et le record de chaque chat. Les chapeaux en édition limitée indiquent pendant quelle fête ils sont en vente.
+
+## Surprises sur les toits
+
+- **Étoile filante dorée** : de temps en temps, elle traverse le ciel puis tombe sur le toit, devant le chat. Il faut sauter pour l'attraper : +25 croquettes et 250 points.
+- **Pigeons** : ils se posent sur le rebord du toit et s'envolent au passage du chat.
+- **Filou, le chat errant** : il court quelques secondes à côté du chat sur le rebord, puis repart en le saluant (+30 points).
+
 ## Niveaux et questions de culture générale
 
 La course est découpée en niveaux. À chaque nouveau niveau, elle fait une pause et propose jusqu'à 3 questions de culture générale (sciences et nature, histoire et géographie, français et maths, arts et culture). Chaque bonne réponse rapporte 1 croquette. En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course.
