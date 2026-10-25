@@ -58,7 +58,10 @@ Plus le joueur monte de niveau, plus les toits sont chargés : un peu plus d'obs
 | 12 | Climatiseurs | ils sont hauts : saute au bon moment |
 | 18 | Pelotes de laine | +300 points |
 | 20 | Pots de fleurs qui roulent vers toi | saute par-dessus |
+| 25 | Panneaux solaires | monte sur la rampe et cours en hauteur (attention à ne pas foncer dans le côté) |
 | 30 | Sacs de croquettes | +15 croquettes |
+| 35 | Trous entre deux toits, sur toute la largeur | saute par-dessus |
+| 45 | Lucarnes qui s'ouvrent et se ferment | passe quand elles sont fermées, ou saute |
 
 L'écran de fin annonce la nouveauté quand elle se débloque.
 

@@ -1901,7 +1901,12 @@
     linge:   { d: 16,  hw: 58 },
     clim:    { d: 60,  hw: 48 },
     pot:     { d: 30,  hw: 26 },
+    solar:   { d: 720, hw: 50 },
+    trou:    { d: 150, hw: 400 },
+    lucarne: { d: 56,  hw: 44 },
   };
+  // Solar panels: a ramp, then a flat top the cat can run on
+  const SOLAR_RAMP = 170, SOLAR_H = 60;
 
   // New things on the roofs, unlocked by the player level
   const ROAD_UNLOCKS = [
@@ -1910,7 +1915,10 @@
     { level: 12, id: 'clim',   name: 'les climatiseurs', text: 'ils sont hauts : saute au bon moment' },
     { level: 18, id: 'yarn',   name: 'les pelotes de laine', text: '+300 points' },
     { level: 20, id: 'pot',    name: 'les pots de fleurs qui roulent', text: 'ils foncent vers toi : saute par-dessus' },
+    { level: 25, id: 'solar',  name: 'les panneaux solaires', text: 'monte dessus et cours en hauteur' },
     { level: 30, id: 'sack',   name: 'les sacs de croquettes', text: '+15 croquettes' },
+    { level: 35, id: 'trou',   name: 'les trous entre les toits', text: 'saute par-dessus' },
+    { level: 45, id: 'lucarne', name: 'les lucarnes qui s’ouvrent', text: 'passe quand elles sont fermées, ou saute' },
   ];
   let runLevel = 1;
   const roadHas = id => ROAD_UNLOCKS.some(u => u.id === id && runLevel >= u.level);
@@ -1922,6 +1930,8 @@
     if (roadHas('linge')) w.push(['linge', 0.9 + diff * 0.6]);
     if (roadHas('clim')) w.push(['clim', 0.8 + diff * 0.6]);
     if (roadHas('pot')) w.push(['pot', 0.5 + diff * 0.5]);
+    if (roadHas('solar')) w.push(['solar', 0.45]);
+    if (roadHas('lucarne')) w.push(['lucarne', 0.8 + diff * 0.5]);
     let total = w.reduce((a, b) => a + b[1], 0), r = Math.random() * total;
     for (const [t, v] of w) { if ((r -= v) < 0) return t; }
     return 'puddle';
@@ -1932,16 +1942,31 @@
   }
 
   function spawnRow(z) {
+    // Lanes still covered by a solar panel stay free of anything else
+    const busy = [-1, 0, 1].map(l => objs.some(o => o.type === 'solar' && o.lane === l && o.z + o.d > z - 150));
+    // Now and then, a gap between two roofs across the whole width
+    if (roadHas('trou') && !busy.some(b => b) && elapsed > 4 && Math.random() < 0.07) {
+      addObstacle('trou', 0, z);
+      const x = pick([-1, 0, 1]) * LANE_W, c = z + OBSTACLES.trou.d / 2;
+      for (let i = -2; i <= 2; i++) { const dz = i * 65; kibs.push({ x, y: 30 + 62 * (1 - (dz / 140) ** 2), z: c + dz, p: Math.random() * TAU }); }
+      return;
+    }
     const pd = playerDiff();
     const diff = Math.min(1, elapsed / 110 + 0.35 * pd);
     const pObs = Math.min(0.72, 0.32 + 0.33 * diff + 0.06 * pd);
-    const types = [-1, 0, 1].map(() => (Math.random() < pObs ? pickType(diff) : null));
+    const types = [-1, 0, 1].map((l, i) => (busy[i] ? 'busy' : Math.random() < pObs ? pickType(diff) : null));
+    // One solar panel at a time
+    const firstSolar = types.indexOf('solar');
+    types.forEach((t, i) => { if (t === 'solar' && (i !== firstSolar || busy.some(b => b))) types[i] = null; });
     if (types.every(t => t === 'chimney')) types[Math.floor(Math.random() * 3)] = null;
     // At most one rolling pot per row, so there is always a calm lane
     if (types.filter(t => t === 'pot').length > 1) types[types.lastIndexOf('pot')] = null;
     if (types.every(t => t === null) && Math.random() < 0.6) types[Math.floor(Math.random() * 3)] = pickType(diff);
 
-    types.forEach((t, i) => { if (t) addObstacle(t, i - 1, z); });
+    types.forEach((t, i) => { if (t && t !== 'busy') addObstacle(t, i - 1, z); });
+    if (firstSolar >= 0 && types[firstSolar] === 'solar') {
+      for (let i = 0; i < 8; i++) kibs.push({ x: (firstSolar - 1) * LANE_W, y: SOLAR_H + 24, z: z + SOLAR_RAMP + 40 + i * 64, p: Math.random() * TAU });
+    }
     if (Math.random() < 0.2) spawnPigeon(z + rand(0, 200));
 
     // A golden fish when one is due in this quarter, then a bonus now and then, in a free lane
@@ -1971,11 +1996,11 @@
     // Kibbles, now and then a golden one
     const addKib = k => { if (roadHas('golden') && Math.random() < 0.06) k.special = 'golden'; kibs.push(k); };
     if (Math.random() < 0.75) {
-      const options = [0, 1, 2].filter(i => types[i] !== 'chimney' && types[i] !== 'pot' && i !== bonusLane);
+      const options = [0, 1, 2].filter(i => !['chimney', 'pot', 'solar', 'busy'].includes(types[i]) && i !== bonusLane);
       if (!options.length) return;
       const li = pick(options);
       const lane = li - 1, x = lane * LANE_W, t = types[li];
-      if (t === 'puddle' || t === 'antLow' || t === 'clim') {
+      if (t === 'puddle' || t === 'antLow' || t === 'clim' || t === 'lucarne') {
         const c = z + OBSTACLES[t].d / 2;
         for (let i = -2; i <= 2; i++) {
           const dz = i * 65;
@@ -2085,13 +2110,16 @@
     cat.x += (tx - cat.x) * Math.min(1, dt * 16);
     cat.tilt = Math.max(-0.25, Math.min(0.25, (tx - cat.x) * 0.004));
 
-    // Vertical physics
+    // Vertical physics; the ground is higher on a solar panel
+    const ground = groundAt();
+    if (cat.onGround && ground < cat.y - 2) { cat.onGround = false; cat.vy = 0; }
+    else if (cat.onGround && ground > cat.y && ground - cat.y < 30) cat.y = ground;
     if (!cat.onGround) {
       cat.vy -= GRAVITY * dt * (cat.fastFall ? 2.6 : 1);
       cat.y += cat.vy * dt;
-      if (cat.y <= 0) {
-        cat.y = 0; cat.vy = 0; cat.onGround = true; cat.fastFall = false;
-        burst(cat.x, 2, 0, 6, { colors: ['#6c6f98', '#8b8db5'], spread: 70, vyMin: 20, vyMax: 70, life: 0.4, size: 4, g: 200 });
+      if (cat.y <= ground && cat.y > ground - 30) {
+        cat.y = ground; cat.vy = 0; cat.onGround = true; cat.fastFall = false;
+        burst(cat.x, ground + 2, 0, 6, { colors: ['#6c6f98', '#8b8db5'], spread: 70, vyMin: 20, vyMax: 70, life: 0.4, size: 4, g: 200 });
         sfx.land();
         if (cat.rollQueued) { cat.rollQueued = false; cat.rollT = ROLL_TIME; sfx.roll(); }
       }
@@ -2142,9 +2170,27 @@
   }
 
   function rolling() { return cat.rollT > 0 && cat.onGround; }
+  function solarHeight(o, s) { return s < SOLAR_RAMP ? SOLAR_H * s / SOLAR_RAMP : SOLAR_H; }
+  function groundAt() {
+    let g = 0;
+    for (const o of objs) {
+      if (o.type !== 'solar' || Math.abs(cat.x - o.x) > 44) continue;
+      const s = -o.z;
+      if (s >= 0 && s <= o.d) g = Math.max(g, solarHeight(o, s));
+    }
+    return g;
+  }
+  // How open a skylight is, from 0 (closed, flat) to 1 (standing up)
+  function lucarneOpen(o) {
+    const t = ((time * 0.45 + o.seed) % 1 + 1) % 1;
+    return t < 0.4 ? 0 : t < 0.5 ? (t - 0.4) * 10 : t < 0.85 ? 1 : (1 - t) / 0.15;
+  }
+  const LUCARNE_L = 56;
 
   function collide() {
     const h = rolling() ? CAT_ROLL_H : CAT_H;
+    // Running into the side of a solar panel
+    if (groundAt() - cat.y >= 30) return die('solar');
     for (const o of objs) {
       if (o.z > 18 || o.z + o.d < -18) continue;
       if (Math.abs(cat.x - o.x) > o.hw + 16) continue;
@@ -2161,6 +2207,11 @@
       if (o.type === 'linge' && cat.y + h > 44 && cat.y < 150) return die('linge');
       if (o.type === 'clim' && cat.y < 66) return die('clim');
       if (o.type === 'pot' && cat.y < 32) return die('pot');
+      if (o.type === 'trou' && cat.y < 3 && o.z < -10 && o.z + o.d > 10) return die('trou');
+      if (o.type === 'lucarne') {
+        const a = lucarneOpen(o);
+        if (a > 0.25 && cat.y < LUCARNE_L * Math.sin(a * 1.4) + 2) return die('lucarne');
+      }
     }
     for (const k of kibs) {
       if (k.taken || Math.abs(k.z) > 24) continue;
@@ -2497,6 +2548,94 @@
     ctx.globalAlpha = 1;
   }
 
+  function drawSolar(o) {
+    const x0 = o.x - o.hw, x1 = o.x + o.hw, zn = -CAM_D * 0.6;
+    const hAt = z => solarHeight(o, z - o.z);
+    const zs = [o.z, o.z + SOLAR_RAMP, o.z + o.d].map(z => Math.max(z, zn)).filter((z, i, a) => i === 0 || z > a[i - 1]);
+    if (zs.length < 2) return;
+    ctx.globalAlpha = fade(o.z);
+    ctx.lineCap = 'round';
+    // Legs under the flat part
+    for (let z = o.z + SOLAR_RAMP; z < o.z + o.d; z += 120) {
+      if (z < zn) continue;
+      for (const x of [x0 + 8, x1 - 8]) line3(x, 0, z, x, SOLAR_H, z, 5, '#2a2c4f');
+    }
+    // Side face toward the middle of the roof
+    for (const [xs, show] of [[x0, x0 > 0], [x1, x1 < 0]]) {
+      if (!show) continue;
+      const pts = zs.map(z => proj(xs, hAt(z), z)).concat(zs.slice().reverse().map(z => proj(xs, Math.min(hAt(z), 8), z)));
+      poly(pts, '#2a2c4f');
+    }
+    // Blue cells on top
+    for (let i = 0; i < zs.length - 1; i++) {
+      const za = zs[i], zb = zs[i + 1];
+      poly([proj(x0, hAt(za), za), proj(x1, hAt(za), za), proj(x1, hAt(zb), zb), proj(x0, hAt(zb), zb)], '#1d3f8f');
+    }
+    for (let z = o.z + 40; z < o.z + o.d; z += 45) {
+      if (z < zn) continue;
+      line3(x0, hAt(z), z, x1, hAt(z), z, 1.4, 'rgba(140, 190, 255, 0.55)');
+    }
+    for (const x of [x0 + 33, x1 - 33]) {
+      for (let i = 0; i < zs.length - 1; i++) line3(x, hAt(zs[i]), zs[i], x, hAt(zs[i + 1]), zs[i + 1], 1.4, 'rgba(140, 190, 255, 0.55)');
+    }
+    // Shine sweeping along the panel, and the metal frame
+    const sz = o.z + ((time * 300 + o.seed * 10) % o.d);
+    if (sz > zn) line3(x0 + 4, hAt(sz) + 1, sz, x1 - 4, hAt(sz) + 1, sz, 5, 'rgba(255, 255, 255, 0.25)');
+    for (const x of [x0, x1]) {
+      for (let i = 0; i < zs.length - 1; i++) line3(x, hAt(zs[i]), zs[i], x, hAt(zs[i + 1]), zs[i + 1], 2.6, '#c9d1e6');
+    }
+    if (o.z > zn) line3(x0, 0, o.z, x1, 0, o.z, 2.6, '#c9d1e6');
+    ctx.globalAlpha = 1;
+  }
+
+  function drawTrou(o) {
+    const z0 = Math.max(o.z, -CAM_D * 0.6), z1 = o.z + o.d, W = ROOF_HALF + 30;
+    if (z1 <= z0) return;
+    ctx.globalAlpha = fade(o.z);
+    const gap = () => { const a = proj(-W, 0, z0), b = proj(W, 0, z0), c = proj(W, 0, z1), d = proj(-W, 0, z1); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.lineTo(c.x, c.y); ctx.lineTo(d.x, d.y); ctx.closePath(); };
+    gap(); ctx.fillStyle = '#05060f'; ctx.fill();
+    ctx.save(); gap(); ctx.clip();
+    // The wall of the next building, with lit windows, and the street far below
+    poly([proj(-W, 0, z1), proj(W, 0, z1), proj(W, -160, z1), proj(-W, -160, z1)], '#3a2a4a');
+    for (let x = -W + 30; x < W; x += 60) {
+      for (const y of [-40, -100]) {
+        const on = hash(x * 3 + y + Math.floor(o.seed)) > 0.4;
+        const a = proj(x, y, z1), b = proj(x + 22, y - 26, z1);
+        ctx.fillStyle = on ? '#ffcf6b' : '#1a1430';
+        ctx.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
+      }
+    }
+    ctx.restore();
+    line3(-W, 0, z1, W, 0, z1, 4, '#8b8db5');
+    if (o.z > -CAM_D * 0.6) line3(-W, 0, o.z, W, 0, o.z, 4, '#6c6f98');
+    ctx.globalAlpha = 1;
+  }
+
+  function drawLucarneFrame(o) {
+    const x0 = o.x - o.hw, x1 = o.x + o.hw, z0 = Math.max(o.z, -CAM_D * 0.6), z1 = o.z + o.d;
+    if (z1 <= z0) return;
+    ctx.globalAlpha = fade(o.z);
+    poly([proj(x0, 0, z0), proj(x1, 0, z0), proj(x1, 0, z1), proj(x0, 0, z1)], '#4c5378');
+    const a = lucarneOpen(o);
+    poly([proj(x0 + 6, 1, Math.max(z0, o.z + 6)), proj(x1 - 6, 1, Math.max(z0, o.z + 6)), proj(x1 - 6, 1, z1 - 6), proj(x0 + 6, 1, z1 - 6)], `rgba(255, 207, 107, ${0.2 + 0.55 * a})`);
+    ctx.globalAlpha = 1;
+  }
+  function drawLucarnePane(o) {
+    const x0 = o.x - o.hw + 4, x1 = o.x + o.hw - 4, z1 = o.z + o.d, th = lucarneOpen(o) * 1.4;
+    const zt = Math.max(z1 - LUCARNE_L * Math.cos(th), -CAM_D * 0.6), yt = LUCARNE_L * Math.sin(th);
+    if (z1 < -CAM_D * 0.6) return;
+    ctx.globalAlpha = fade(o.z);
+    const pts = [proj(x0, 1, z1), proj(x1, 1, z1), proj(x1, yt + 1, zt), proj(x0, yt + 1, zt)];
+    poly(pts, 'rgba(160, 210, 255, 0.55)');
+    ctx.strokeStyle = '#c9d1e6'; ctx.lineWidth = Math.max(1, 3 * pts[2].s); ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); for (const q of pts.slice(1)) ctx.lineTo(q.x, q.y); ctx.closePath(); ctx.stroke();
+    // Glare
+    const g1 = proj(x0 + 12, yt * 0.8 + 1, zt + (z1 - zt) * 0.2), g2 = proj(x0 + 30, yt * 0.3 + 1, zt + (z1 - zt) * 0.7);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; ctx.lineWidth = Math.max(1, 2.5 * g1.s);
+    ctx.beginPath(); ctx.moveTo(g1.x, g1.y); ctx.lineTo(g2.x, g2.y); ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
   // Golden kibbles, balls of yarn and bags of kibbles
   function drawSpecialItem(k) {
     const bob = Math.sin(time * 4 + k.p) * 4;
@@ -2595,9 +2734,10 @@
   }
 
   function drawCat() {
-    const p = proj(cat.x, cat.y, 0), g = proj(cat.x, 0, 0), s = p.s;
+    const gy = groundAt();
+    const p = proj(cat.x, cat.y, 0), g = proj(cat.x, gy, 0), s = p.s;
     drawAura(ctx, p.x, p.y - 34 * s, 62 * s, currentSkin());
-    const sh = Math.max(0.4, 1 - cat.y / 170);
+    const sh = Math.max(0.4, 1 - (cat.y - gy) / 170);
     ctx.fillStyle = 'rgba(5, 6, 20, 0.45)';
     ctx.beginPath(); ctx.ellipse(g.x, g.y, 26 * s * sh, 7 * s * sh, 0, 0, TAU); ctx.fill();
 
@@ -3250,7 +3390,7 @@
     ctx.globalAlpha = 1;
   }
 
-  const DRAWERS = { antLow: drawAntLow, antHigh: drawAntHigh, chimney: drawChimney, linge: drawLinge, clim: drawClim, pot: drawPot };
+  const DRAWERS = { antLow: drawAntLow, antHigh: drawAntHigh, chimney: drawChimney, linge: drawLinge, clim: drawClim, pot: drawPot, solar: drawSolar, lucarne: drawLucarnePane };
 
   function render() {
     ctx.save();
@@ -3260,9 +3400,12 @@
     drawRoof();
     // Ground decals first
     for (const o of objs) if (o.type === 'puddle' && o.z < FAR) drawPuddle(o);
+    for (const o of objs) if (o.type === 'trou' && o.z < FAR) drawTrou(o);
+    for (const o of objs) if (o.type === 'lucarne' && o.z < FAR) drawLucarneFrame(o);
     // Everything else back to front, with the cat at z = 0
     const list = [];
-    for (const o of objs) if (o.type !== 'puddle') list.push({ z: o.z + o.d / 2, o });
+    // A solar panel sorts by its far end, so the cat running on it is drawn on top
+    for (const o of objs) if (o.type !== 'puddle' && o.type !== 'trou') list.push({ z: o.type === 'solar' ? o.z + o.d : o.z + o.d / 2, o });
     for (const k of kibs) if (!k.taken) list.push({ z: k.z, k });
     for (const d of decos) list.push({ z: d.z, d });
     list.push({ z: 0, cat: true });
@@ -3348,6 +3491,9 @@
     linge: ['Emmêlé !', "Le chat s'est pris dans une corde à linge.", 'hit'],
     clim: ['Bing !', "Le chat s'est cogné contre un climatiseur.", 'hit'],
     pot: ['Paf !', 'Le chat a été renversé par un pot de fleurs.', 'hit'],
+    solar: ['Boing !', "Le chat s'est cogné contre un panneau solaire.", 'hit'],
+    trou: ['Oups !', 'Le chat est tombé entre deux toits.', 'hit'],
+    lucarne: ['Toc !', "Le chat s'est cogné contre une lucarne ouverte.", 'hit'],
   };
 
   function showGameOver() {
