@@ -4094,6 +4094,23 @@
   $('shareBtnOver').addEventListener('click', openShare);
   $('shareBack').addEventListener('click', () => { show('overScreen'); $('againBtn').focus({ preventScroll: true }); });
   $('shareNative').addEventListener('click', shareNative);
+  // Inside the claude.ai viewer, files are saved through the downloads capability;
+  // in the standalone file the plain download link works on its own.
+  let downloads = null;
+  if (window.claude && window.claude.use) {
+    window.claude.use('downloads').then(d => { downloads = d; if (!d) $('shareSave').hidden = true; }).catch(() => { $('shareSave').hidden = true; });
+  }
+  $('shareSave').addEventListener('click', async e => {
+    if (!downloads) return;
+    e.preventDefault();
+    if (!shareBlob) return;
+    try {
+      await downloads.save({ filename: $('shareSave').download, data: shareBlob });
+      toast('Image enregistrée !');
+    } catch (err) {
+      if (!err || err.code !== 'declined') toast("L'image n'a pas pu être enregistrée. Fais un appui long dessus.");
+    }
+  });
   $('giftBtn').addEventListener('click', openGift);
   $('gradeBtn').addEventListener('click', () => openClass('startScreen'));
   $('quizNext').addEventListener('click', quizNext);
