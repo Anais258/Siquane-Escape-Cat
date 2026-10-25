@@ -200,7 +200,16 @@
   .name-btn svg { width: 18px; height: 18px; color: var(--muted); }
   .player span:not(.bar) { color: var(--muted); font-weight: 800; font-size: var(--fs-sm); }
   .player .bar { grid-column: 1 / -1; width: 180px; justify-self: center; }
-  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: var(--s2); }
+  .gold-stat strong { color: #ffd24a; }
+  .full { grid-column: 1 / -1; }
+  .power { grid-template-columns: 1fr auto; align-items: center; }
+  .power .skin-btn { width: auto; padding: var(--s1) var(--s3); }
+  .gold-count { display: flex; align-items: center; gap: var(--s1); color: #ffd24a !important; font-family: var(--font-display); font-weight: 400; font-size: var(--fs-lg); }
+  .gold-count svg, .skin-btn svg { width: 18px; height: 12px; }
+  .swap { min-width: var(--tap); min-height: var(--tap); margin: calc(-1 * var(--s2)) 0; display: inline-flex; align-items: center; justify-content: center; gap: var(--s1); border: 1px solid var(--line); border-radius: var(--r-sm); background: transparent; color: var(--ink); cursor: pointer; font-weight: 800; font-size: var(--fs-xs); }
+  .swap svg { width: 16px; height: 10px; }
+  .quiz-choice.struck { opacity: 0.35; text-decoration: line-through; }
   .stat { display: grid; gap: 2px; padding: var(--s2); border-radius: var(--r-md); background: var(--surface); }
   .stat span { font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
   .stat strong { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-xl); font-variant-numeric: tabular-nums; }
@@ -264,7 +273,7 @@
   @keyframes pop { from { transform: scale(1.6); opacity: 0.2; } to { transform: scale(1); opacity: 1; } }
 
   /* ---------- Shop, album, tabs ---------- */
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s1); padding: var(--s1); border-radius: var(--r-md); background: var(--surface); }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--s1); padding: var(--s1); border-radius: var(--r-md); background: var(--surface); }
   .tab { min-height: var(--tap); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border: 0; border-radius: var(--r-sm); background: transparent; color: var(--muted); cursor: pointer; }
   .tab.active { background: var(--accent); color: var(--accent-ink); }
   .bank { justify-self: center; display: flex; align-items: center; gap: var(--s2); font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
@@ -379,6 +388,7 @@
       <div class="stat-row">
         <div class="stat"><span>Record</span><strong id="bestStart">0</strong></div>
         <div class="stat"><span>Tirelire</span><strong id="bankStart">0</strong></div>
+        <div class="stat gold-stat"><span>Poissons d'or</span><strong id="goldStart">0</strong></div>
       </div>
       <details class="fold event" id="eventBanner" hidden>
         <summary id="eventTitle"></summary>
@@ -455,6 +465,8 @@
           <div class="row"><svg viewBox="0 0 34 24" aria-hidden="true"><circle cx="17" cy="12" r="10" fill="#ffcf4a" stroke="#8a5a00" stroke-width="1.5"/><text x="17" y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#5a3a00">x2</text></svg><span><b>Croquettes x2</b> : chaque croquette compte double.</span></div>
           <div class="row"><svg viewBox="0 0 34 24" aria-hidden="true"><path d="M17 2l9 10h-5v10h-8V12H8z" fill="#5aff8a" stroke="#1a6a2a" stroke-width="1.5"/></svg><span><b>Super-saut</b> : saute si haut que tu peux passer au-dessus des cheminées.</span></div>
         </div>
+        <div class="label">Poissons d'or</div>
+        <p class="small-text">Très rares : il y a 1 chance sur 10 qu'un poisson d'or se cache dans chaque quartier. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
         <div class="label">Quartiers et questions</div>
         <p class="small-text">Tous les kilomètres, tu entres dans un nouveau quartier : la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
@@ -549,6 +561,8 @@
       <div class="skins" id="albumCats"></div>
       <div class="label">Chapeaux</div>
       <div class="skins" id="albumHats"></div>
+      <div class="label">Déguisements</div>
+      <div class="skins" id="albumCostumes"></div>
       <button class="btn" id="albumBack">Retour</button>
     </div>
   </div>
@@ -561,6 +575,16 @@
       <a class="btn ghost" id="shareSave" href="#" download="siquane-escape-cat.png">Enregistrer l'image</a>
       <p class="small-text center">Sur téléphone, tu peux aussi faire un appui long sur l'image pour l'enregistrer ou la partager.</p>
       <button class="btn ghost" id="shareBack">Retour</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="reviveScreen" hidden>
+    <div class="card">
+      <h2>Encore une chance ?</h2>
+      <p>Utilise 1 poisson d'or pour repartir d'ici. Tu en as <b class="good" id="reviveCount">1</b>.</p>
+      <div class="bar gold"><i id="reviveBar" style="width:100%"></i></div>
+      <button class="btn big" id="reviveUse">Utiliser 1 poisson d'or (<span id="reviveTime">10</span>)</button>
+      <button class="btn ghost small" id="reviveSkip">Passer</button>
     </div>
   </div>
 
@@ -599,6 +623,7 @@
       <div class="tabs" role="tablist">
         <button class="tab active" id="tab-cats" role="tab" aria-selected="true">Chats</button>
         <button class="tab" id="tab-hats" role="tab" aria-selected="false">Chapeaux</button>
+        <button class="tab" id="tab-fish" role="tab" aria-selected="false">Poissons d'or</button>
       </div>
       <div class="skins" id="skinGrid"></div>
       <button class="btn" id="shopBack">Retour</button>
@@ -1769,6 +1794,10 @@
   let bonusPts = 0, level = 1, comboMult = 1, recordShown = false, lastOufT = -9, nextBonusAt = 6;
   let active = {}, shakeT = 0, shakeMag = 0, slowT = 0, popups = [];
   let decos = [], strayAt = 25, starAt = 30, shootStar = null, quizRight = 0, trailAcc = 0;
+  // Golden fish state (loaded with the shop data further down)
+  let gold = { count: 0, costumes: [], costume: 'none', pending: {} };
+  let runPowers = {}, fishAt = null, revived = false, reviveT = 0, shieldT = 0;
+  const GOLD_SVG = '<svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#ffd24a" stroke="#9a6400" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#5a3a00"/></svg>';
   let best = 0;
   try { best = parseInt(localStorage.getItem(BEST_KEY), 10) || 0; } catch (e) {}
 
@@ -1779,6 +1808,7 @@
     bonusPts = 0; level = 1; comboMult = 1; recordShown = false; lastOufT = -9; nextBonusAt = 6;
     active = {}; shakeT = 0; slowT = 0; kibCombo = 0;
     decos = []; strayAt = rand(18, 30); starAt = rand(22, 35); shootStar = null; quizRight = 0;
+    runPowers = {}; fishAt = null; revived = false; shieldT = 0;
     nextRowZ = 1100;
     deathCause = null; deathT = 0;
   }
@@ -1815,9 +1845,9 @@
     types.forEach((t, i) => { if (t) addObstacle(t, i - 1, z); });
     if (Math.random() < 0.2) spawnPigeon(z + rand(0, 200));
 
-    // A bonus now and then, in a free lane
-    let bonusLane = -9;
-    if (elapsed >= nextBonusAt) {
+    // A golden fish when one is due in this quarter, then a bonus now and then, in a free lane
+    let bonusLane = maybeSpawnGoldFish(z, types);
+    if (bonusLane === -9 && elapsed >= nextBonusAt) {
       const free = [0, 1, 2].filter(i => !types[i]);
       if (free.length) {
         bonusLane = pick(free);
@@ -1893,7 +1923,7 @@
   }
 
   function die(cause) {
-    if (state !== 'play' || debugGod) return;
+    if (state !== 'play' || debugGod || shieldT > 0) return;
     state = 'dying';
     deathCause = cause;
     deathT = 0;
@@ -1924,11 +1954,13 @@
     if (state === 'dying') {
       deathT += dt;
       updateParticles(dt, 0);
-      if (deathT > 1.0) showGameOver();
+      if (deathT > 1.0) { if (canRevive()) openRevive(); else showGameOver(); }
       return;
     }
+    if (state === 'revive') { updateRevive(dt); return; }
 
     elapsed += dt;
+    if (shieldT > 0) shieldT -= dt;
     speed = Math.min(MAX_SPEED, START_SPEED + elapsed * 7);
     const dz = speed * dt;
     dist += dz;
@@ -1977,6 +2009,7 @@
     if (state === 'play' && Math.floor(dist / 10) >= levelAt(level)) {
       level++;
       track('level', level);
+      rollGoldFish(level);
       sfx.level();
       startQuiz();
     }
@@ -2006,6 +2039,7 @@
       if (k.y < cat.y - 16 || k.y > cat.y + h + 16) continue;
       k.taken = true;
       if (k.star) { catchStar(k); continue; }
+      if (k.goldfish) { catchGoldFish(k); continue; }
       if (k.bonus) { activateBonus(k.bonus); continue; }
       const gain = active.double ? 2 : 1;
       kibbles += gain;
@@ -2244,6 +2278,7 @@
     if (k.z < -CAM_D * 0.6) return;
     if (k.bonus) return drawBonusItem(k);
     if (k.star) return drawStarItem(k);
+    if (k.goldfish) return drawGoldFish(k);
     const bob = Math.sin(time * 4 + k.p) * 4;
     const p = proj(k.x, k.y + bob, k.z), gnd = proj(k.x, 0, k.z), s = p.s;
     ctx.globalAlpha = fade(k.z);
@@ -2281,10 +2316,11 @@
     ctx.scale(s, s);
     ctx.rotate(cat.tilt);
     const sk = skinPaint(currentSkin(), time);
-    const o = { ph: cat.anim, air: !cat.onGround, still: state === 'dying' || state === 'over' || state === 'pause', t: time, wet: state === 'dying' && deathCause === 'puddle', hat: hatId };
+    const o = { ph: cat.anim, air: !cat.onGround, still: state === 'dying' || state === 'over' || state === 'pause', t: time, wet: state === 'dying' && deathCause === 'puddle', hat: hatId, costume: currentCostume() };
     if (rolling()) drawCatBall(ctx, sk, o); else drawCatRun(ctx, sk, o);
     ctx.restore();
     drawUmbrella();
+    drawShield();
 
     // Dizzy stars after hitting something
     if (state === 'dying' && deathCause !== 'puddle') {
@@ -2350,6 +2386,8 @@
     const legB = air ? 6 : o.still ? 0 : Math.max(0, -Math.sin(ph)) * 7;
     c.lineJoin = 'round';
     c.lineCap = 'round';
+    const cos = o.costume && o.costume !== 'none' ? o.costume : null;
+    if (cos) drawCostume(c, cos, 'back', { by: -23 - bob, hy: -50 - bob, bob, t: o.t, air });
 
     // Tail, with a light tip
     const sway = Math.sin(o.t * 6) * 10;
@@ -2402,6 +2440,7 @@
     }
     c.restore();
     shadeShape(c, sk, body, by, 20);
+    if (cos) drawCostume(c, cos, 'body', { by, hy: -50 - bob, bob, t: o.t, air, tipX, tipY });
 
     // Fluffy cheeks behind the head
     const hy = -50 - bob;
@@ -2458,6 +2497,7 @@
       c.beginPath(); c.moveTo(sd * 16, hy + 6); c.lineTo(sd * 28, hy + 10); c.stroke();
     }
 
+    if (cos) drawCostume(c, cos, 'head', { by, hy, bob, t: o.t, air });
     if (o.hat) { c.save(); c.translate(0, hy - 14); drawHat(c, o.hat, o.t); c.restore(); }
 
     // Wet cat drips
@@ -2900,13 +2940,14 @@
   }
 
   function show(id) {
-    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen']) $(s).hidden = s !== id;
+    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen', 'reviveScreen']) $(s).hidden = s !== id;
   }
 
   function startGame() {
     initAudio();
     resetWorld();
     resetRunMissions();
+    applyRunPowers();
     transpose = 0;
     state = 'play';
     show(null);
@@ -3016,6 +3057,7 @@
 
   function updateBank() {
     for (const id of ['bankStart', 'bankOver', 'bankShop']) $(id).textContent = bank;
+    $('goldStart').textContent = gold.count;
   }
   // Limited-edition hats show up only during their holiday, or once owned.
   function shopItems(shop) {
@@ -3037,7 +3079,7 @@
 
   function buildShop() {
     const shop = SHOP[shopTab];
-    for (const tab of ['cats', 'hats']) {
+    for (const tab of ['cats', 'hats', 'fish']) {
       const b = $('tab-' + tab);
       b.setAttribute('aria-selected', String(tab === shopTab));
       b.classList.toggle('active', tab === shopTab);
@@ -3045,6 +3087,7 @@
     const grid = $('skinGrid');
     grid.textContent = '';
     previews = [];
+    if (shopTab === 'fish') return buildFishShop(grid);
     for (const it of shopItems(shop)) {
       const isOwned = shop.owned().includes(it.id), isSel = it.id === shop.get(), canBuy = buyable(shop, it);
       const card = document.createElement('div');
@@ -3113,11 +3156,12 @@
       c.beginPath(); c.ellipse(38, 71, 19, 4, 0, 0, TAU); c.fill();
       c.translate(38, 71);
       c.scale(0.7, 0.7);
-      const isCat = shopTab === 'cats';
-      const owns = SHOP[shopTab].owned().includes(it.id);
+      const isCat = shopTab === 'cats', isFish = shopTab === 'fish';
+      const owns = isFish ? (it.id === 'none' || gold.costumes.includes(it.id)) : SHOP[shopTab].owned().includes(it.id);
       const sk = isCat ? it : currentSkin();
       c.save(); c.setTransform(dpr, 0, 0, dpr, 0, 0); drawAura(c, 38, 44, 38, sk); c.restore();
-      drawCatRun(c, skinPaint(sk, time), { ph: owns ? time * 9 : 0, air: false, still: !owns, t: time, wet: false, hat: isCat ? hatId : it.id });
+      drawCatRun(c, skinPaint(sk, time), { ph: owns ? time * 9 : 0, air: false, still: !owns, t: time, wet: false,
+        hat: isCat || isFish ? hatId : it.id, costume: isFish ? it.id : currentCostume() });
     }
   }
 
@@ -3131,7 +3175,7 @@
   function closeShop() {
     show(shopReturn);
   }
-  for (const tab of ['cats', 'hats']) {
+  for (const tab of ['cats', 'hats', 'fish']) {
     $('tab-' + tab).addEventListener('click', () => { shopTab = tab; buildShop(); });
   }
   $('shopBtnStart').addEventListener('click', openShop);
@@ -3511,7 +3555,7 @@
     runRewards = 0; runMissions = 0;
   }
 
-  function missionRow(m, label) {
+  function missionRow(m, label, idx) {
     const t = MISSION_TYPES[m.type];
     const done = m.done || m.progress >= m.target;
     const pct = Math.min(100, Math.round(100 * m.progress / m.target));
@@ -3519,16 +3563,17 @@
     return `<div class="mission${done ? ' done' : ''}">
       <div class="m-text">${label ? `<b>${label}</b> ` : ''}${t.text(m.target)}</div>
       <div class="m-bar"><i style="width:${pct}%"></i></div>
-      <div class="m-meta"><span>${done ? 'Réussi !' : prog}</span><span class="m-reward">+${m.reward} ${FISH_SVG}</span></div>
+      <div class="m-meta"><span>${done ? 'Réussi !' : prog}</span>${idx != null && gold.count > 0 ? `<button class="swap" data-swap="${idx}" aria-label="Changer cette mission pour 1 poisson d'or">Changer · ${GOLD_SVG} 1</button>` : ''}<span class="m-reward">+${m.reward} ${FISH_SVG}</span></div>
     </div>`;
   }
   function renderPanels() {
     refreshDaily();
-    const list = missions.list.map(m => missionRow(m)).join('');
+    const list = missions.list.map((m, i) => missionRow(m, null, i)).join('');
     $('missionsStart').innerHTML = list;
     $('missionsOver').innerHTML = list;
     $('dailyStart').innerHTML = missionRow(daily);
     renderGift();
+    $('goldStart').textContent = gold.count;
     $('gradeSub').textContent = gradeName() || 'à choisir';
     const toWin = missions.list.reduce((t, m) => t + m.reward, 0) + (daily.done ? 0 : daily.reward);
     $('missionsReward').innerHTML = `+${toWin} ${FISH_SVG}`;
@@ -3631,7 +3676,7 @@
     super:    { name: 'Super-saut', dur: 8, color: '#5aff8a' },
   };
   function activateBonus(type) {
-    active[type] = BONUSES[type].dur;
+    active[type] = Math.max(active[type] || 0, BONUSES[type].dur * (runPowers.long ? 2 : 1));
     popup(BONUSES[type].name + ' !', BONUSES[type].color, 26);
     sfx.bonus();
     shake(3, 0.12);
@@ -3728,7 +3773,7 @@
     const m = Math.floor(dist / 10), lo = level > 1 ? levelAt(level - 1) : 0, hi = levelAt(level);
     $('levelLabel').textContent = `Quartier ${level}`;
     $('levelBar').style.width = Math.min(100, Math.max(0, 100 * (m - lo) / (hi - lo))) + '%';
-    const html = Object.keys(active).map(k => `<div class="chip" style="--c:${BONUSES[k].color}"><span>${BONUSES[k].name}</span><i style="width:${Math.round(100 * active[k] / BONUSES[k].dur)}%"></i></div>`).join('');
+    const html = Object.keys(active).map(k => `<div class="chip" style="--c:${BONUSES[k].color}"><span>${BONUSES[k].name}</span><i style="width:${Math.min(100, Math.round(100 * active[k] / BONUSES[k].dur))}%"></i></div>`).join('');
     if (html !== lastBonusHtml) { $('bonusBar').innerHTML = html; lastBonusHtml = html; }
   }
 
@@ -3820,11 +3865,19 @@
       b.addEventListener('click', () => answer(i));
       box.append(b);
     });
+    if (runPowers.hint) {
+      const wrong = q.choices.map((c, i) => i).filter(i => i !== q.ans);
+      const k = pick(wrong);
+      const b = box.children[k];
+      b.disabled = true;
+      b.classList.add('struck');
+      b.setAttribute('aria-label', `${q.choices[k]} (éliminée par l'indice)`);
+    }
     $('quizFeedback').hidden = true;
     $('quizNext').hidden = true;
     $('quizResume').textContent = `Passer les questions (−${2 * (3 - quiz.i)} croquettes)`;
     $('quizResume').className = 'btn ghost';
-    box.firstChild.focus({ preventScroll: true });
+    (box.querySelector('.quiz-choice:not(:disabled)') || box.firstChild).focus({ preventScroll: true });
   }
   function answer(i) {
     if (!quiz || quiz.answered) return;
@@ -4012,12 +4065,13 @@
   function renderAlbum() {
     const cats = SKINS.filter(s => owned.includes(s.id)).length;
     const hats = ALBUM_HATS().filter(h => ownedHats.includes(h.id)).length;
-    $('albumCount').textContent = `${cats}/${SKINS.length} chats · ${hats}/${ALBUM_HATS().length} chapeaux`;
+    const costumes = COSTUMES.filter(cs => gold.costumes.includes(cs.id)).length;
+    $('albumCount').textContent = `${cats}/${SKINS.length} chats · ${hats}/${ALBUM_HATS().length} chapeaux · ${costumes}/${COSTUMES.length} déguisements`;
     const build = (gridId, items, kind) => {
       const grid = $(gridId);
       grid.textContent = '';
       for (const it of items) {
-        const has = kind === 'cat' ? owned.includes(it.id) : ownedHats.includes(it.id);
+        const has = kind === 'cat' ? owned.includes(it.id) : kind === 'costume' ? gold.costumes.includes(it.id) : ownedHats.includes(it.id);
         const card = document.createElement('div');
         card.className = 'album-item' + (has ? '' : ' missing');
         const cv = document.createElement('canvas');
@@ -4030,6 +4084,8 @@
         if (kind === 'cat') {
           const rec = profile.bestByCat[it.id];
           sub.textContent = has ? (rec ? `Record : ${rec}` : 'Pas encore de record') : it.special ? `Offert au niveau ${it.special}` : `${it.price} croquettes`;
+        } else if (kind === 'costume') {
+          sub.textContent = has ? 'Obtenu' : `Pendant : ${THEMES[it.theme].name}`;
         } else if (has) {
           sub.textContent = it.theme ? 'Édition limitée' : 'Obtenu';
         } else {
@@ -4042,12 +4098,16 @@
     };
     build('albumCats', SKINS, 'cat');
     build('albumHats', ALBUM_HATS(), 'hat');
+    build('albumCostumes', COSTUMES, 'costume');
   }
   function drawAlbumTile(cv, kind, it, has) {
     const c = cv.getContext('2d');
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.clearRect(0, 0, 76, 76);
-    if (kind === 'cat') {
+    if (kind === 'costume') {
+      c.translate(38, 71); c.scale(0.62, 0.62);
+      drawCatRun(c, SKINS[0], { ph: 0, air: false, still: true, t: 0, wet: false, costume: it.id });
+    } else if (kind === 'cat') {
       if (has) drawAura(c, 38, 44, 38, it);
       c.translate(38, 71); c.scale(0.7, 0.7);
       drawCatRun(c, skinPaint(it, 0), { ph: 0, air: false, still: true, t: 0, wet: false });
@@ -4169,7 +4229,7 @@
     c.beginPath(); c.ellipse(540, 1250, 120, 30, 0, 0, TAU); c.fill();
     drawAura(c, 540, 1100, 300, currentSkin());
     c.translate(540, 1250); c.scale(4.4, 4.4);
-    drawCatRun(c, skinPaint(currentSkin(), time), { ph: 0, air: false, still: true, t: time, wet: false, hat: hatId });
+    drawCatRun(c, skinPaint(currentSkin(), time), { ph: 0, air: false, still: true, t: time, wet: false, hat: hatId, costume: currentCostume() });
     c.restore();
     // Text panel
     c.fillStyle = 'rgba(10, 14, 40, 0.72)';
@@ -4355,6 +4415,450 @@
     ctx.globalAlpha = 1;
   }
 
+  // ---------- Golden fish: rare catch, costumes, powers, second chance ----------
+  const GOLD_KEY = 'siquane-escape-cat-goldfish';
+  gold = load(GOLD_KEY, null);
+  if (!gold || typeof gold !== 'object') gold = { count: 0, costumes: [], costume: 'none', pending: {} };
+  gold.costumes = Array.isArray(gold.costumes) ? gold.costumes : [];
+  gold.pending = gold.pending || {};
+  const saveGold = () => store(GOLD_KEY, gold);
+  const FISH_CHANCE = 0.1;
+
+  const COSTUMES = [
+    { id: 'vampire', name: 'Vampire', theme: 'halloween' },
+    { id: 'renne', name: 'Renne', theme: 'noel' },
+    { id: 'poussin', name: 'Poussin', theme: 'paques' },
+    { id: 'cupidon', name: 'Cupidon', theme: 'valentin' },
+    { id: 'dragon', name: 'Dragon', theme: 'cny' },
+    { id: 'soiree', name: 'Tenue de soirée', theme: 'nouvelan' },
+    { id: 'bouee', name: 'Bouée', theme: 'ete' },
+    { id: 'rockstar', name: 'Rock star', theme: 'musique' },
+    { id: 'sardine', name: 'Sardine', theme: 'avril' },
+    { id: 'superchat', name: 'Super-chat', theme: 'chats' },
+  ];
+  const COSTUME_PRICE = 10;
+  const POWERS = [
+    { id: 'long', name: 'Bonus plus longs', price: 3, text: 'Les bonus durent deux fois plus longtemps pendant la prochaine partie.' },
+    { id: 'quick', name: 'Départ rapide', price: 3, text: 'La prochaine partie commence au quartier 2, avec un bouclier pendant 5 secondes.' },
+    { id: 'hint', name: 'Indice aux questions', price: 2, text: 'Pendant la prochaine partie, une mauvaise réponse disparaît à chaque question.' },
+    { id: 'magnet', name: 'Aimant de départ', price: 2, text: 'La prochaine partie commence avec un aimant qui dure 30 secondes.' },
+  ];
+  // One chance in ten that a golden fish hides somewhere in each quarter.
+  function rollGoldFish(quarter) {
+    fishAt = Math.random() < FISH_CHANCE ? (quarter - 1) * 1000 + rand(200, 800) : null;
+  }
+  function maybeSpawnGoldFish(z, types) {
+    if (fishAt == null || (dist + z) / 10 < fishAt) return -9;
+    const free = [0, 1, 2].filter(i => !types[i]);
+    if (!free.length) return -9;
+    const lane = pick(free);
+    kibs.push({ x: (lane - 1) * LANE_W, y: 40, z: z + 60, p: 0, goldfish: true });
+    fishAt = null;
+    return lane;
+  }
+  function catchGoldFish(k) {
+    gold.count++;
+    saveGold();
+    bonusPts += 100;
+    popup('Poisson d’or !', '#ffd24a', 32);
+    toast(`Poisson d'or attrapé ! Tu en as ${gold.count}.`);
+    sfx.record();
+    shake(5, 0.25);
+    burst(k.x, k.y, k.z, 30, { colors: ['#ffd24a', '#fff3b0', '#ffffff'], spread: 180, vyMin: 80, vyMax: 300, life: 0.9, size: 4, g: 250, kind: 'star' });
+  }
+  function drawGoldFish(k) {
+    const bob = Math.sin(time * 3) * 6;
+    const p = proj(k.x, k.y + bob, k.z), gnd = proj(k.x, 0, k.z), s = p.s;
+    ctx.globalAlpha = fade(k.z);
+    ctx.fillStyle = 'rgba(5, 6, 20, 0.3)';
+    ctx.beginPath(); ctx.ellipse(gnd.x, gnd.y, 18 * s, 5 * s, 0, 0, TAU); ctx.fill();
+    glow(ctx, p.x, p.y, 70 * s, '255, 210, 74', 0.55 + 0.15 * Math.sin(time * 5));
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(Math.sin(time * 4) * 0.15);
+    const g = ctx.createLinearGradient(0, -14 * s, 0, 14 * s);
+    g.addColorStop(0, '#fff3b0'); g.addColorStop(0.5, '#ffd24a'); g.addColorStop(1, '#e09a1a');
+    fishPath(ctx, 0, 0, 20 * s, 1);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.strokeStyle = '#8a5a00'; ctx.lineWidth = Math.max(1, 2 * s); ctx.stroke();
+    ctx.fillStyle = '#5a3a00';
+    ctx.beginPath(); ctx.arc(-11 * s, -2 * s, 2 * s, 0, TAU); ctx.fill();
+    ctx.restore();
+    for (let i = 0; i < 3; i++) {
+      const a = time * 2 + i * TAU / 3;
+      drawStar(ctx, p.x + Math.cos(a) * 28 * s, p.y + Math.sin(a) * 16 * s, 4 * s, '#fff6c8');
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // Powers bought in the shop apply to the next run.
+  function applyRunPowers() {
+    runPowers = Object.assign({}, gold.pending);
+    gold.pending = {};
+    saveGold();
+    const names = [];
+    if (runPowers.quick) {
+      dist = levelAt(1) * 10;
+      level = 2;
+      shieldT = 5;
+      track('level', level);
+      names.push('départ rapide');
+    }
+    if (runPowers.magnet) { active.magnet = 30; names.push('aimant'); }
+    if (runPowers.long) names.push('bonus plus longs');
+    if (runPowers.hint) names.push('indices');
+    if (names.length) toast('Pouvoirs : ' + names.join(', ') + ' !');
+    rollGoldFish(level);
+  }
+
+  // ---------- Second chance ----------
+  function canRevive() { return gold.count > 0 && !revived; }
+  function openRevive() {
+    state = 'revive';
+    reviveT = 10;
+    $('reviveCount').textContent = gold.count;
+    show('reviveScreen');
+    $('reviveUse').focus({ preventScroll: true });
+  }
+  function updateRevive(dt) {
+    reviveT -= dt;
+    $('reviveBar').style.width = Math.max(0, reviveT / 10 * 100) + '%';
+    $('reviveTime').textContent = Math.max(0, Math.ceil(reviveT));
+    if (reviveT <= 0) skipRevive();
+  }
+  function useRevive() {
+    if (state !== 'revive' || gold.count < 1) return;
+    gold.count--;
+    saveGold();
+    revived = true;
+    objs = objs.filter(o => o.z > 700);
+    kibs = kibs.filter(k => k.z > 700);
+    cat.y = 0; cat.vy = 0; cat.onGround = true; cat.rollT = 0; cat.fastFall = false; cat.rollQueued = false;
+    deathCause = null;
+    shieldT = 2;
+    show(null);
+    state = 'ready';
+    readyT = 3;
+    lastCount = 0;
+    meow(false);
+  }
+  function skipRevive() {
+    if (state !== 'revive') return;
+    show(null);
+    showGameOver();
+  }
+  function drawShield() {
+    if (shieldT <= 0 || (shieldT < 1 && Math.sin(time * 20) < 0)) return;
+    const p = proj(cat.x, cat.y + 30, 0);
+    ctx.strokeStyle = 'rgba(160, 220, 255, 0.85)';
+    ctx.lineWidth = Math.max(2, 3 * p.s);
+    ctx.beginPath(); ctx.arc(p.x, p.y, 48 * p.s, 0, TAU); ctx.stroke();
+    glow(ctx, p.x, p.y, 52 * p.s, '160, 220, 255', 0.18);
+  }
+
+  // ---------- Costumes, drawn in three layers around the cat ----------
+  function cosShape(c, fill, outline, lw) {
+    c.fillStyle = fill; c.fill();
+    c.strokeStyle = outline; c.lineWidth = lw || 1.8; c.stroke();
+  }
+  function scales(c, by, fill, line) {
+    c.save();
+    c.beginPath(); c.ellipse(0, by, 20, 19, 0, 0, TAU); c.clip();
+    c.globalAlpha = 0.8; c.fillStyle = fill; c.fillRect(-22, by - 21, 44, 42); c.globalAlpha = 1;
+    c.strokeStyle = line; c.lineWidth = 1.4;
+    for (let r = 0, y = by - 20; y < by + 22; y += 6, r++) {
+      for (let x = -24 + (r % 2) * 3.5; x < 24; x += 7) { c.beginPath(); c.arc(x, y, 3.6, 0, Math.PI); c.stroke(); }
+    }
+    c.restore();
+  }
+  const COSTUME_DRAW = {
+    vampire(c, layer, g) {
+      if (layer !== 'body') return;
+      const sw = Math.sin(g.t * 8) * 2;
+      c.beginPath();
+      c.moveTo(-12, g.hy + 15); c.quadraticCurveTo(-25, g.by - 6, -26, g.by + 18 + sw);
+      for (let k = 0; k < 5; k++) { const x0 = -26 + k * 10.4; c.quadraticCurveTo(x0 + 5.2, g.by + 25 + sw, x0 + 10.4, g.by + 18 + sw); }
+      c.quadraticCurveTo(25, g.by - 6, 12, g.hy + 15); c.closePath();
+      cosShape(c, '#1b1024', '#05020a');
+      for (const sd of [-1, 1]) {
+        c.beginPath(); c.moveTo(sd * 4, g.hy + 16); c.quadraticCurveTo(sd * 22, g.hy + 12, sd * 24, g.hy - 8); c.quadraticCurveTo(sd * 15, g.hy + 4, sd * 9, g.hy + 8); c.closePath();
+        cosShape(c, '#b3122e', '#3a0410');
+      }
+    },
+    superchat(c, layer, g) {
+      if (layer !== 'body') return;
+      const sw = Math.sin(g.t * 7) * 4;
+      c.beginPath();
+      c.moveTo(-12, g.hy + 15); c.quadraticCurveTo(-26, g.by, -24 + sw * 0.3, g.by + 22);
+      c.quadraticCurveTo(0, g.by + 30 + sw, 24 + sw * 0.3, g.by + 22);
+      c.quadraticCurveTo(26, g.by, 12, g.hy + 15); c.closePath();
+      cosShape(c, '#e0283a', '#5a0a12');
+      c.beginPath(); c.arc(0, g.by - 1, 7.5, 0, TAU); cosShape(c, '#ffd34d', '#8a5a00', 1.4);
+      c.fillStyle = '#e0283a';
+      c.beginPath(); c.arc(0, g.by + 1, 3.4, 0, TAU); c.fill();
+      for (const sd of [-1, 1]) { c.beginPath(); c.moveTo(sd * 3.4, g.by); c.lineTo(sd * 3, g.by - 5); c.lineTo(sd * 0.8, g.by - 2); c.closePath(); c.fill(); }
+    },
+    renne(c, layer, g) {
+      if (layer === 'body') {
+        c.beginPath(); c.ellipse(0, g.hy + 16, 14, 4.5, 0, 0, TAU); cosShape(c, '#d42a2a', '#5a0a0a', 1.4);
+        c.save(); c.translate(7, g.hy + 18); c.rotate(0.25);
+        c.beginPath(); c.roundRect(-3.5, 0, 7, 18, 2); cosShape(c, '#d42a2a', '#5a0a0a', 1.4);
+        c.fillStyle = '#ffffff'; c.fillRect(-3.5, 5, 7, 2.5); c.fillRect(-3.5, 11, 7, 2.5);
+        c.restore();
+      } else if (layer === 'head') {
+        for (const [w, col] of [[5.5, '#3a240f'], [3.2, '#a8743a']]) {
+          c.strokeStyle = col; c.lineWidth = w;
+          for (const sd of [-1, 1]) {
+            c.beginPath(); c.moveTo(sd * 7, g.hy - 14); c.quadraticCurveTo(sd * 12, g.hy - 30, sd * 21, g.hy - 38); c.stroke();
+            c.beginPath(); c.moveTo(sd * 11, g.hy - 25); c.lineTo(sd * 4, g.hy - 34); c.stroke();
+            c.beginPath(); c.moveTo(sd * 16, g.hy - 33); c.lineTo(sd * 13, g.hy - 42); c.stroke();
+          }
+        }
+      }
+    },
+    poussin(c, layer, g) {
+      if (layer === 'body') {
+        const flap = Math.sin(g.t * 10) * 0.25;
+        for (const sd of [-1, 1]) {
+          c.save(); c.translate(sd * 18, g.by - 4); c.rotate(sd * (0.5 + flap));
+          c.beginPath(); c.ellipse(0, 6, 6, 11, 0, 0, TAU); cosShape(c, '#ffcf2e', '#9a6a00');
+          c.restore();
+        }
+        c.beginPath(); c.ellipse(0, g.by, 21, 20, 0, 0, TAU); cosShape(c, '#ffd84a', '#9a6a00');
+        c.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        c.beginPath(); c.ellipse(-8, g.by - 9, 7, 3.5, -0.6, 0, TAU); c.fill();
+      } else if (layer === 'head') {
+        for (const [x, h] of [[-4, 7], [0, 9], [4, 7]]) {
+          c.beginPath(); c.ellipse(x, g.hy - 18 - h / 2, 2.6, h / 2 + 1, x * 0.08, 0, TAU); cosShape(c, '#ffd84a', '#9a6a00', 1.2);
+        }
+      }
+    },
+    cupidon(c, layer, g) {
+      if (layer === 'back') {
+        const flap = Math.sin(g.t * 12) * 0.15;
+        for (const sd of [-1, 1]) {
+          c.save(); c.translate(sd * 8, g.by - 10); c.rotate(sd * flap);
+          c.beginPath();
+          c.moveTo(0, 0); c.quadraticCurveTo(sd * 18, -22, sd * 32, -18);
+          c.quadraticCurveTo(sd * 30, -10, sd * 26, -8); c.quadraticCurveTo(sd * 28, -2, sd * 22, 2);
+          c.quadraticCurveTo(sd * 22, 8, sd * 14, 8); c.quadraticCurveTo(sd * 8, 10, 0, 6); c.closePath();
+          cosShape(c, '#ffffff', '#b8b3d6');
+          c.restore();
+        }
+      } else if (layer === 'body') {
+        c.save(); c.translate(9, g.by - 2); c.rotate(0.45);
+        c.strokeStyle = '#8a5a2a'; c.lineWidth = 1.6;
+        for (const x of [-1.5, 1.5]) { c.beginPath(); c.moveTo(x, -10); c.lineTo(x, -22); c.stroke(); heartPath(c, x, -24, 3); c.fillStyle = '#ff3d7a'; c.fill(); }
+        c.beginPath(); c.roundRect(-4, -12, 8, 22, 2); cosShape(c, '#b07a3a', '#5a3a1a', 1.4);
+        c.restore();
+      }
+    },
+    dragon(c, layer, g) {
+      if (layer !== 'body') return;
+      scales(c, g.by, '#3fbf6a', '#1f7a3a');
+      c.beginPath(); c.ellipse(0, g.by, 20, 19, 0, 0, TAU); c.strokeStyle = '#1f5a2a'; c.lineWidth = 1.9; c.stroke();
+      for (const y of [-14, -6, 2, 10]) {
+        c.beginPath(); c.moveTo(-4, g.by + y + 4); c.lineTo(0, g.by + y - 4); c.lineTo(4, g.by + y + 4); c.closePath();
+        cosShape(c, '#ff8a2a', '#7a3a0a', 1.3);
+      }
+    },
+    soiree(c, layer, g) {
+      if (layer !== 'body') return;
+      c.beginPath();
+      c.moveTo(-13, g.hy + 15); c.lineTo(-21, g.by + 2); c.quadraticCurveTo(-20, g.by + 17, -9, g.by + 20);
+      c.lineTo(-3, g.by + 28); c.lineTo(0, g.by + 17); c.lineTo(3, g.by + 28); c.lineTo(9, g.by + 20);
+      c.quadraticCurveTo(20, g.by + 17, 21, g.by + 2); c.lineTo(13, g.hy + 15); c.closePath();
+      cosShape(c, '#1c1c28', '#000000');
+      c.strokeStyle = '#3a3a50'; c.lineWidth = 1.2;
+      c.beginPath(); c.moveTo(0, g.hy + 16); c.lineTo(0, g.by + 17); c.stroke();
+      for (const sd of [-1, 1]) { c.beginPath(); c.moveTo(sd * 2, g.hy + 15); c.lineTo(sd * 9, g.hy + 15); c.lineTo(sd * 4, g.hy + 21); c.closePath(); cosShape(c, '#ffffff', '#9a98b8', 1); }
+      [[-10, -6], [8, 4], [-4, 10]].forEach(([x, y], i) => {
+        c.globalAlpha = 0.4 + 0.6 * Math.max(0, Math.sin(g.t * 3 + i * 2));
+        drawStar(c, x, g.by + y, 2.4, '#ffd76a');
+      });
+      c.globalAlpha = 1;
+    },
+    bouee(c, layer, g) {
+      const seg = (from, to) => {
+        c.strokeStyle = '#5a1a1a'; c.lineWidth = 9.5;
+        c.beginPath(); c.ellipse(0, g.by + 7, 25, 8, 0, from, to); c.stroke();
+        for (let k = 0; k < 8; k++) {
+          const a0 = Math.max(from, k * TAU / 8), a1 = Math.min(to, (k + 1) * TAU / 8);
+          if (a1 <= a0) continue;
+          c.strokeStyle = k % 2 ? '#ffffff' : '#e83a3a'; c.lineWidth = 7;
+          c.beginPath(); c.ellipse(0, g.by + 7, 25, 8, 0, a0, a1); c.stroke();
+        }
+      };
+      if (layer === 'back') seg(Math.PI, TAU);
+      else if (layer === 'body') seg(0, Math.PI);
+    },
+    rockstar(c, layer, g) {
+      if (layer !== 'body') return;
+      c.strokeStyle = '#1a1a1a'; c.lineWidth = 3;
+      c.beginPath(); c.moveTo(-14, g.hy + 16); c.lineTo(16, g.by + 14); c.stroke();
+      c.save(); c.translate(2, g.by + 2); c.rotate(-0.7);
+      c.beginPath(); c.rect(-2, -34, 4, 26); cosShape(c, '#7a4a1a', '#3a200a', 1.2);
+      c.beginPath(); c.rect(-3.5, -41, 7, 8); cosShape(c, '#222222', '#000000', 1.2);
+      c.beginPath(); c.arc(0, 6, 9, 0, TAU); c.arc(0, -3, 7, 0, TAU); cosShape(c, '#e83a3a', '#3a0a0a', 1.4);
+      c.beginPath(); c.arc(0, 2, 7.5, 0, TAU); c.fillStyle = '#e83a3a'; c.fill();
+      c.fillStyle = '#ffffff'; c.beginPath(); c.ellipse(3, 6, 3, 4, 0.3, 0, TAU); c.fill();
+      c.strokeStyle = 'rgba(255, 255, 255, 0.7)'; c.lineWidth = 0.6;
+      for (const x of [-1, 0, 1]) { c.beginPath(); c.moveTo(x, -33); c.lineTo(x, 8); c.stroke(); }
+      c.restore();
+    },
+    sardine(c, layer, g) {
+      if (layer !== 'body') return;
+      scales(c, g.by, '#4aa8e0', '#1f5a8a');
+      c.beginPath(); c.ellipse(0, g.by, 20, 19, 0, 0, TAU); c.strokeStyle = '#123a5a'; c.lineWidth = 1.9; c.stroke();
+      c.beginPath(); c.moveTo(0, g.by - 18);
+      for (let k = 0; k < 4; k++) { c.lineTo(5, g.by - 13 + k * 8); c.lineTo(0, g.by - 9 + k * 8); }
+      c.closePath(); cosShape(c, '#7ad0ff', '#1f5a8a', 1.3);
+      c.beginPath(); c.moveTo(g.tipX, g.tipY + 2); c.lineTo(g.tipX - 9, g.tipY - 9); c.quadraticCurveTo(g.tipX, g.tipY - 4, g.tipX + 9, g.tipY - 9); c.closePath();
+      cosShape(c, '#7ad0ff', '#1f5a8a', 1.3);
+    },
+  };
+  function drawCostume(c, id, layer, g) {
+    const fn = COSTUME_DRAW[id];
+    if (!fn) return;
+    c.save(); c.lineJoin = 'round'; c.lineCap = 'round';
+    fn(c, layer, g);
+    c.restore();
+  }
+
+  // ---------- Golden fish tab of the shop ----------
+  const currentCostume = () => gold.costume || 'none';
+  function visibleCostumes() {
+    return COSTUMES.filter(cs => cs.theme === THEME_ID || gold.costumes.includes(cs.id));
+  }
+  function section(grid, text) {
+    const l = document.createElement('div');
+    l.className = 'label full';
+    l.textContent = text;
+    grid.append(l);
+  }
+  function buildFishShop(grid) {
+    const head = document.createElement('div');
+    head.className = 'box full fish-head';
+    head.innerHTML = `<div class="box-head"><b>Tes poissons d'or</b><span class="gold-count">${GOLD_SVG} ${gold.count}</span></div><p class="small-text">Ils sont très rares : un seul se cache parfois dans un quartier. Ils servent aussi à te relever une fois par partie.</p>`;
+    grid.append(head);
+
+    section(grid, 'Déguisements de fête · 10 poissons d’or');
+    const list = [{ id: 'none', name: 'Sans déguisement' }, ...visibleCostumes()];
+    for (const cs of list) {
+      const has = cs.id === 'none' || gold.costumes.includes(cs.id);
+      const sel = currentCostume() === cs.id;
+      const card = document.createElement('div');
+      card.className = 'skin' + (sel ? ' selected' : '');
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = Math.round(76 * dpr);
+      const name = document.createElement('div');
+      name.className = 'skin-name';
+      name.textContent = cs.name;
+      const btn = document.createElement('button');
+      btn.className = 'skin-btn';
+      btn.id = 'costume-' + cs.id;
+      if (sel) { btn.textContent = 'Choisi'; btn.disabled = true; }
+      else if (has) btn.textContent = 'Choisir';
+      else {
+        btn.innerHTML = (gold.count >= COSTUME_PRICE ? 'Acheter ' : '') + GOLD_SVG + ' ' + COSTUME_PRICE;
+        if (gold.count >= COSTUME_PRICE) btn.classList.add('buy'); else btn.disabled = true;
+      }
+      btn.addEventListener('click', () => chooseCostume(cs));
+      if (cs.theme) {
+        const tag = document.createElement('div');
+        tag.className = 'limited';
+        tag.textContent = THEMES[cs.theme].name;
+        card.append(tag);
+      }
+      card.append(cv, name, btn);
+      grid.append(card);
+      previews.push({ cv, it: cs, costume: true });
+    }
+    if (!COSTUMES.some(cs => cs.theme === THEME_ID)) {
+      const p = document.createElement('p');
+      p.className = 'small-text full';
+      p.textContent = 'Chaque fête a son déguisement. Le prochain arrivera avec la prochaine fête.';
+      grid.append(p);
+    }
+
+    section(grid, 'Pouvoirs pour la prochaine partie');
+    for (const pw of POWERS) grid.append(powerRow(pw.id, pw.name, pw.text, pw.price, !!gold.pending[pw.id], () => buyPower(pw)));
+    section(grid, 'Échange');
+    grid.append(powerRow('trade', '500 croquettes', 'Échange 1 poisson d’or contre 500 croquettes dans ta tirelire.', 1, false, tradeFish));
+  }
+  function powerRow(id, name, text, price, ready, onBuy) {
+    const row = document.createElement('div');
+    row.className = 'box full power';
+    const t = document.createElement('div');
+    const b = document.createElement('b'); b.textContent = name;
+    const p = document.createElement('p'); p.className = 'small-text'; p.textContent = text;
+    t.append(b, p);
+    const btn = document.createElement('button');
+    btn.className = 'skin-btn' + (!ready && gold.count >= price ? ' buy' : '');
+    btn.id = 'power-' + id;
+    if (ready) { btn.textContent = 'Prêt !'; btn.disabled = true; }
+    else { btn.innerHTML = GOLD_SVG + ' ' + price; btn.disabled = gold.count < price; btn.setAttribute('aria-label', `${name} : ${price} poisson${price > 1 ? 's' : ''} d'or`); }
+    btn.addEventListener('click', onBuy);
+    row.append(t, btn);
+    return row;
+  }
+  function spendGold(n) {
+    if (gold.count < n) return false;
+    gold.count -= n;
+    saveGold();
+    sfx.kibble();
+    return true;
+  }
+  function chooseCostume(cs) {
+    initAudio();
+    if (cs.id !== 'none' && !gold.costumes.includes(cs.id)) {
+      if (!spendGold(COSTUME_PRICE)) return;
+      gold.costumes.push(cs.id);
+      toast(`Déguisement ${cs.name} débloqué !`);
+    }
+    gold.costume = cs.id;
+    saveGold();
+    meow(false);
+    buildShop();
+    const b = $('costume-' + cs.id);
+    if (b) b.focus({ preventScroll: true });
+  }
+  function buyPower(pw) {
+    initAudio();
+    if (gold.pending[pw.id] || !spendGold(pw.price)) return;
+    gold.pending[pw.id] = true;
+    saveGold();
+    toast(`${pw.name} : prêt pour la prochaine partie !`);
+    buildShop();
+  }
+  function tradeFish() {
+    initAudio();
+    if (!spendGold(1)) return;
+    bank += 500;
+    saveProgress();
+    updateBank();
+    toast('+500 croquettes dans ta tirelire !');
+    buildShop();
+  }
+
+  // Swap a mission for a new one with a golden fish
+  function swapMission(i) {
+    if (!missions.list[i] || gold.count < 1) return;
+    spendGold(1);
+    missions.list[i] = newMission(missions.list[i].type);
+    store(MISSIONS_KEY, missions);
+    renderPanels();
+    toast('Nouvelle mission !');
+  }
+  for (const id of ['missionsStart', 'missionsOver']) {
+    $(id).addEventListener('click', e => {
+      const b = e.target.closest('[data-swap]');
+      if (b) swapMission(parseInt(b.dataset.swap, 10));
+    });
+  }
+  $('reviveUse').addEventListener('click', useRevive);
+  $('reviveSkip').addEventListener('click', skipRevive);
+
   $('introForm').addEventListener('submit', e => { e.preventDefault(); initAudio(); finishIntro(); });
   $('renameForm').addEventListener('submit', e => { e.preventDefault(); rename(); });
   $('storyBtn').addEventListener('click', () => openStory('startScreen'));
@@ -4408,6 +4912,11 @@
       bonus(t) { activateBonus(t); },
       surprises() { strayAt = elapsed; starAt = elapsed; spawnPigeon(600); },
       addKibbles(n) { kibbles += n; },
+      addGold(n) { gold.count += n; saveGold(); updateBank(); renderPanels(); },
+      fishNow() { fishAt = Math.floor(dist / 10) + 150; },
+      get fishLane() { const k = kibs.find(k => k.goldfish && !k.taken); return k ? { lane: Math.round(k.x / LANE_W), z: k.z } : null; },
+      get gold() { return gold.count; },
+      get catLane() { return cat.lane; },
       // Peak and average level of the music over the last frame (0 to 1)
       musicLevel() {
         if (!musicBus) return null;
@@ -4444,6 +4953,10 @@
       return;
     }
     if (state === 'ready') return;
+    if (state === 'revive') {
+      if (code === 'Escape') skipRevive();
+      return;
+    }
     if (state === 'start' || state === 'over') {
       if ((code === 'Space' || code === 'Enter') && !e.repeat) { e.preventDefault(); startGame(); }
       return;
@@ -4495,7 +5008,7 @@
     shakeT -= dt;
     update(dt * scale);
     render();
-    if (state === 'play' || state === 'dying' || state === 'ready' || state === 'quiz') updateHud();
+    if (state === 'play' || state === 'dying' || state === 'ready' || state === 'quiz' || state === 'revive') updateHud();
     if (!$('shopScreen').hidden) drawPreviews();
     requestAnimationFrame(frame);
   }
