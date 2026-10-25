@@ -215,6 +215,14 @@
   .quiz-feedback.ok { background: rgba(122, 255, 196, 0.12); color: #7affc4; }
   .quiz-feedback.ko { background: rgba(255, 107, 107, 0.1); }
   .quiz-feedback .expl { margin-top: 6px; color: var(--ink); }
+  .icon-btn .slash { display: none; }
+  .icon-btn.off { color: var(--muted); }
+  .icon-btn.off .slash { display: inline; }
+  .icon-btn.off .waves { display: none; }
+  .toggle { font-family: var(--font-body); font-weight: 800; font-size: 0.9rem; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: var(--ink); cursor: pointer; }
+  .toggle .state { color: var(--cat); }
+  .toggle.off .state { color: var(--muted); }
+  .toggle:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
   .unlock { color: var(--kibble); font-weight: 800; }
   .card.shop { max-width: 560px; }
   .bank { justify-self: center; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; color: var(--kibble); font-variant-numeric: tabular-nums; }
@@ -275,8 +283,11 @@
       <div class="bonus-bar" id="bonusBar"></div>
     </div>
     <div class="buttons">
-      <button class="icon-btn" id="muteBtn" aria-label="Couper le son">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path id="muteIcon" d="M4 9h4l5-4v14l-5-4H4z M16 8.5a5 5 0 0 1 0 7 M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="icon-btn sound" data-toggle="music" aria-label="Couper la musique">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="16.5" cy="16" r="2.5" fill="currentColor"/><path class="slash" d="M4 4l16 16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-btn sound" data-toggle="sfx" aria-label="Couper les bruitages">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path class="waves" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="slash" d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
       <button class="icon-btn" id="pauseBtn" aria-label="Pause">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
@@ -307,6 +318,10 @@
       <div class="btn-row">
         <button class="btn ghost" id="shopBtnStart">Chats et chapeaux</button>
         <button class="btn ghost" id="gradeBtn">Classe</button>
+      </div>
+      <div class="btn-row sound-row">
+        <button class="toggle" data-toggle="music" data-label="1" aria-pressed="true">Musique : <span class="state">oui</span></button>
+        <button class="toggle" data-toggle="sfx" data-label="1" aria-pressed="true">Bruitages : <span class="state">oui</span></button>
       </div>
       <details class="howto">
         <summary>Comment jouer</summary>
@@ -359,6 +374,10 @@
       <p>Le chat attend sur le toit.</p>
       <button class="btn" id="resumeBtn">Reprendre</button>
       <button class="btn ghost" id="quitBtn">Menu</button>
+      <div class="btn-row sound-row">
+        <button class="toggle" data-toggle="music" data-label="1" aria-pressed="true">Musique : <span class="state">oui</span></button>
+        <button class="toggle" data-toggle="sfx" data-label="1" aria-pressed="true">Bruitages : <span class="state">oui</span></button>
+      </div>
     </div>
   </div>
 
@@ -701,7 +720,7 @@
     ].filter(Boolean);
   }
   function detectTheme(now) {
-    const m = /^#theme-([a-z]+)$/.exec(location.hash || '');
+    const m = /^#theme-([a-z]+)/.exec(location.hash || '');
     if (m) return THEMES[m[1]] ? { id: m[1], end: null } : null;
     const day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     for (const [id, a, b] of themeWindows(now.getFullYear())) if (day >= a && day <= b) return { id, end: b };
@@ -1239,17 +1258,16 @@
 
   // ---------- Audio ----------
   let actx = null;
-  let muted = false;
-  try { muted = localStorage.getItem('siquane-escape-cat-muted') === '1'; } catch (e) {}
 
   function initAudio() {
     if (!actx) {
       try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; }
     }
     if (actx && actx.state === 'suspended') actx.resume();
+    setupBuses();
   }
   function tone(freq, dur, type, vol, slideTo, delay) {
-    if (!actx || muted) return;
+    if (!actx || !sfxOn || !sfxBus) return;
     const t0 = actx.currentTime + (delay || 0);
     const o = actx.createOscillator(), g = actx.createGain();
     o.type = type || 'sine';
@@ -1258,11 +1276,11 @@
     g.gain.setValueAtTime(0.0001, t0);
     g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    o.connect(g).connect(actx.destination);
+    o.connect(g).connect(sfxBus);
     o.start(t0); o.stop(t0 + dur + 0.02);
   }
   function noise(dur, vol, freq, delay) {
-    if (!actx || muted) return;
+    if (!actx || !sfxOn || !sfxBus) return;
     const t0 = actx.currentTime + (delay || 0);
     const len = Math.floor(actx.sampleRate * dur);
     const buf = actx.createBuffer(1, len, actx.sampleRate);
@@ -1275,11 +1293,11 @@
     const g = actx.createGain();
     g.gain.setValueAtTime(vol, t0);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    src.connect(f).connect(g).connect(actx.destination);
+    src.connect(f).connect(g).connect(sfxBus);
     src.start(t0);
   }
   function meow(sad) {
-    if (!actx || muted) return;
+    if (!actx || !sfxOn || !sfxBus) return;
     const t0 = actx.currentTime;
     const o = actx.createOscillator(), g = actx.createGain(), f = actx.createBiquadFilter();
     o.type = 'sawtooth';
@@ -1291,7 +1309,7 @@
     g.gain.setValueAtTime(0.0001, t0);
     g.gain.exponentialRampToValueAtTime(0.08, t0 + 0.05);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
-    o.connect(f).connect(g).connect(actx.destination);
+    o.connect(f).connect(g).connect(sfxBus);
     o.start(t0); o.stop(t0 + 0.55);
   }
   let kibCombo = 0, kibComboT = 0;
@@ -1319,6 +1337,253 @@
     wrong: () => tone(300, 0.3, 'sawtooth', 0.05, 180),
     beep: hi => tone(hi ? 880 : 520, 0.12, 'square', 0.05),
   };
+
+  // ---------- Background music: a small chiptune sequencer ----------
+  // The melody is written in scale degrees (0 = root, 7 = octave) over 8 bars of 16 steps,
+  // so each holiday theme can replay it in its own key, scale and instruments.
+  const MELODY = [
+    [[0, 4, 2], [2, 4, 2], [4, 2, 2], [6, 4, 2], [8, 7, 4], [12, 4, 4]],
+    [[0, 6, 2], [2, 5, 2], [4, 4, 2], [6, 1, 2], [8, 4, 6], [14, 3, 2]],
+    [[0, 2, 2], [2, 4, 2], [4, 5, 4], [8, 7, 2], [10, 6, 2], [12, 5, 4]],
+    [[0, 3, 2], [2, 5, 2], [4, 7, 2], [6, 5, 2], [8, 4, 8]],
+    [[0, 7, 2], [2, 9, 2], [4, 8, 2], [6, 7, 2], [8, 9, 4], [12, 7, 4]],
+    [[0, 8, 2], [2, 7, 2], [4, 6, 2], [6, 4, 2], [8, 6, 4], [12, 8, 4]],
+    [[0, 5, 2], [2, 7, 2], [4, 10, 4], [8, 9, 2], [10, 8, 2], [12, 7, 4]],
+    [[0, 8, 3], [3, 7, 1], [4, 6, 2], [6, 4, 2], [8, 1, 2], [10, 2, 2], [12, 4, 4]],
+  ];
+  const CHORDS = [0, 4, 5, 3, 0, 4, 3, 4];
+  const SCALES = {
+    major: [0, 2, 4, 5, 7, 9, 11],
+    minor: [0, 2, 3, 5, 7, 8, 11],
+    dorian: [0, 2, 3, 5, 7, 9, 10],
+    penta: [0, 2, 4, 7, 7, 9, 12],
+  };
+  const MUSIC_THEMES = {
+    base:      { root: 60, scale: 'major', lead: 'pulse', bpm: 0 },
+    noel:      { root: 65, scale: 'major', lead: 'bell', bpm: -6, sleigh: true },
+    halloween: { root: 57, scale: 'minor', lead: 'organ', bpm: -10 },
+    valentin:  { root: 62, scale: 'major', lead: 'soft', bpm: -16 },
+    cny:       { root: 62, scale: 'penta', lead: 'pluck', bpm: 0, block: true },
+    paques:    { root: 67, scale: 'major', lead: 'pulse', bpm: 6 },
+    nouvelan:  { root: 60, scale: 'major', lead: 'pulse', bpm: 10, clap: true },
+    ete:       { root: 65, scale: 'major', lead: 'steel', bpm: 4 },
+    musique:   { root: 62, scale: 'dorian', lead: 'square', bpm: 6, clap: true },
+    avril:     { root: 64, scale: 'major', lead: 'bubble', bpm: 0 },
+    chats:     { root: 60, scale: 'major', lead: 'pluck', bpm: 4 },
+  };
+  const MT = MUSIC_THEMES[THEME_ID] || MUSIC_THEMES.base;
+  const SC = SCALES[MT.scale];
+  const midiHz = m => 440 * Math.pow(2, (m - 69) / 12);
+  const degSemis = d => SC[((d % 7) + 7) % 7] + 12 * Math.floor(d / 7);
+
+  let musicOn = true, sfxOn = true;
+  try {
+    const legacy = localStorage.getItem('siquane-escape-cat-muted') === '1';
+    const mu = localStorage.getItem('siquane-escape-cat-music'), sf = localStorage.getItem('siquane-escape-cat-sfx');
+    musicOn = mu == null ? !legacy : mu === '1';
+    sfxOn = sf == null ? !legacy : sf === '1';
+  } catch (e) {}
+
+  let musicBus = null, sfxBus = null, pulseWave = null, noiseBuf = null;
+  let musicTimer = 0, nextStepT = 0, step = 0, bpm = 100, transpose = 0, duck = 1;
+  function setupBuses() {
+    if (musicBus || !actx) return;
+    musicBus = actx.createGain();
+    musicBus.gain.value = musicOn ? 0.55 : 0;
+    musicBus.connect(actx.destination);
+    sfxBus = actx.createGain();
+    sfxBus.gain.value = 1;
+    sfxBus.connect(actx.destination);
+    // 25 % pulse wave, the classic chiptune lead
+    const n = 32, re = new Float32Array(n), im = new Float32Array(n);
+    for (let k = 1; k < n; k++) re[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * 0.25);
+    pulseWave = actx.createPeriodicWave(re, im);
+    noiseBuf = actx.createBuffer(1, actx.sampleRate * 0.5, actx.sampleRate);
+    const d = noiseBuf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    nextStepT = actx.currentTime + 0.1;
+    musicTimer = setInterval(scheduleMusic, 25);
+  }
+
+  function env(g, t, vol, attack, hold, release) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + attack);
+    g.gain.setValueAtTime(vol, t + Math.max(attack, hold));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + Math.max(attack, hold) + release);
+  }
+  function osc(type, freq, t, end, dest) {
+    const o = actx.createOscillator();
+    if (type === 'pulse') o.setPeriodicWave(pulseWave); else o.type = type;
+    o.frequency.setValueAtTime(freq, t);
+    o.connect(dest);
+    o.start(t); o.stop(end + 0.05);
+    return o;
+  }
+  function voice(inst, midi, t, dur, vol) {
+    const f = midiHz(midi + transpose), g = actx.createGain();
+    g.connect(musicBus);
+    switch (inst) {
+      case 'bell': {
+        env(g, t, vol * 1.3, 0.004, 0.01, 0.7);
+        osc('sine', f, t, t + 0.8, g);
+        const g2 = actx.createGain(); g2.gain.value = 0.35; g2.connect(g);
+        osc('sine', f * 2.01, t, t + 0.8, g2);
+        break;
+      }
+      case 'organ': {
+        const lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1400; lp.connect(g);
+        env(g, t, vol * 0.8, 0.02, dur * 0.85, 0.12);
+        const o = osc('sawtooth', f, t, t + dur + 0.15, lp);
+        const lfo = actx.createOscillator(), lg = actx.createGain();
+        lfo.frequency.value = 5.5; lg.gain.value = f * 0.012;
+        lfo.connect(lg).connect(o.frequency); lfo.start(t); lfo.stop(t + dur + 0.2);
+        osc('square', f / 2, t, t + dur + 0.15, lp);
+        break;
+      }
+      case 'soft':
+        env(g, t, vol * 1.4, 0.05, dur * 0.8, 0.25);
+        osc('triangle', f, t, t + dur + 0.3, g);
+        break;
+      case 'pluck':
+        env(g, t, vol, 0.004, 0.01, Math.min(0.35, dur));
+        osc('square', f, t, t + dur + 0.1, g);
+        break;
+      case 'steel': {
+        env(g, t, vol * 1.3, 0.004, 0.01, 0.45);
+        osc('sine', f, t, t + 0.5, g);
+        const g2 = actx.createGain(); g2.gain.value = 0.3; g2.connect(g);
+        osc('sine', f * 2.76, t, t + 0.5, g2);
+        break;
+      }
+      case 'bubble': {
+        env(g, t, vol * 1.3, 0.006, dur * 0.6, 0.12);
+        const o = osc('sine', f * 0.7, t, t + dur + 0.15, g);
+        o.frequency.exponentialRampToValueAtTime(f, t + 0.05);
+        break;
+      }
+      case 'tri':
+        env(g, t, vol, 0.005, dur * 0.8, 0.06);
+        osc('triangle', f, t, t + dur + 0.1, g);
+        break;
+      default:
+        env(g, t, vol, 0.005, dur * 0.8, 0.06);
+        osc(inst === 'square' ? 'square' : 'pulse', f, t, t + dur + 0.1, g);
+    }
+  }
+  function drum(kind, t, vol) {
+    const g = actx.createGain();
+    g.connect(musicBus);
+    if (kind === 'kick') {
+      env(g, t, vol, 0.002, 0.01, 0.16);
+      const o = osc('sine', 150, t, t + 0.2, g);
+      o.frequency.exponentialRampToValueAtTime(45, t + 0.15);
+      return;
+    }
+    if (kind === 'block') {
+      env(g, t, vol, 0.002, 0.005, 0.06);
+      osc('sine', 1300, t, t + 0.08, g);
+      return;
+    }
+    const src = actx.createBufferSource();
+    src.buffer = noiseBuf;
+    const f = actx.createBiquadFilter();
+    f.type = kind === 'snare' || kind === 'clap' ? 'bandpass' : 'highpass';
+    f.frequency.value = kind === 'snare' ? 1800 : kind === 'clap' ? 1200 : kind === 'sleigh' ? 9000 : 7000;
+    src.connect(f).connect(g);
+    const len = kind === 'snare' ? 0.12 : kind === 'clap' ? 0.1 : 0.04;
+    env(g, t, vol, 0.002, 0.005, len);
+    src.start(t); src.stop(t + len + 0.05);
+  }
+
+  function scheduleMusic() {
+    if (!actx || !musicBus) return;
+    const playing = state === 'play';
+    const target = playing
+      ? 132 + MT.bpm + 28 * Math.max(0, Math.min(1, (speed - START_SPEED) / (MAX_SPEED - START_SPEED)))
+      : 96 + MT.bpm * 0.5;
+    bpm += (target - bpm) * 0.05;
+    // Duck the music when the cat falls or the game is paused
+    const wantDuck = state === 'dying' ? 0.25 : state === 'pause' ? 0.5 : 1;
+    if (wantDuck !== duck) {
+      duck = wantDuck;
+      musicBus.gain.setTargetAtTime(musicOn ? 0.55 * duck : 0, actx.currentTime, 0.15);
+    }
+    if (nextStepT < actx.currentTime - 0.2) nextStepT = actx.currentTime + 0.05;
+    while (nextStepT < actx.currentTime + 0.12) {
+      if (musicOn) playStep(step, nextStepT, playing);
+      nextStepT += 60 / bpm / 4;
+      step = (step + 1) % 128;
+    }
+  }
+
+  function playStep(i, t, full) {
+    const bar = Math.floor(i / 16), s = i % 16;
+    const sd = 60 / bpm / 4;
+    const chord = CHORDS[bar];
+    const root = MT.root - 12;
+    const boost = full && Object.keys(active).length > 0;
+
+    // Bass: bouncing octaves while running, long notes in the menus
+    if (full) {
+      if (s % 2 === 0) voice('tri', root - 12 + degSemis(chord) + (s % 4 === 2 ? 12 : 0), t, sd * 1.6, 0.11);
+    } else if (s === 0 || s === 8) {
+      voice('tri', root - 12 + degSemis(chord), t, sd * 7, 0.09);
+    }
+
+    // Arpeggio on the chord tones
+    const arp = [0, 2, 4, 7];
+    if (full) {
+      const tone = degSemis(chord + arp[s % 4]);
+      voice('square', root + 12 + tone + (boost ? 12 : 0), t, sd * 0.7, boost ? 0.022 : 0.018);
+    } else if (s % 2 === 0) {
+      voice('tri', root + 12 + degSemis(chord + arp[(s / 2) % 4]), t, sd * 1.8, 0.035);
+    }
+
+    // Lead melody (only while running; the menus keep a lighter, calmer loop)
+    for (const [st, deg, len] of MELODY[bar]) {
+      if (st !== s) continue;
+      if (full) {
+        voice(MT.lead, MT.root + degSemis(deg), t, sd * len, 0.05);
+        if (boost) voice('pluck', MT.root + 12 + degSemis(deg), t, sd * len, 0.018);
+      } else if (bar % 2 === 0) {
+        voice(MT.lead === 'pulse' || MT.lead === 'square' ? 'soft' : MT.lead, MT.root + degSemis(deg), t, sd * len, 0.03);
+      }
+    }
+
+    if (!full) return;
+    // Drums
+    if (s === 0 || s === 8 || (s === 10 && bar % 2 === 1)) drum('kick', t, 0.35);
+    if (s === 4 || s === 12) drum(MT.clap ? 'clap' : 'snare', t, 0.12);
+    if (boost || s % 2 === 1) drum('hat', t, 0.05);
+    if (MT.sleigh && s % 2 === 0) drum('sleigh', t, 0.035);
+    if (MT.block && (s === 3 || s === 11 || s === 14)) drum('block', t, 0.06);
+  }
+
+  function setMusic(on) {
+    musicOn = on;
+    try { localStorage.setItem('siquane-escape-cat-music', on ? '1' : '0'); } catch (e) {}
+    if (musicBus) musicBus.gain.setTargetAtTime(on ? 0.55 * duck : 0, actx.currentTime, 0.1);
+    refreshSoundUi();
+  }
+  function setSfx(on) {
+    sfxOn = on;
+    try { localStorage.setItem('siquane-escape-cat-sfx', on ? '1' : '0'); } catch (e) {}
+    refreshSoundUi();
+  }
+  function refreshSoundUi() {
+    document.querySelectorAll('[data-toggle="music"]').forEach(b => {
+      b.setAttribute('aria-pressed', String(musicOn));
+      b.classList.toggle('off', !musicOn);
+      if (b.dataset.label) b.querySelector('.state').textContent = musicOn ? 'oui' : 'non';
+      else b.setAttribute('aria-label', musicOn ? 'Couper la musique' : 'Remettre la musique');
+    });
+    document.querySelectorAll('[data-toggle="sfx"]').forEach(b => {
+      b.setAttribute('aria-pressed', String(sfxOn));
+      b.classList.toggle('off', !sfxOn);
+      if (b.dataset.label) b.querySelector('.state').textContent = sfxOn ? 'oui' : 'non';
+      else b.setAttribute('aria-label', sfxOn ? 'Couper les bruitages' : 'Remettre les bruitages');
+    });
+  }
 
   // ---------- Game state ----------
   let state = 'start'; // start | play | pause | dying | over
@@ -2355,7 +2620,7 @@
       scoreEl.textContent = sc;
       lastScore = sc;
       track('score', sc);
-      if (!recordShown && best > 0 && sc > best) { recordShown = true; popup('Nouveau record !', '#ffcf4a', 30); sfx.record(); }
+      if (!recordShown && best > 0 && sc > best) { recordShown = true; transpose = 2; popup('Nouveau record !', '#ffcf4a', 30); sfx.record(); }
     }
     if (kibbles !== lastKib) { kibEl.textContent = kibbles; lastKib = kibbles; }
     updateHudExtras();
@@ -2369,6 +2634,7 @@
     initAudio();
     resetWorld();
     resetRunMissions();
+    transpose = 0;
     state = 'play';
     show(null);
     $('countdown').hidden = true;
@@ -2438,23 +2704,23 @@
     show('startScreen');
   }
 
-  function setMuted(m) {
-    muted = m;
-    try { localStorage.setItem('siquane-escape-cat-muted', m ? '1' : '0'); } catch (e) {}
-    $('muteIcon').setAttribute('d', m
-      ? 'M4 9h4l5-4v14l-5-4H4z M16 9l6 6 M22 9l-6 6'
-      : 'M4 9h4l5-4v14l-5-4H4z M16 8.5a5 5 0 0 1 0 7 M18.5 6a8.5 8.5 0 0 1 0 12');
-    $('muteBtn').setAttribute('aria-label', m ? 'Remettre le son' : 'Couper le son');
-  }
 
   $('playBtn').addEventListener('click', startGame);
   $('againBtn').addEventListener('click', startGame);
   $('resumeBtn').addEventListener('click', resume);
   $('quitBtn').addEventListener('click', toMenu);
   $('pauseBtn').addEventListener('click', e => { e.currentTarget.blur(); pause(); });
-  $('muteBtn').addEventListener('click', e => { e.currentTarget.blur(); initAudio(); setMuted(!muted); });
+  document.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', e => {
+    initAudio();
+    if (b.dataset.toggle === 'music') setMusic(!musicOn); else setSfx(!sfxOn);
+    if (!b.dataset.label) e.currentTarget.blur();
+  }));
+  refreshSoundUi();
+  // Start the menu music at the first touch or key press
+  const firstInput = () => { initAudio(); window.removeEventListener('pointerdown', firstInput); window.removeEventListener('keydown', firstInput); };
+  window.addEventListener('pointerdown', firstInput);
+  window.addEventListener('keydown', firstInput);
   $('bestStart').textContent = best;
-  setMuted(muted);
 
   if (THEME_ID) {
     const end = ACTIVE.end ? ` · jusqu'au ${ACTIVE.end.getDate() === 1 ? '1er' : ACTIVE.end.getDate()} ${MONTHS[ACTIVE.end.getMonth()]}` : '';
@@ -3276,7 +3542,7 @@
 
   // Test hooks, only with #debug in the address
   let debugGod = false;
-  if (location.hash === '#debug') {
+  if (/debug/.test(location.hash)) {
     window.__game = {
       get state() { return state; },
       get level() { return level; },
@@ -3284,6 +3550,16 @@
       setDist(v) { dist = v; },
       god(v) { debugGod = v; },
       bonus(t) { activateBonus(t); },
+      // Peak and average level of the music over the last frame (0 to 1)
+      musicLevel() {
+        if (!musicBus) return null;
+        if (!this.an) { this.an = actx.createAnalyser(); this.an.fftSize = 2048; musicBus.connect(this.an); }
+        const d = new Float32Array(this.an.fftSize);
+        this.an.getFloatTimeDomainData(d);
+        let peak = 0, sum = 0;
+        for (const v of d) { peak = Math.max(peak, Math.abs(v)); sum += v * v; }
+        return { peak: +peak.toFixed(3), rms: +Math.sqrt(sum / d.length).toFixed(3), ctx: actx.state, bpm: Math.round(bpm) };
+      },
     };
   }
 

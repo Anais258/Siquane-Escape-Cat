@@ -44,6 +44,16 @@ Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Plus gr
 - **« Ouf ! »** : éviter un obstacle de justesse déclenche un petit ralenti et rapporte 20 points.
 - L'écran tremble quand le chat se cogne, un message s'affiche quand on bat son record, et la fin de partie indique combien de points il manquait pour le battre.
 
+## Musique
+
+Une musique chiptune originale accompagne le jeu. Elle est générée dans le navigateur, sans fichier audio.
+
+- Dans les menus et pendant les questions, une version calme et plus lente.
+- Pendant la course, la version complète avec batterie, dont le tempo accélère avec le chat (environ 130 → 160 BPM).
+- Pendant un bonus, des arpèges plus aigus et un rythme plus serré. Après un nouveau record, la musique monte d'un ton jusqu'à la fin de la partie.
+- Chaque fête a sa variante : clochettes à Noël, orgue en mineur à Halloween, gamme pentatonique et wood-block au Nouvel An chinois, steel drum en été, etc.
+- La musique et les bruitages se coupent séparément, avec les boutons en haut à droite pendant la course, ou sur l'écran d'accueil et l'écran de pause. Ces réglages sont enregistrés.
+
 ## Les chats à débloquer
 
 Les croquettes ramassées pendant les parties vont dans une tirelire. Dans la **Boutique**, tu peux les dépenser pour débloquer de nouveaux chats, puis choisir celui avec lequel tu cours. La tirelire et les chats débloqués sont enregistrés dans le navigateur.
