@@ -66,4 +66,23 @@ Dans l'onglet **Chapeaux** de la boutique, les croquettes servent aussi à achet
 | Corne de licorne | 750 |
 | Auréole | 900 |
 
+## Les thèmes de fête
+
+Le jeu change tout seul de décor pendant les fêtes, selon la date de l'appareil. Pendant un thème, le ciel, les toits, les obstacles et les objets à ramasser changent d'apparence (les règles restent les mêmes), et un chapeau en **édition limitée** est en vente dans la boutique à 150 croquettes. Une fois acheté, il reste à toi toute l'année.
+
+| Thème | Dates | Objets à ramasser | Les flaques deviennent | Chapeau limité |
+| --- | --- | --- | --- | --- |
+| Nouvel An | 29 décembre → 3 janvier | étoiles dorées | champagne renversé | Chapeau de fête |
+| Saint-Valentin | 10 → 15 février | chocolats en cœur | sirop de fraise | Serre-tête à cœurs |
+| Nouvel An chinois | la veille → 7 jours après (date qui change chaque année) | enveloppes rouges | eau | Coiffe de dragon |
+| Poisson d'avril | 31 mars → 2 avril | poissons en papier | eau | Poisson d'avril |
+| Pâques | 6 jours avant → lundi de Pâques | œufs en chocolat | chocolat fondu | Oreilles de lapin |
+| Fête de la musique | 19 → 22 juin | notes de musique | eau | Casque audio |
+| Été et 14 Juillet | 1er juillet → 31 août | glaces | eau de piscine | Chapeau de paille |
+| Journée internationale du chat | 7 → 9 août | pelotes de laine | lait renversé | Oreilles de souris |
+| Halloween | 20 octobre → 2 novembre | bonbons | potion | Citrouille |
+| Noël | 1er → 28 décembre | cadeaux | neige fondue | Bonnet de Père Noël |
+
+Pour voir un thème en dehors de ses dates (par exemple pour tester), ajoute `#theme-noel` à la fin de l'adresse du jeu (ou `#theme-halloween`, `#theme-paques`, etc., et `#theme-aucun` pour le décor normal).
+
 Tout le jeu tient dans un seul fichier, `index.html` (HTML, CSS et JavaScript, dessin sur `<canvas>`, sons générés avec la Web Audio API).
