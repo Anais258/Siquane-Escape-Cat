@@ -119,6 +119,8 @@
   .btn.big { font-size: var(--fs-xl); padding: var(--s3) var(--s4); }
   a.btn { text-decoration: none; text-align: center; display: grid; place-items: center; }
   .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
+  .btn-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 380px) { .btn-row.three { grid-template-columns: 1fr 1fr; } .btn-row.three > :last-child { grid-column: span 2; } }
   .icon-btn {
     width: var(--tap); height: var(--tap);
     border-radius: var(--r-pill);
@@ -221,7 +223,9 @@
   .gift svg { width: 40px; height: 40px; }
   .gift-text { display: grid; gap: 2px; min-width: 0; }
   .gift-text span { color: var(--muted); font-size: var(--fs-sm); }
-  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s2); }
+  .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--s2); }
+  .tiles .tile { grid-column: span 2; }
+  .tiles .tile:nth-child(n+4) { grid-column: span 3; }
   .tile { position: relative; min-height: 72px; display: grid; justify-items: center; align-content: center; gap: var(--s1); padding: var(--s2) var(--s1); border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; font-weight: 800; font-size: var(--fs-xs); line-height: 1.2; }
   .tile svg { width: 28px; height: 28px; color: var(--accent); }
   .tile small { color: var(--muted); font-size: var(--fs-xs); font-weight: 700; }
@@ -334,7 +338,18 @@
 
   @media (pointer: coarse) { .kbd-only { display: none !important; } }
   @media (pointer: fine) { .touch-only { display: none !important; } }
-  @media (max-width: 360px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+  .tabs.four { grid-template-columns: repeat(4, 1fr); }
+  .tabs.four .tab { font-size: var(--fs-xs); padding: var(--s1); }
+  .board { display: grid; gap: 2px; text-align: left; }
+  .board-row { display: grid; grid-template-columns: 2.2em 1fr auto; gap: var(--s2); align-items: center; min-height: 40px; padding: 0 var(--s3); border-radius: var(--r-sm); background: var(--surface); }
+  .board-row b { font-family: var(--font-display); font-weight: 400; color: var(--muted); }
+  .board-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+  .board-row strong { font-variant-numeric: tabular-nums; }
+  .board-row.top b { color: var(--gold); }
+  .board-row.me { background: var(--accent); color: var(--accent-ink); }
+  .board-row.me b { color: var(--accent-ink); }
+  .board-gap { text-align: center; color: var(--muted); line-height: 1; }
+  .board-me { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); }
   @media (prefers-reduced-motion: reduce) { .toast.show, .countdown.pop { animation: none; } .bar i { transition: none; } }
 </style>
 </head>
@@ -420,6 +435,10 @@
           Histoire
           <span class="tile-badge" id="storyBadge" hidden>nouveau</span>
         </button>
+        <button class="tile" id="boardBtn">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 27V17h7v10M12.5 27V9h7v18M21 27V13h7v14M3 27h26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M16 3l1.3 2.6 2.7.4-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.4z" fill="currentColor"/></svg>
+          Classement
+        </button>
         <button class="tile" id="gradeBtn">
           <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 12l13-6 13 6-13 6z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M9 15v6c4 3 10 3 14 0v-6M27 13v7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
           Classe
@@ -503,9 +522,10 @@
         <div class="stat"><span>Record</span><strong id="finalBest">0</strong></div>
       </div>
       <button class="btn big" id="againBtn">Rejouer</button>
-      <div class="btn-row">
+      <div class="btn-row three">
         <button class="btn ghost" id="shopBtnOver">Boutique</button>
         <button class="btn ghost" id="shareBtnOver">Partager</button>
+        <button class="btn ghost" id="boardBtnOver">Classement</button>
       </div>
       <p class="hint kbd-only">ou appuie sur Espace</p>
       <div class="box">
@@ -578,6 +598,27 @@
     </div>
   </div>
 
+  <div class="overlay" id="boardScreen" hidden>
+    <div class="card">
+      <h2>Classement</h2>
+      <form class="rename" id="joinForm" hidden>
+        <p>Choisis un pseudo pour apparaître dans le classement avec tes amis. Pas ton vrai nom : tout le monde pourra le voir.</p>
+        <label class="label" for="joinInput">Ton pseudo (3 à 16 caractères)</label>
+        <div class="rename-row"><input class="name-input" id="joinInput" maxlength="16" autocomplete="off" spellcheck="false"><button class="btn small" type="submit" id="joinGo">M'inscrire</button></div>
+      </form>
+      <div class="board-me" id="boardMe" hidden><span>Tu joues en tant que <b class="good" id="boardPseudo"></b></span><button class="btn ghost small" id="boardRename">Changer</button></div>
+      <div class="tabs four" role="tablist" id="boardTabs">
+        <button class="tab active" role="tab" aria-selected="true" data-board="best">Score</button>
+        <button class="tab" role="tab" aria-selected="false" data-board="far">Plus loin</button>
+        <button class="tab" role="tab" aria-selected="false" data-board="level">Niveau</button>
+        <button class="tab" role="tab" aria-selected="false" data-board="collection">Collection</button>
+      </div>
+      <p class="small-text" id="boardStatus" role="status"></p>
+      <div class="board" id="boardList"></div>
+      <button class="btn" id="boardBack">Retour</button>
+    </div>
+  </div>
+
   <div class="overlay" id="choiceScreen" hidden>
     <div class="card">
       <h2>D'où repars-tu ?</h2>
@@ -645,6 +686,8 @@
 'use strict';
 (() => {
   const $ = id => document.getElementById(id);
+  // Online leaderboard: fill in with the Firebase web app settings (see FIREBASE.md).
+  const FIREBASE = { apiKey: '', projectId: '' };
   const canvas = $('c');
   const ctx = canvas.getContext('2d');
   const TAU = Math.PI * 2;
@@ -2951,7 +2994,7 @@
   }
 
   function show(id) {
-    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen', 'reviveScreen', 'choiceScreen']) $(s).hidden = s !== id;
+    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen', 'reviveScreen', 'choiceScreen', 'boardScreen']) $(s).hidden = s !== id;
   }
 
   // Highest quarter ever reached: runs can restart from there.
@@ -4176,6 +4219,176 @@
     $('albumBack').focus({ preventScroll: true });
   }
 
+  // ---------- Online leaderboard (Firebase, signed in anonymously) ----------
+  const ONLINE_KEY = 'siquane-escape-cat-online';
+  let online = load(ONLINE_KEY, null);
+  let idToken = null, idTokenExp = 0, boardKind = 'best', boardReturn = 'startScreen';
+  const BOARD_UNITS = { best: v => `${v} pts`, far: v => `${v} m`, level: v => `niv. ${v}`, collection: v => `${v} objet${v > 1 ? 's' : ''}` };
+  const boardReady = () => !!(FIREBASE.apiKey && FIREBASE.projectId);
+  const DOCS = () => `https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents`;
+  const pseudoKey = n => n.trim().replace(/\s+/g, ' ').toLowerCase();
+  const validPseudo = n => /^[\p{L}0-9 _-]{3,16}$/u.test(n.trim().replace(/\s+/g, ' '));
+
+  async function api(url, opts = {}) {
+    const res = await fetch(url, opts);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { const e = new Error((data.error && data.error.message) || res.status); e.status = res.status; throw e; }
+    return data;
+  }
+  async function token() {
+    if (idToken && Date.now() < idTokenExp) return idToken;
+    const key = encodeURIComponent(FIREBASE.apiKey);
+    if (online && online.refresh) {
+      const d = await api(`https://securetoken.googleapis.com/v1/token?key=${key}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(online.refresh),
+      });
+      online.uid = d.user_id; online.refresh = d.refresh_token;
+      idToken = d.id_token; idTokenExp = Date.now() + (d.expires_in - 60) * 1000;
+    } else {
+      const d = await api(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${key}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ returnSecureToken: true }),
+      });
+      online = Object.assign(online || {}, { uid: d.localId, refresh: d.refreshToken });
+      idToken = d.idToken; idTokenExp = Date.now() + (d.expiresIn - 60) * 1000;
+    }
+    store(ONLINE_KEY, online);
+    return idToken;
+  }
+  const authed = async () => ({ 'Content-Type': 'application/json', Authorization: 'Bearer ' + await token() });
+
+  function myStats() {
+    return {
+      best,
+      far: profile.farM || 0,
+      level: profile.level,
+      collection: owned.length + ALBUM_HATS().filter(h => ownedHats.includes(h.id)).length + gold.costumes.length,
+    };
+  }
+  async function pushStats() {
+    if (!boardReady() || !online || !online.pseudo) return;
+    const fields = { pseudo: { stringValue: online.pseudo } };
+    for (const [k, v] of Object.entries(myStats())) fields[k] = { integerValue: String(v) };
+    await api(`${DOCS()}/players/${online.uid}`, { method: 'PATCH', headers: await authed(), body: JSON.stringify({ fields }) });
+  }
+  function syncBoard() { pushStats().catch(() => {}); }
+
+  async function join(name) {
+    name = name.trim().replace(/\s+/g, ' ');
+    const headers = await authed();
+    const old = online.pseudo;
+    if (old && pseudoKey(old) === pseudoKey(name)) return;
+    // Reserve the pseudo: fails if somebody already has it.
+    await api(`${DOCS()}/pseudos?documentId=${encodeURIComponent(pseudoKey(name))}`, {
+      method: 'POST', headers, body: JSON.stringify({ fields: { uid: { stringValue: online.uid } } }),
+    });
+    online.pseudo = name;
+    store(ONLINE_KEY, online);
+    await pushStats();
+    if (old) api(`${DOCS()}/pseudos/${encodeURIComponent(pseudoKey(old))}`, { method: 'DELETE', headers }).catch(() => {});
+  }
+
+  async function fetchBoard(kind) {
+    const rows = await api(`${DOCS()}:runQuery`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ structuredQuery: { from: [{ collectionId: 'players' }], orderBy: [{ field: { fieldPath: kind }, direction: 'DESCENDING' }], limit: 30 } }),
+    });
+    return rows.filter(r => r.document).map(r => {
+      const f = r.document.fields || {};
+      return { uid: r.document.name.split('/').pop(), pseudo: (f.pseudo && f.pseudo.stringValue) || '?', value: +((f[kind] && f[kind].integerValue) || 0) };
+    });
+  }
+  async function myRank(kind, value) {
+    const res = await api(`${DOCS()}:runAggregationQuery`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ structuredAggregationQuery: {
+        structuredQuery: { from: [{ collectionId: 'players' }], where: { fieldFilter: { field: { fieldPath: kind }, op: 'GREATER_THAN', value: { integerValue: String(value) } } } },
+        aggregations: [{ alias: 'n', count: {} }],
+      } }),
+    });
+    const r = res.find(x => x.result);
+    return 1 + +((r && r.result.aggregateFields.n.integerValue) || 0);
+  }
+
+  function boardRow(rank, pseudo, value, kind, me) {
+    const row = document.createElement('div');
+    row.className = 'board-row' + (rank <= 3 ? ' top' : '') + (me ? ' me' : '');
+    const b = document.createElement('b'); b.textContent = rank;
+    const name = document.createElement('span'); name.textContent = pseudo;
+    const val = document.createElement('strong'); val.textContent = BOARD_UNITS[kind](value);
+    row.append(b, name, val);
+    return row;
+  }
+  let boardSeq = 0;
+  async function renderBoard() {
+    const seq = ++boardSeq;
+    const list = $('boardList'), status = $('boardStatus');
+    const joined = !!(online && online.pseudo);
+    $('joinForm').hidden = joined || !boardReady();
+    $('boardMe').hidden = !joined;
+    if (joined) $('boardPseudo').textContent = online.pseudo;
+    document.querySelectorAll('#boardTabs .tab').forEach(t => {
+      const on = t.dataset.board === boardKind;
+      t.classList.toggle('active', on); t.setAttribute('aria-selected', on);
+    });
+    list.textContent = '';
+    if (!boardReady()) { status.textContent = "Le classement en ligne n'est pas encore activé. Il marche sur la version du jeu publiée sur GitHub Pages."; return; }
+    status.textContent = 'Chargement…';
+    try {
+      if (joined) await pushStats();
+      const rows = await fetchBoard(boardKind);
+      if (seq !== boardSeq) return;
+      const me = joined ? online.uid : null;
+      rows.forEach((r, i) => list.append(boardRow(i + 1, r.pseudo, r.value, boardKind, r.uid === me)));
+      if (joined && !rows.some(r => r.uid === me)) {
+        const v = myStats()[boardKind];
+        const rank = await myRank(boardKind, v);
+        if (seq !== boardSeq) return;
+        const gap = document.createElement('div'); gap.className = 'board-gap'; gap.textContent = '⋯';
+        list.append(gap, boardRow(rank, online.pseudo, v, boardKind, true));
+      }
+      status.textContent = rows.length ? '' : 'Personne encore. Sois le premier ou la première !';
+    } catch (e) {
+      if (seq !== boardSeq) return;
+      status.textContent = 'Impossible de joindre le classement. Vérifie ta connexion. (Il ne marche pas dans la version Claude du jeu.)';
+    }
+  }
+  function openBoard(ret) {
+    boardReturn = ret || 'startScreen';
+    show('boardScreen');
+    renderBoard();
+    $('boardBack').focus({ preventScroll: true });
+  }
+  $('boardTabs').addEventListener('click', e => {
+    const t = e.target.closest('[data-board]');
+    if (t && t.dataset.board !== boardKind) { boardKind = t.dataset.board; renderBoard(); }
+  });
+  $('joinForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = $('joinInput').value;
+    if (!validPseudo(name)) { $('boardStatus').textContent = 'Le pseudo doit faire 3 à 16 caractères : lettres, chiffres, espaces, - ou _.'; return; }
+    $('joinGo').disabled = true;
+    $('boardStatus').textContent = 'Inscription…';
+    try {
+      online = online || {};
+      await join(name);
+      toast(`Bienvenue dans le classement, ${online.pseudo} !`);
+      renderBoard();
+    } catch (err) {
+      $('boardStatus').textContent = err.status === 409 ? 'Ce pseudo est déjà pris. Essaie un autre !' : "L'inscription n'a pas marché. Vérifie ta connexion et réessaie.";
+    }
+    $('joinGo').disabled = false;
+  });
+  $('boardRename').addEventListener('click', () => {
+    $('joinForm').hidden = false;
+    $('joinInput').value = online.pseudo;
+    $('joinInput').focus();
+    $('joinInput').select();
+  });
+  $('boardBtn').addEventListener('click', () => openBoard('startScreen'));
+  $('boardBtnOver').addEventListener('click', () => openBoard('overScreen'));
+  $('boardBack').addEventListener('click', () => show(boardReturn));
+
   // ---------- End of run: XP, next unlock, record per cat ----------
   function nextUnlock() {
     const cat = catLimitReached() ? null : SKINS.filter(s => !s.special && !owned.includes(s.id)).sort((a, b) => a.price - b.price)[0];
@@ -4187,6 +4400,7 @@
     // Record with this cat
     const prev = profile.bestByCat[skinId] || 0;
     if (sc > prev) profile.bestByCat[skinId] = sc;
+    profile.farM = Math.max(profile.farM || 0, Math.floor(dist / 10));
     const sk = currentSkin();
     $('catBest').textContent = sc > prev && prev > 0
       ? `Nouveau record pour le chat ${sk.name} : ${sc} !`
@@ -4207,6 +4421,7 @@
     if (unlockedChapters() > before) newChapter = unlockedChapters();
     if (reward) { bank += reward; saveProgress(); updateBank(); }
     saveProfile();
+    syncBoard();
     $('xpGain').textContent = `+${gain} XP`;
     $('xpLevel').textContent = `${catName()} · niveau ${profile.level}`;
     $('xpBarOver').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
@@ -4979,7 +5194,7 @@
     if (e.target && e.target.tagName === 'INPUT') return;
     const k = e.key.toLowerCase();
     const code = e.code;
-    for (const [scr, back] of [['storyScreen', () => show(storyReturn)], ['albumScreen', () => show(albumReturn)], ['shareScreen', () => show('overScreen')], ['introScreen', null]]) {
+    for (const [scr, back] of [['storyScreen', () => show(storyReturn)], ['albumScreen', () => show(albumReturn)], ['shareScreen', () => show('overScreen')], ['boardScreen', () => show(boardReturn)], ['introScreen', null]]) {
       if (!$(scr).hidden) { if (code === 'Escape' && back) back(); return; }
     }
     const isJump = code === 'ArrowUp' || code === 'Space' || k === 'z' || k === 'w';

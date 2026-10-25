@@ -94,6 +94,12 @@ Tous les kilomètres, le chat entre dans un nouveau quartier : la course fait un
 
 **Reprendre au quartier atteint** : le jeu retient le quartier le plus loin que tu as atteint. Dès que tu as atteint le quartier 2, « Jouer » et « Rejouer » te proposent de « Reprendre au quartier N » ou de « Repartir du quartier 1 ». Quand tu reprends plus loin, tu as 3 secondes de bouclier, et les points ne comptent que pour la distance que tu cours vraiment. Le record reste donc juste.
 
+## Classement entre amis
+
+Le bouton **Classement** (sur l'accueil et l'écran de fin) ouvre un classement en ligne. Chaque joueur s'inscrit avec un pseudo, sans compte ni mot de passe. Quatre onglets : **Score** (meilleur score), **Plus loin** (distance la plus longue atteinte), **Niveau** (niveau du joueur) et **Collection** (chats, chapeaux et déguisements obtenus). Le jeu envoie les résultats à la fin de chaque partie. Si tu n'es pas dans les 30 premiers, ta place s'affiche en bas de la liste.
+
+Le classement utilise Firebase et marche sur la version publiée sur GitHub Pages. Pour l'activer, suis le guide [FIREBASE.md](FIREBASE.md).
+
 Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Lycée et + »). Elle se change avec la tuile **Classe** de l'écran d'accueil. Le jeu ajuste ensuite un peu la difficulté : après 3 bonnes réponses d'affilée, les questions deviennent plus difficiles, et après 2 erreurs d'affilée, plus faciles. Les calculs sont générés automatiquement et changent à chaque fois.
 
 ## Missions, défi du jour et cadeau du jour
