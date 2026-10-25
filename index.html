@@ -2732,16 +2732,7 @@
     shadeShape(c, sk, body, by, 20);
     if (cos) drawCostume(c, cos, 'body', { by, hy: -50 - bob, bob, t: o.t, air, tipX, tipY });
 
-    // Fluffy cheeks behind the head
     const hy = -50 - bob;
-    for (const sd of [-1, 1]) {
-      c.beginPath();
-      c.moveTo(sd * 13, hy - 4); c.quadraticCurveTo(sd * 22, hy - 1, sd * 20, hy + 3);
-      c.quadraticCurveTo(sd * 23, hy + 7, sd * 18, hy + 10);
-      c.quadraticCurveTo(sd * 18, hy + 14, sd * 9, hy + 12);
-      c.closePath();
-      strokeFill(c, sk, sk.head || sk.fur);
-    }
 
     // Head
     const head = () => { c.beginPath(); c.arc(0, hy, 18, 0, TAU); };
