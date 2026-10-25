@@ -1,0 +1,32 @@
+rules_version = '2';
+// Rules for the Neko Odyssey leaderboard (see FIREBASE.md).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // One document per pseudo, so two players cannot share the same one.
+    match /pseudos/{key} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && key == key.lower()
+        && key.matches('^[\\p{L}0-9 _-]{3,16}$')
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+
+    // One document per player: only its owner can write it.
+    match /players/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['pseudo', 'best', 'far', 'level', 'collection'])
+        && request.resource.data.pseudo is string
+        && get(/databases/$(database)/documents/pseudos/$(request.resource.data.pseudo.lower())).data.uid == uid
+        && request.resource.data.best is int && request.resource.data.best >= 0 && request.resource.data.best <= 10000000
+        && request.resource.data.far is int && request.resource.data.far >= 0 && request.resource.data.far <= 10000000
+        && request.resource.data.level is int && request.resource.data.level >= 1 && request.resource.data.level <= 100
+        && request.resource.data.collection is int && request.resource.data.collection >= 0 && request.resource.data.collection <= 500;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
