@@ -9,19 +9,52 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@500;700;800&display=swap">
 <style>
-  /* Layout: full-screen canvas scene, HUD pinned to the corners, overlay cards centered over the rooftops. */
+  /* Layout: full-screen canvas scene, HUD pinned to the corners, overlay cards centered over the rooftops.
+     Design system: every color, size, radius and spacing below comes from these tokens. */
   :root {
+    /* Colors */
     --night: #0b1030;
-    --panel: rgba(13, 17, 46, 0.88);
+    --panel: rgba(13, 17, 46, 0.9);
+    --surface: rgba(255, 255, 255, 0.05);
+    --surface-strong: rgba(255, 255, 255, 0.1);
     --line: rgba(169, 172, 214, 0.22);
     --ink: #f4f1ff;
     --muted: #a9acd6;
-    --cat: #ffa24c;
-    --kibble: #e0a458;
-    --water: #5bb8ff;
+    --accent: #ffa24c;
+    --accent-ink: #3a1a04;
+    --accent-edge: #a85a17;
+    --accent-deep: #7a3b0c;
+    --gold: #e0a458;
+    --gold-ink: #2b1600;
+    --success: #7affc4;
+    --success-soft: rgba(122, 255, 196, 0.14);
     --danger: #ff6b6b;
+    --danger-soft: rgba(255, 107, 107, 0.14);
+    --water: #5bb8ff;
+    --shade: rgba(5, 6, 20, 0.6);
+    --scrim: rgba(11, 16, 48, 0.75);
+    /* Type: two families, seven sizes (+ one for the countdown) */
     --font-display: "Lilita One", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
     --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --fs-xs: 0.8125rem;
+    --fs-sm: 0.9375rem;
+    --fs-md: 1.0625rem;
+    --fs-lg: 1.3rem;
+    --fs-xl: 1.7rem;
+    --fs-2xl: 2.4rem;
+    --fs-hero: clamp(2.2rem, 10vw, 3.2rem);
+    --fs-giant: clamp(5rem, 22vw, 9rem);
+    /* Shape and space */
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 22px;
+    --r-pill: 999px;
+    --s1: 4px;
+    --s2: 8px;
+    --s3: 12px;
+    --s4: 16px;
+    --s5: 22px;
+    --tap: 44px;
     color-scheme: dark;
   }
   html, body {
@@ -31,6 +64,7 @@
     background: var(--night);
     color: var(--ink);
     font-family: var(--font-body);
+    font-size: var(--fs-md);
     -webkit-user-select: none;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -39,42 +73,80 @@
   [hidden] { display: none !important; }
   #game { position: fixed; inset: 0; }
   canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  button, summary, input, a { font: inherit; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
+  /* ---------- HUD ---------- */
   #hud {
     position: absolute;
-    top: calc(env(safe-area-inset-top, 0px) + 12px);
-    left: calc(env(safe-area-inset-left, 0px) + 16px);
-    right: calc(env(safe-area-inset-right, 0px) + 16px);
+    top: calc(env(safe-area-inset-top, 0px) + var(--s3));
+    left: calc(env(safe-area-inset-left, 0px) + var(--s4));
+    right: calc(env(safe-area-inset-right, 0px) + var(--s4));
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     pointer-events: none;
   }
-  .stats { display: grid; gap: 2px; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); }
-  .score { font-family: var(--font-display); font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
-  .kib { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.05rem; color: var(--kibble); font-variant-numeric: tabular-nums; }
+  .stats { display: grid; gap: 2px; text-shadow: 0 2px 6px var(--shade); }
+  .score { font-family: var(--font-display); font-size: var(--fs-xl); line-height: 1; font-variant-numeric: tabular-nums; }
+  .kib { display: flex; align-items: center; gap: 6px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
   .kib svg { width: 22px; height: 14px; }
-  .buttons { display: flex; gap: 8px; pointer-events: auto; }
+  .lvl { display: grid; gap: 3px; margin-top: 2px; font-weight: 800; font-size: var(--fs-xs); color: var(--muted); }
+  .lvl-bar { width: 96px; height: 5px; border-radius: var(--r-pill); background: var(--surface-strong); overflow: hidden; }
+  .lvl-bar i { display: block; height: 100%; width: 0; background: var(--accent); }
+  .bonus-bar { display: grid; gap: var(--s1); margin-top: var(--s1); }
+  .chip { position: relative; width: 124px; padding: 3px var(--s2) 6px; border-radius: var(--r-sm); background: var(--panel); border: 1px solid var(--c); font-size: var(--fs-xs); font-weight: 800; color: var(--c); overflow: hidden; }
+  .chip i { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--c); }
+  .buttons { display: flex; gap: var(--s2); pointer-events: auto; }
+
+  /* ---------- Buttons: one style per role ---------- */
+  .btn {
+    min-height: var(--tap);
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    letter-spacing: 0.02em;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: 0;
+    border-radius: var(--r-md);
+    padding: var(--s3) var(--s4);
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--accent-edge);
+  }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--accent-edge); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; font-size: var(--fs-md); }
+  .btn.small { font-size: var(--fs-md); padding: var(--s2) var(--s4); }
+  .btn.big { font-size: var(--fs-xl); padding: var(--s3) var(--s4); }
+  a.btn { text-decoration: none; text-align: center; display: grid; place-items: center; }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
   .icon-btn {
-    width: 42px; height: 42px;
-    border-radius: 50%;
+    width: var(--tap); height: var(--tap);
+    border-radius: var(--r-pill);
     border: 1px solid var(--line);
     background: var(--panel);
     color: var(--ink);
     display: grid; place-items: center;
     cursor: pointer;
     padding: 0;
+    flex: none;
   }
   .icon-btn svg { width: 20px; height: 20px; }
-  .icon-btn:focus-visible, .btn:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
+  .icon-btn .slash { display: none; }
+  .icon-btn.off { color: var(--muted); }
+  .icon-btn.off .slash { display: inline; }
+  .icon-btn.off .waves { display: none; }
+  .toggle { min-height: var(--tap); font-family: var(--font-body); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .toggle .state { color: var(--accent); }
+  .toggle.off .state { color: var(--muted); }
 
+  /* ---------- Overlays and cards ---------- */
   .overlay {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    padding-block: calc(env(safe-area-inset-top, 0px) + 16px) calc(env(safe-area-inset-bottom, 0px) + 16px);
-    padding-left: max(16px, env(safe-area-inset-left, 0px));
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
-    background: radial-gradient(ellipse at center, rgba(11, 16, 48, 0.35), rgba(11, 16, 48, 0.75));
+    padding-block: calc(env(safe-area-inset-top, 0px) + var(--s4)) calc(env(safe-area-inset-bottom, 0px) + var(--s4));
+    padding-left: max(var(--s4), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--s4), env(safe-area-inset-right, 0px));
+    background: radial-gradient(ellipse at center, rgba(11, 16, 48, 0.35), var(--scrim));
     overflow-y: auto;
   }
   .card {
@@ -82,225 +154,177 @@
     max-width: 440px;
     background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 22px;
-    padding: 22px 22px 20px;
+    border-radius: var(--r-lg);
+    padding: var(--s5) var(--s5) var(--s4);
     display: grid;
-    gap: 14px;
+    gap: var(--s3);
     text-align: center;
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
     margin: auto;
   }
-  h1, h2 { font-family: var(--font-display); font-weight: 400; margin: 0; letter-spacing: 0.01em; text-wrap: balance; }
-  h1 { font-size: clamp(2rem, 9vw, 2.8rem); line-height: 1; color: var(--cat); text-shadow: 0 3px 0 #7a3b0c; }
-  h1 small { display: block; font-size: 0.5em; color: var(--ink); text-shadow: none; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
-  h2 { font-size: 2.4rem; line-height: 1; }
+  .card.wide { max-width: 560px; }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; letter-spacing: 0.01em; text-wrap: balance; }
+  h1 { font-size: var(--fs-hero); line-height: 1; color: var(--accent); text-shadow: 0 3px 0 var(--accent-deep); }
+  h1 small { display: block; font-size: var(--fs-sm); color: var(--ink); text-shadow: none; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: var(--s1); }
+  h2 { font-size: var(--fs-2xl); line-height: 1; }
   p { margin: 0; color: var(--muted); line-height: 1.45; }
+  .label { font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 800; text-align: left; }
+  .small-text { font-size: var(--fs-sm); text-align: left; }
+  .center { text-align: center; }
+  .box { display: grid; gap: var(--s2); padding: var(--s3); border-radius: var(--r-md); background: var(--surface); text-align: left; }
+  .box.accent { border: 1px solid var(--accent); }
+  .box-head { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); font-size: var(--fs-sm); }
+  .box-head span { color: var(--success); font-weight: 800; white-space: nowrap; }
+  .bar { height: 6px; border-radius: var(--r-pill); background: var(--surface-strong); overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--success); border-radius: var(--r-pill); transition: width 0.6s ease-out; }
+  .bar.gold i { background: var(--gold); }
+  .good { color: var(--gold); font-weight: 800; }
+
+  /* Collapsible panels (details/summary) */
+  .fold { display: grid; gap: var(--s2); text-align: left; border-radius: var(--r-md); background: var(--surface); padding: 0 var(--s3); }
+  .fold > summary { min-height: var(--tap); display: flex; align-items: center; justify-content: space-between; gap: var(--s2); cursor: pointer; font-weight: 800; list-style: none; }
+  .fold > summary::-webkit-details-marker { display: none; }
+  .fold > summary::after { content: ""; width: 9px; height: 9px; border-right: 2.5px solid var(--muted); border-bottom: 2.5px solid var(--muted); transform: rotate(45deg); margin: 0 var(--s1) var(--s1); flex: none; }
+  .fold[open] > summary::after { transform: rotate(-135deg); margin-bottom: 0; }
+  .fold[open] { padding-bottom: var(--s3); }
+  .fold .sum-extra { margin-left: auto; color: var(--gold); font-size: var(--fs-sm); display: flex; align-items: center; gap: var(--s1); }
+  .fold .sum-extra svg { width: 16px; height: 10px; }
+  .fold > *:not(summary) + * { margin-top: var(--s2); }
+
+  /* ---------- Home ---------- */
+  .home-head { display: grid; grid-template-columns: var(--tap) 1fr var(--tap); align-items: start; gap: var(--s2); }
+  .home-head .sounds { display: grid; gap: var(--s2); }
+  .player { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: baseline; gap: 2px var(--s2); }
+  .player b { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-lg); }
+  .player span:not(.bar) { color: var(--muted); font-weight: 800; font-size: var(--fs-sm); }
+  .player .bar { grid-column: 1 / -1; width: 180px; justify-self: center; }
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
+  .stat { display: grid; gap: 2px; padding: var(--s2); border-radius: var(--r-md); background: var(--surface); }
+  .stat span { font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .stat strong { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-xl); font-variant-numeric: tabular-nums; }
+  .stat.hero strong { font-size: var(--fs-2xl); color: var(--ink); }
+  .event { border: 1px solid var(--event, var(--accent)); }
+  .event > summary { color: var(--event, var(--accent)); font-family: var(--font-display); font-weight: 400; font-size: var(--fs-md); }
+  .event p { color: var(--ink); font-size: var(--fs-sm); }
+  .gift { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: var(--s3); padding: var(--s3); border-radius: var(--r-md); background: var(--surface-strong); text-align: left; }
+  .gift svg { width: 40px; height: 40px; }
+  .gift-text { display: grid; gap: 2px; min-width: 0; }
+  .gift-text span { color: var(--muted); font-size: var(--fs-sm); }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s2); }
+  .tile { position: relative; min-height: 72px; display: grid; justify-items: center; align-content: center; gap: var(--s1); padding: var(--s2) var(--s1); border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; font-weight: 800; font-size: var(--fs-xs); line-height: 1.2; }
+  .tile svg { width: 28px; height: 28px; color: var(--accent); }
+  .tile small { color: var(--muted); font-size: var(--fs-xs); font-weight: 700; }
+  .tile-badge { position: absolute; top: -6px; right: -4px; padding: 1px 6px; border-radius: var(--r-pill); background: var(--danger); color: #fff; font-size: var(--fs-xs); font-weight: 800; }
+  .play-bar { position: sticky; bottom: calc(-1 * var(--s4)); margin: 0 calc(-1 * var(--s5)) calc(-1 * var(--s4)); padding: var(--s3) var(--s5) var(--s4); background: linear-gradient(to bottom, rgba(13, 17, 46, 0), rgba(13, 17, 46, 0.97) 30%); border-radius: 0 0 var(--r-lg) var(--r-lg); z-index: 2; display: grid; }
   .controls, .legend { display: grid; gap: 6px; text-align: left; }
-  .row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 10px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
-    font-size: 0.92rem;
-  }
+  .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--s3); padding: var(--s2) var(--s3); border-radius: var(--r-sm); background: var(--surface); font-size: var(--fs-sm); }
   .row b { font-weight: 800; }
-  .keys { display: flex; gap: 4px; align-items: center; color: var(--muted); font-size: 0.8rem; white-space: nowrap; }
-  kbd {
-    font-family: var(--font-body);
-    font-weight: 800;
-    font-size: 0.78rem;
-    min-width: 24px;
-    padding: 2px 6px;
-    border-radius: 6px;
-    border: 1px solid var(--line);
-    border-bottom-width: 3px;
-    color: var(--ink);
-    text-align: center;
-  }
   .legend .row { grid-template-columns: 34px 1fr; }
   .legend svg { width: 34px; height: 24px; }
-  .label { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 800; text-align: left; }
-  .btn {
-    font-family: var(--font-display);
-    font-size: 1.4rem;
-    letter-spacing: 0.03em;
-    color: #3a1a04;
-    background: var(--cat);
-    border: 0;
-    border-radius: 14px;
-    padding: 12px 18px;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #a85a17;
-  }
-  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #a85a17; }
-  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; font-size: 1.1rem; }
-  .best { font-weight: 800; color: var(--ink); }
-  .results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .result { padding: 10px 6px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); display: grid; gap: 2px; }
-  .result span { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
-  .result strong { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
-  .badge { justify-self: center; background: var(--kibble); color: #2b1600; font-weight: 800; border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; }
-  .hint { font-size: 0.82rem; }
-  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(255, 255, 255, 0.06); }
-  .tab { font-family: var(--font-body); font-weight: 800; font-size: 0.95rem; padding: 8px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); cursor: pointer; }
-  .tab.active { background: var(--cat); color: #3a1a04; }
-  .tab:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
-  .event { display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--event, var(--cat)); background: rgba(255, 255, 255, 0.05); text-align: left; }
-  .event-title { font-family: var(--font-display); font-size: 1.15rem; color: var(--event, var(--cat)); }
-  .event p { font-size: 0.88rem; color: var(--ink); }
-  .limited { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #2b1600; background: var(--event, var(--kibble)); border-radius: 999px; padding: 2px 7px; }
-  .lvl { display: grid; gap: 3px; margin-top: 2px; font-weight: 800; font-size: 0.8rem; color: var(--muted); }
-  .lvl-bar { width: 96px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.15); overflow: hidden; }
-  .lvl-bar i { display: block; height: 100%; width: 0; background: var(--cat); border-radius: 3px; }
-  .bonus-bar { display: grid; gap: 4px; margin-top: 4px; }
-  .chip { position: relative; width: 120px; padding: 3px 8px 6px; border-radius: 8px; background: var(--panel); border: 1px solid var(--c); font-size: 0.75rem; font-weight: 800; color: var(--c); overflow: hidden; }
-  .chip i { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--c); }
+  .keys { display: flex; gap: var(--s1); align-items: center; color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; }
+  kbd { font-family: var(--font-body); font-weight: 800; font-size: var(--fs-xs); min-width: 24px; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--line); border-bottom-width: 3px; color: var(--ink); text-align: center; }
+
+  /* Missions */
+  .missions { display: grid; gap: 6px; }
+  .mission { display: grid; gap: var(--s1); padding: var(--s2) var(--s3); border-radius: var(--r-sm); background: var(--surface); text-align: left; font-size: var(--fs-sm); }
+  .mission.done { background: var(--success-soft); }
+  .mission b { color: var(--accent); }
+  .m-bar { height: 6px; border-radius: var(--r-pill); background: var(--surface-strong); overflow: hidden; }
+  .m-bar i { display: block; height: 100%; background: var(--gold); }
+  .mission.done .m-bar i { background: var(--success); }
+  .m-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: var(--fs-xs); font-weight: 800; font-variant-numeric: tabular-nums; }
+  .m-reward { display: flex; align-items: center; gap: var(--s1); color: var(--gold); }
+  .m-reward svg { width: 16px; height: 10px; }
+
+  /* ---------- Game over ---------- */
+  .over-head { display: grid; gap: var(--s1); }
+  #overTitle.puddle { color: var(--water); }
+  #overTitle.hit { color: var(--danger); }
+  .badge { justify-self: center; background: var(--gold); color: var(--gold-ink); font-weight: 800; border-radius: var(--r-pill); padding: var(--s1) var(--s3); font-size: var(--fs-sm); }
+  .near { color: var(--accent); font-weight: 800; }
+  .hint { font-size: var(--fs-xs); }
+
+  /* ---------- Toast and countdown ---------- */
   .toast {
-    position: absolute; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 70px); transform: translateX(-50%);
-    max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 14px;
-    background: var(--kibble); color: #2b1600; font-weight: 800; text-align: center;
+    position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + var(--s5)); transform: translateX(-50%);
+    width: max-content; max-width: calc(100% - 2 * var(--s4)); padding: var(--s2) var(--s4); border-radius: var(--r-pill);
+    background: var(--gold); color: var(--gold-ink); font-weight: 800; text-align: center;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); pointer-events: none; z-index: 5;
   }
   .toast.show { animation: toast-in 0.35s ease-out; }
-  @keyframes toast-in { from { transform: translate(-50%, -14px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+  @keyframes toast-in { from { transform: translate(-50%, 14px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
   .countdown {
     position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
-    font-family: var(--font-display); font-size: clamp(5rem, 22vw, 9rem); color: var(--ink);
+    font-family: var(--font-display); font-size: var(--fs-giant); color: var(--ink);
     text-shadow: 0 6px 0 rgba(0, 0, 0, 0.35), 0 0 30px rgba(255, 162, 76, 0.6);
   }
   .countdown.pop { animation: pop 0.5s ease-out; }
   @keyframes pop { from { transform: scale(1.6); opacity: 0.2; } to { transform: scale(1); opacity: 1; } }
-  .gift { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); text-align: left; }
-  .gift svg { width: 40px; height: 40px; }
-  .gift-text { display: grid; gap: 2px; min-width: 0; }
-  .gift-text span { color: var(--muted); font-size: 0.85rem; }
-  .btn.small { font-size: 1rem; padding: 8px 14px; }
-  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .btn-row .btn { font-size: 1rem; padding: 10px 8px; }
-  .missions { display: grid; gap: 6px; }
-  .mission { display: grid; gap: 4px; padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); text-align: left; font-size: 0.88rem; }
-  .mission.done { background: rgba(122, 255, 196, 0.1); }
-  .m-bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
-  .m-bar i { display: block; height: 100%; background: var(--kibble); border-radius: 3px; }
-  .mission.done .m-bar i { background: #7affc4; }
-  .m-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.78rem; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .m-reward { display: flex; align-items: center; gap: 4px; color: var(--kibble); }
-  .m-reward svg { width: 16px; height: 10px; }
-  .howto { text-align: left; display: grid; gap: 8px; }
-  .howto summary { cursor: pointer; font-weight: 800; color: var(--muted); padding: 6px 0; text-align: center; }
-  .howto[open] { gap: 8px; }
-  .howto > * + * { margin-top: 8px; }
-  .small-text { font-size: 0.88rem; text-align: left; }
-  .near { color: var(--cat); font-weight: 800; }
-  .grades { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
-  .grade { font-family: var(--font-display); font-size: 1.2rem; padding: 12px 6px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: var(--ink); cursor: pointer; }
-  .grade.selected { border-color: var(--cat); color: var(--cat); }
-  .grade:focus-visible, .quiz-choice:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
+
+  /* ---------- Shop, album, tabs ---------- */
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s1); padding: var(--s1); border-radius: var(--r-md); background: var(--surface); }
+  .tab { min-height: var(--tap); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border: 0; border-radius: var(--r-sm); background: transparent; color: var(--muted); cursor: pointer; }
+  .tab.active { background: var(--accent); color: var(--accent-ink); }
+  .bank { justify-self: center; display: flex; align-items: center; gap: var(--s2); font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+  .bank svg { width: 26px; height: 17px; }
+  .bank span { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-xl); color: var(--ink); }
+  .skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--s2); }
+  .skin, .album-item { display: grid; justify-items: center; align-content: start; gap: var(--s1); padding: var(--s2) 6px; border-radius: var(--r-md); border: 2px solid transparent; background: var(--surface); min-width: 0; }
+  .skin.selected { border-color: var(--accent); background: rgba(255, 162, 76, 0.12); }
+  .skin canvas, .album-item canvas { width: 76px; height: 76px; }
+  .skin.locked canvas { opacity: 0.55; }
+  .skin-name { font-weight: 800; font-size: var(--fs-sm); }
+  .album-item.missing .skin-name { color: var(--muted); }
+  .album-sub { font-size: var(--fs-xs); color: var(--muted); font-weight: 700; text-align: center; }
+  .album-count { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--gold); }
+  .skin-btn { width: 100%; min-height: var(--tap); font-weight: 800; font-size: var(--fs-sm); padding: var(--s1); border-radius: var(--r-sm); border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--s1); font-variant-numeric: tabular-nums; }
+  .skin-btn svg { width: 16px; height: 10px; }
+  .skin-btn.buy { background: var(--gold); color: var(--gold-ink); border-color: transparent; }
+  .skin-btn:disabled { cursor: default; color: var(--muted); }
+  .skin.selected .skin-btn { color: var(--accent); border-color: transparent; }
+  .limited { font-size: var(--fs-xs); font-weight: 800; color: var(--gold-ink); background: var(--event, var(--gold)); border-radius: var(--r-pill); padding: 1px var(--s2); }
+
+  /* ---------- Class picker and quiz ---------- */
+  .grades { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: var(--s2); }
+  .grade { min-height: 52px; font-family: var(--font-display); font-size: var(--fs-lg); padding: var(--s2) 6px; border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .grade.selected { border-color: var(--accent); color: var(--accent); }
   .card.quiz { text-align: left; max-width: 520px; }
-  .quiz-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .quiz-level { font-family: var(--font-display); font-size: 1.6rem; color: var(--cat); }
-  .quiz-count { color: var(--muted); font-weight: 800; font-size: 0.85rem; }
-  .quiz-subject { justify-self: start; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #2b1600; background: var(--kibble); border-radius: 999px; padding: 3px 10px; }
-  .quiz-q { margin: 0; font-size: 1.25rem; line-height: 1.35; font-weight: 800; text-wrap: balance; }
-  .quiz-choices { display: grid; gap: 8px; }
-  .quiz-choice { display: flex; align-items: center; gap: 10px; text-align: left; font-family: var(--font-body); font-size: 1rem; font-weight: 700; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); color: var(--ink); cursor: pointer; }
-  .quiz-choice:hover:not(:disabled) { background: rgba(255, 255, 255, 0.12); }
-  .quiz-choice.right { border-color: #7affc4; background: rgba(122, 255, 196, 0.18); }
-  .quiz-choice.wrong { border-color: var(--danger); background: rgba(255, 107, 107, 0.18); }
+  .quiz-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); }
+  .quiz-level { font-family: var(--font-display); font-size: var(--fs-xl); color: var(--accent); }
+  .quiz-count { color: var(--muted); font-weight: 800; font-size: var(--fs-sm); }
+  .quiz-subject { justify-self: start; font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-ink); background: var(--gold); border-radius: var(--r-pill); padding: 2px var(--s3); }
+  .quiz-q { font-family: var(--font-body); font-size: var(--fs-lg); line-height: 1.35; font-weight: 800; }
+  .quiz-choices { display: grid; gap: var(--s2); }
+  .quiz-choice { min-height: 56px; display: flex; align-items: center; gap: var(--s3); text-align: left; font-size: var(--fs-md); font-weight: 800; padding: var(--s3) var(--s4); border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .quiz-choice:hover:not(:disabled) { background: var(--surface-strong); }
+  .quiz-choice.right { border-color: var(--success); background: var(--success-soft); }
+  .quiz-choice.wrong { border-color: var(--danger); background: var(--danger-soft); }
   .quiz-choice:disabled { cursor: default; }
-  .quiz-feedback { padding: 10px 12px; border-radius: 12px; line-height: 1.45; }
-  .quiz-feedback.ok { background: rgba(122, 255, 196, 0.12); color: #7affc4; }
-  .quiz-feedback.ko { background: rgba(255, 107, 107, 0.1); }
+  .quiz-feedback { padding: var(--s3); border-radius: var(--r-md); line-height: 1.45; }
+  .quiz-feedback.ok { background: var(--success-soft); color: var(--success); }
+  .quiz-feedback.ko { background: var(--danger-soft); }
   .quiz-feedback .expl { margin-top: 6px; color: var(--ink); }
-  .icon-btn .slash { display: none; }
-  .icon-btn.off { color: var(--muted); }
-  .icon-btn.off .slash { display: inline; }
-  .icon-btn.off .waves { display: none; }
-  .toggle { font-family: var(--font-body); font-weight: 800; font-size: 0.9rem; padding: 8px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); color: var(--ink); cursor: pointer; }
-  .toggle .state { color: var(--cat); }
-  .toggle.off .state { color: var(--muted); }
-  .toggle:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
-  .player { display: grid; grid-template-columns: auto auto; justify-content: center; align-items: baseline; gap: 2px 10px; }
-  .player b { font-family: var(--font-display); font-weight: 400; font-size: 1.3rem; }
-  .player span:not(.xp-bar) { color: var(--muted); font-weight: 800; font-size: 0.85rem; }
-  .xp-bar, .pb-bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
-  .xp-bar { width: 180px; justify-self: center; }
-  .xp-bar i, .pb-bar i { display: block; height: 100%; width: 0; background: #7affc4; border-radius: 3px; transition: width 0.6s ease-out; }
-  .pb-bar.kib i { background: var(--kibble); }
-  .progress-box { display: grid; gap: 6px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); text-align: left; }
-  .pb-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.9rem; }
-  .pb-head span { color: #7affc4; font-weight: 800; }
-  .chapter-box { border: 1px solid var(--cat); }
-  .center { text-align: center; }
-  .btn.glow { border-color: var(--cat); color: var(--cat); }
-  a.btn { text-decoration: none; text-align: center; }
+
+  /* ---------- Story, intro, share ---------- */
   .story-text { color: var(--ink); text-align: left; }
-  .name-input { font-family: var(--font-display); font-size: 1.4rem; padding: 10px 14px; border-radius: 12px; border: 2px solid var(--line); background: rgba(255, 255, 255, 0.06); color: var(--ink); width: 100%; box-sizing: border-box; text-align: center; -webkit-user-select: text; user-select: text; }
-  .name-input:focus { outline: none; border-color: var(--cat); }
+  .name-input { min-height: var(--tap); font-family: var(--font-display); font-size: var(--fs-lg); padding: var(--s2) var(--s3); border-radius: var(--r-md); border: 2px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; box-sizing: border-box; text-align: center; -webkit-user-select: text; user-select: text; }
+  .name-input:focus { outline: none; border-color: var(--accent); }
   .rename { display: grid; gap: 6px; }
-  .rename-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
-  .rename-row .name-input { font-size: 1.1rem; padding: 8px 10px; }
+  .rename-row { display: grid; grid-template-columns: 1fr auto; gap: var(--s2); }
   .card.story { text-align: left; max-width: 560px; }
   .card.story h2 { text-align: center; }
-  .chapters { display: grid; gap: 10px; }
-  .chapter { padding: 12px 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); }
-  .chapter h3 { margin: 0 0 6px; font-family: var(--font-display); font-weight: 400; font-size: 1.1rem; color: var(--cat); }
+  .chapters { display: grid; gap: var(--s2); }
+  .chapter { padding: var(--s3) var(--s4); border-radius: var(--r-md); background: var(--surface); }
+  .chapter h3 { margin: 0 0 6px; font-size: var(--fs-md); color: var(--accent); }
   .chapter p { color: var(--ink); }
   .chapter.locked { opacity: 0.55; }
-  .chapter.locked h3 { color: var(--muted); }
-  .chapter.locked p { color: var(--muted); }
-  .album-count { font-family: var(--font-display); font-size: 1.2rem; color: var(--kibble); }
-  .album-item { display: grid; justify-items: center; gap: 2px; padding: 8px 6px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); min-width: 0; }
-  .album-item canvas { width: 76px; height: 76px; }
-  .album-item.missing .skin-name { color: var(--muted); }
-  .album-sub { font-size: 0.72rem; color: var(--muted); font-weight: 700; text-align: center; }
-  .share-img { width: 100%; max-height: 52vh; object-fit: contain; border-radius: 14px; }
-  .unlock { color: var(--kibble); font-weight: 800; }
-  .card.shop { max-width: 560px; }
-  .bank { justify-self: center; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; color: var(--kibble); font-variant-numeric: tabular-nums; }
-  .bank svg { width: 26px; height: 17px; }
-  .bank span { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; color: var(--ink); }
-  .skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
-  .skin {
-    display: grid;
-    justify-items: center;
-    gap: 4px;
-    padding: 8px 6px;
-    border-radius: 14px;
-    border: 2px solid transparent;
-    background: rgba(255, 255, 255, 0.05);
-    min-width: 0;
-  }
-  .skin.selected { border-color: var(--cat); background: rgba(255, 162, 76, 0.12); }
-  .skin canvas { width: 76px; height: 76px; }
-  .skin.locked canvas { opacity: 0.55; }
-  .skin-name { font-weight: 800; font-size: 0.85rem; }
-  .skin-btn {
-    width: 100%;
-    font-family: var(--font-body);
-    font-weight: 800;
-    font-size: 0.8rem;
-    padding: 6px 4px;
-    border-radius: 9px;
-    border: 1px solid var(--line);
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 4px;
-    font-variant-numeric: tabular-nums;
-  }
-  .skin-btn svg { width: 16px; height: 10px; }
-  .skin-btn.buy { background: var(--kibble); color: #2b1600; border-color: transparent; }
-  .skin-btn:disabled { cursor: default; color: var(--muted); }
-  .skin.selected .skin-btn { color: var(--cat); border-color: transparent; }
-  .skin-btn:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
-  #overTitle.puddle { color: var(--water); }
-  #overTitle.hit { color: var(--danger); }
-  @media (pointer: coarse) { .kbd-only { display: none; } }
-  @media (pointer: fine) { .touch-only { display: none; } }
+  .chapter.locked h3, .chapter.locked p { color: var(--muted); }
+  .share-img { width: 100%; max-height: 52vh; object-fit: contain; border-radius: var(--r-md); }
+
+  @media (pointer: coarse) { .kbd-only { display: none !important; } }
+  @media (pointer: fine) { .touch-only { display: none !important; } }
+  @media (max-width: 360px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+  @media (prefers-reduced-motion: reduce) { .toast.show, .countdown.pop { animation: none; } .bar i { transition: none; } }
 </style>
 </head>
 <body>
@@ -314,7 +338,7 @@
         <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
         <span id="kibbles">0</span>
       </div>
-      <div class="lvl"><span id="levelLabel">Niveau 1</span><span class="lvl-bar"><i id="levelBar"></i></span></div>
+      <div class="lvl"><span id="levelLabel">Quartier 1</span><span class="lvl-bar"><i id="levelBar"></i></span></div>
       <div class="bonus-bar" id="bonusBar"></div>
     </div>
     <div class="buttons">
@@ -332,42 +356,65 @@
 
   <div class="overlay" id="startScreen">
     <div class="card">
-      <h1><small>Siquane</small>Escape Cat</h1>
+      <div class="home-head">
+        <span></span>
+        <h1><small>Siquane</small>Escape Cat</h1>
+        <div class="sounds">
+          <button class="icon-btn sound" data-toggle="music" aria-label="Couper la musique">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="16.5" cy="16" r="2.5" fill="currentColor"/><path class="slash" d="M4 4l16 16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </button>
+          <button class="icon-btn sound" data-toggle="sfx" aria-label="Couper les bruitages">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path class="waves" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="slash" d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
       <div class="player">
         <b id="playerName">Siquane</b>
         <span id="playerLevel">Niveau 1</span>
-        <span class="xp-bar"><i id="xpBar"></i></span>
+        <span class="bar"><i id="xpBar"></i></span>
       </div>
-      <p>Perdu dans une ville inconnue, ton chat court de toit en toit pour retrouver sa famille. Attrape les croquettes et ne mets surtout pas les pattes dans l'eau !</p>
-
-      <p>Record : <span class="best" id="bestStart">0</span> · Tirelire : <span class="best" id="bankStart">0</span> croquettes</p>
-      <div class="event" id="eventBanner" hidden>
-        <div class="event-title" id="eventTitle"></div>
+      <p>Ton chat s'est perdu en ville. Aide-le à retrouver sa famille en courant sur les toits !</p>
+      <div class="stat-row">
+        <div class="stat"><span>Record</span><strong id="bestStart">0</strong></div>
+        <div class="stat"><span>Tirelire</span><strong id="bankStart">0</strong></div>
+      </div>
+      <details class="fold event" id="eventBanner" hidden>
+        <summary id="eventTitle"></summary>
         <p id="eventText"></p>
-      </div>
+      </details>
       <div class="gift" id="giftCard" hidden>
         <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="13" width="22" height="15" rx="2" fill="#e8445a"/><rect x="3" y="9" width="26" height="6" rx="2" fill="#ff6b7d"/><rect x="14" y="9" width="4" height="19" fill="#ffd34d"/><path d="M16 9c-3-6-9-6-8-2 1 3 5 2 8 2zm0 0c3-6 9-6 8-2-1 3-5 2-8 2z" fill="#ffd34d"/></svg>
         <div class="gift-text"><b id="giftTitle">Cadeau du jour</b><span id="giftSub"></span></div>
         <button class="btn small" id="giftBtn">Ouvrir</button>
       </div>
-      <div class="label">Défi du jour</div>
-      <div id="dailyStart"></div>
-      <div class="label">Missions</div>
-      <div class="missions" id="missionsStart"></div>
-      <button class="btn" id="playBtn">Jouer</button>
-      <div class="btn-row">
-        <button class="btn ghost" id="shopBtnStart">Chats et chapeaux</button>
-        <button class="btn ghost" id="albumBtn">Album</button>
+      <details class="fold" id="missionsFold">
+        <summary>Missions et défi <span class="sum-extra" id="missionsReward"></span></summary>
+        <div class="label">Défi du jour</div>
+        <div id="dailyStart"></div>
+        <div class="label">Missions</div>
+        <div class="missions" id="missionsStart"></div>
+      </details>
+      <div class="tiles">
+        <button class="tile" id="shopBtnStart">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 12l2-7 5 5h4l5-5 2 7v5c0 6-4 10-9 10s-9-4-9-10z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="12.5" cy="17" r="1.6" fill="currentColor"/><circle cx="19.5" cy="17" r="1.6" fill="currentColor"/></svg>
+          Boutique
+        </button>
+        <button class="tile" id="albumBtn">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="5" width="20" height="23" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M11 12h10M11 17h10M11 22h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          Album
+        </button>
+        <button class="tile" id="storyBtn">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 8c4-2 8-2 12 1 4-3 8-3 12-1v17c-4-2-8-2-12 1-4-3-8-3-12-1z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M16 9v17" stroke="currentColor" stroke-width="2.4"/></svg>
+          Histoire
+          <span class="tile-badge" id="storyBadge" hidden>nouveau</span>
+        </button>
+        <button class="tile" id="gradeBtn">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 12l13-6 13 6-13 6z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M9 15v6c4 3 10 3 14 0v-6M27 13v7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          Classe
+          <small id="gradeSub"></small>
+        </button>
       </div>
-      <div class="btn-row">
-        <button class="btn ghost" id="storyBtn">Histoire</button>
-        <button class="btn ghost" id="gradeBtn">Classe</button>
-      </div>
-      <div class="btn-row sound-row">
-        <button class="toggle" data-toggle="music" data-label="1" aria-pressed="true">Musique : <span class="state">oui</span></button>
-        <button class="toggle" data-toggle="sfx" data-label="1" aria-pressed="true">Bruitages : <span class="state">oui</span></button>
-      </div>
-      <details class="howto">
+      <details class="fold howto">
         <summary>Comment jouer</summary>
       <div class="label">Commandes</div>
       <div class="controls">
@@ -406,9 +453,12 @@
           <div class="row"><svg viewBox="0 0 34 24" aria-hidden="true"><circle cx="17" cy="12" r="10" fill="#ffcf4a" stroke="#8a5a00" stroke-width="1.5"/><text x="17" y="16" text-anchor="middle" font-size="10" font-weight="800" fill="#5a3a00">x2</text></svg><span><b>Croquettes x2</b> : chaque croquette compte double.</span></div>
           <div class="row"><svg viewBox="0 0 34 24" aria-hidden="true"><path d="M17 2l9 10h-5v10h-8V12H8z" fill="#5aff8a" stroke="#1a6a2a" stroke-width="1.5"/></svg><span><b>Super-saut</b> : saute si haut que tu peux passer au-dessus des cheminées.</span></div>
         </div>
-        <div class="label">Niveaux et questions</div>
-        <p class="small-text">À chaque nouveau niveau, la course fait une pause et te pose jusqu'à 3 questions de culture générale adaptées à ta classe. Chaque bonne réponse rapporte 1 croquette. Ramasser plusieurs croquettes d'affilée déclenche des combos, et éviter un obstacle de justesse fait un « Ouf ! » qui rapporte des points.</p>
+        <div class="label">Quartiers et questions</div>
+        <p class="small-text">La ville est découpée en quartiers. À chaque nouveau quartier, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe : chaque bonne réponse rapporte 1 croquette. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
+      <div class="play-bar">
+        <button class="btn big" id="playBtn">Jouer</button>
+      </div>
     </div>
   </div>
 
@@ -417,7 +467,7 @@
       <h2>Pause</h2>
       <p>Le chat attend sur le toit.</p>
       <button class="btn" id="resumeBtn">Reprendre</button>
-      <button class="btn ghost" id="quitBtn">Menu</button>
+      <button class="btn ghost" id="quitBtn">Retour à l'accueil</button>
       <div class="btn-row sound-row">
         <button class="toggle" data-toggle="music" data-label="1" aria-pressed="true">Musique : <span class="state">oui</span></button>
         <button class="toggle" data-toggle="sfx" data-label="1" aria-pressed="true">Bruitages : <span class="state">oui</span></button>
@@ -427,40 +477,42 @@
 
   <div class="overlay" id="overScreen" hidden>
     <div class="card">
-      <h2 id="overTitle">Plouf !</h2>
-      <p id="overText">Le chat est tombé dans une flaque d'eau.</p>
+      <div class="over-head">
+        <h2 id="overTitle">Plouf !</h2>
+        <p id="overText">Le chat est tombé dans une flaque d'eau.</p>
+      </div>
+      <div class="stat hero"><span>Score</span><strong id="finalScore">0</strong></div>
       <div class="badge" id="newBest" hidden>Nouveau record !</div>
-      <p class="small-text center" id="catBest"></p>
-      <div class="results">
-        <div class="result"><span>Score</span><strong id="finalScore">0</strong></div>
-        <div class="result"><span>Croquettes</span><strong id="finalKibbles">0</strong></div>
-        <div class="result"><span>Record</span><strong id="finalBest">0</strong></div>
-      </div>
       <p class="near" id="nearBest" hidden></p>
-      <p id="levelOver"></p>
-      <div class="progress-box">
-        <div class="pb-head"><b id="xpLevel">Siquane · niveau 1</b><span id="xpGain">+0 XP</span></div>
-        <div class="pb-bar"><i id="xpBarOver"></i></div>
-        <p class="unlock" id="levelUp" hidden></p>
+      <div class="stat-row">
+        <div class="stat"><span>Croquettes</span><strong id="finalKibbles">0</strong></div>
+        <div class="stat"><span>Record</span><strong id="finalBest">0</strong></div>
       </div>
-      <div class="progress-box chapter-box" id="chapterBox" hidden>
-        <div class="pb-head"><b id="chapterTitle">Nouveau chapitre</b><button class="btn small" id="chapterRead">Lire</button></div>
-      </div>
-      <div class="progress-box" id="nextBox" hidden>
-        <div class="pb-head"><b id="nextText"></b></div>
-        <div class="pb-bar kib"><i id="nextBar"></i></div>
-      </div>
-      <p class="unlock" id="missionsGain" hidden></p>
-      <p>Tirelire : <span class="best" id="bankOver">0</span> croquettes</p>
-      <p class="unlock" id="unlockHint" hidden>Tu as assez de croquettes pour débloquer un chat ou un chapeau !</p>
-      <button class="btn" id="againBtn">Rejouer</button>
+      <button class="btn big" id="againBtn">Rejouer</button>
       <div class="btn-row">
         <button class="btn ghost" id="shopBtnOver">Boutique</button>
-        <button class="btn ghost" id="shareBtnOver">Partager mon score</button>
+        <button class="btn ghost" id="shareBtnOver">Partager</button>
       </div>
       <p class="hint kbd-only">ou appuie sur Espace</p>
-      <div class="label">Missions</div>
-      <div class="missions" id="missionsOver"></div>
+      <div class="box">
+        <div class="box-head"><b id="xpLevel">Siquane · niveau 1</b><span id="xpGain">+0 XP</span></div>
+        <div class="bar"><i id="xpBarOver"></i></div>
+        <p class="good" id="levelUp" hidden></p>
+      </div>
+      <div class="box accent" id="chapterBox" hidden>
+        <div class="box-head"><b id="chapterTitle">Nouveau chapitre</b><button class="btn small" id="chapterRead">Lire</button></div>
+      </div>
+      <div class="box" id="nextBox" hidden>
+        <div class="box-head"><b id="nextText"></b><button class="btn small" id="nextShopBtn" hidden>Voir</button></div>
+        <div class="bar gold"><i id="nextBar"></i></div>
+        <p class="small-text">Tirelire : <b class="good" id="bankOver">0</b> croquettes</p>
+      </div>
+      <details class="fold">
+        <summary>Missions <span class="sum-extra" id="missionsGain"></span></summary>
+        <div class="missions" id="missionsOver"></div>
+      </details>
+      <p class="small-text center" id="catBest"></p>
+      <p class="small-text center" id="levelOver"></p>
     </div>
   </div>
 
@@ -481,14 +533,14 @@
         <label class="label" for="renameInput">Nom de ton chat</label>
         <div class="rename-row"><input class="name-input" id="renameInput" maxlength="16" autocomplete="off" spellcheck="false"><button class="btn small" type="submit">Renommer</button></div>
       </form>
-      <p class="small-text">Un nouveau chapitre se débloque quand ton niveau de joueur monte. Chaque partie te donne de l'expérience.</p>
+      <p class="small-text">Chaque partie te donne de l'expérience. Quand ton niveau monte, un nouveau chapitre se débloque.</p>
       <div class="chapters" id="chapterList"></div>
       <button class="btn" id="storyBack">Retour</button>
     </div>
   </div>
 
   <div class="overlay" id="albumScreen" hidden>
-    <div class="card shop">
+    <div class="card wide">
       <h2>Album</h2>
       <p class="album-count" id="albumCount"></p>
       <div class="label">Chats</div>
@@ -513,20 +565,20 @@
   <div class="overlay" id="classScreen" hidden>
     <div class="card">
       <h2>Ta classe</h2>
-      <p>À chaque nouveau niveau, la course te pose jusqu'à 3 questions de culture générale. Choisis ta classe pour avoir des questions à ton niveau. Le jeu s'adapte ensuite un peu selon tes réponses.</p>
+      <p>À chaque nouveau quartier, la course te pose jusqu'à 3 questions. Choisis ta classe pour avoir des questions à ton niveau. Le jeu s'adapte ensuite à tes réponses.</p>
       <div class="grades" id="gradeGrid"></div>
     </div>
   </div>
 
   <div class="overlay" id="quizScreen" hidden>
     <div class="card quiz">
-      <div class="quiz-head"><span class="quiz-level" id="quizLevel">Niveau 2 !</span><span class="quiz-count" id="quizCount">Question 1 sur 3</span></div>
+      <div class="quiz-head"><span class="quiz-level" id="quizLevel">Quartier 2 !</span><span class="quiz-count" id="quizCount">Question 1 sur 3</span></div>
       <div class="quiz-subject" id="quizSubject"></div>
       <h3 class="quiz-q" id="quizQ"></h3>
       <div class="quiz-choices" id="quizChoices"></div>
       <div class="quiz-feedback" id="quizFeedback" hidden></div>
       <button class="btn" id="quizNext" hidden>Question suivante</button>
-      <button class="btn ghost" id="quizResume">Passer et reprendre la course</button>
+      <button class="btn ghost" id="quizResume">Passer les questions</button>
       <p class="hint kbd-only">Touches 1, 2, 3 pour répondre · Entrée pour continuer</p>
     </div>
   </div>
@@ -535,7 +587,7 @@
   <div class="countdown" id="countdown" hidden></div>
 
   <div class="overlay" id="shopScreen" hidden>
-    <div class="card shop">
+    <div class="card wide">
       <h2>Boutique</h2>
       <div class="bank">
         <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
@@ -2789,13 +2841,11 @@
     endOfRun(sc);
     saveProgress();
     updateBank();
-    $('unlockHint').hidden = !canUnlockSomething();
     const gap = best - sc;
     $('nearBest').hidden = isBest || gap > Math.max(100, best * 0.25);
     $('nearBest').textContent = `Plus que ${gap} points pour battre ton record !`;
-    $('levelOver').textContent = `Niveau ${level} atteint`;
-    $('missionsGain').hidden = !runMissions;
-    $('missionsGain').textContent = runMissions === 1 ? `1 mission réussie : +${runRewards} croquettes` : `${runMissions} missions réussies : +${runRewards} croquettes`;
+    $('levelOver').textContent = level > 1 ? `Tu as atteint le quartier ${level}.` : 'Atteins le quartier 2 pour répondre à des questions.';
+    $('missionsGain').innerHTML = runMissions ? `${runMissions} réussie${runMissions > 1 ? 's' : ''} · +${runRewards} ${FISH_SVG}` : '';
     renderPanels();
     hud.hidden = true;
     show('overScreen');
@@ -2956,7 +3006,6 @@
     $('shopBack').focus({ preventScroll: true });
   }
   function closeShop() {
-    $('unlockHint').hidden = !canUnlockSomething();
     show(shopReturn);
   }
   for (const tab of ['cats', 'hats']) {
@@ -2964,6 +3013,7 @@
   }
   $('shopBtnStart').addEventListener('click', openShop);
   $('shopBtnOver').addEventListener('click', openShop);
+  $('nextShopBtn').addEventListener('click', openShop);
   $('shopBack').addEventListener('click', closeShop);
   updateBank();
 
@@ -3193,18 +3243,18 @@
 
   // ev: the game event that moves the mission forward. run: progress resets each run. max: keeps the best value.
   const MISSION_TYPES = {
-    antLow:   { ev: 'antLow',  base: [5, 12, 25],       text: n => `Saute par-dessus ${n} antennes basses` },
-    antHigh:  { ev: 'antHigh', base: [3, 8, 15],        text: n => `Passe sous ${n} grandes antennes en roulade` },
-    puddle:   { ev: 'puddle',  base: [5, 12, 25],       text: n => `Saute par-dessus ${n} flaques` },
+    antLow:   { ev: 'antLow',  base: [5, 12, 25],       text: n => `Saute ${n} antennes basses` },
+    antHigh:  { ev: 'antHigh', base: [3, 8, 15],        text: n => `Roule sous ${n} grandes antennes` },
+    puddle:   { ev: 'puddle',  base: [5, 12, 25],       text: n => `Saute ${n} flaques` },
     kibRun:   { ev: 'kib',     base: [15, 30, 50],      text: n => `Ramasse ${n} croquettes en une partie`, run: true },
     scoreRun: { ev: 'score',   base: [400, 900, 1600],  text: n => `Fais ${n} points en une partie`, run: true, max: true },
-    meters:   { ev: 'meters',  base: [3000, 8000, 20000], text: n => `Cours ${n.toLocaleString('fr-FR')} mètres au total` },
-    ouf:      { ev: 'ouf',     base: [2, 5, 10],        text: n => `Fais ${n} « Ouf ! » en évitant un obstacle de justesse` },
+    meters:   { ev: 'meters',  base: [3000, 8000, 20000], text: n => `Cours ${n.toLocaleString('fr-FR')} m en tout` },
+    ouf:      { ev: 'ouf',     base: [2, 5, 10],        text: n => `Fais ${n} « Ouf ! »` },
     bonus:    { ev: 'bonus',   base: [2, 5, 10],        text: n => `Attrape ${n} bonus` },
     combo:    { ev: 'combo',   base: [2, 3, 4],         text: n => `Atteins un combo x${n}`, run: true, max: true },
-    quiz:     { ev: 'quiz',    base: [3, 8, 15],        text: n => `Réponds juste à ${n} questions` },
-    laneRun:  { ev: 'lane',    base: [20, 40, 70],      text: n => `Change de couloir ${n} fois en une partie`, run: true },
-    level:    { ev: 'level',   base: [2, 3, 4],         text: n => `Atteins le niveau ${n}`, run: true, max: true },
+    quiz:     { ev: 'quiz',    base: [3, 8, 15],        text: n => `Donne ${n} bonnes réponses` },
+    laneRun:  { ev: 'lane',    base: [20, 40, 70],      text: n => `Change ${n} fois de couloir en une partie`, run: true },
+    level:    { ev: 'level',   base: [2, 3, 4],         text: n => `Atteins le quartier ${n}`, run: true, max: true },
   };
   const MISSION_REWARD = [25, 40, 60];
   const DAILY_TARGETS = { scoreRun: 1500, kibRun: 60, level: 4, antLow: 15, puddle: 15, quiz: 6, combo: 4, bonus: 5, ouf: 5 };
@@ -3299,7 +3349,10 @@
     $('missionsOver').innerHTML = list;
     $('dailyStart').innerHTML = missionRow(daily);
     renderGift();
-    $('gradeBtn').textContent = 'Classe : ' + (gradeName() || 'à choisir');
+    $('gradeSub').textContent = gradeName() || 'à choisir';
+    const toWin = missions.list.reduce((t, m) => t + m.reward, 0) + (daily.done ? 0 : daily.reward);
+    $('missionsReward').innerHTML = `+${toWin} ${FISH_SVG}`;
+    $('missionsReward').setAttribute('aria-label', `${toWin} croquettes à gagner`);
   }
 
   // Daily gift: grows with the number of days played, never resets.
@@ -3307,11 +3360,11 @@
   const giftAmount = days => 20 + 5 * Math.min(days, 10);
   function renderGift() {
     const available = gift.last !== todayStr();
-    $('giftCard').hidden = false;
+    $('giftCard').hidden = !available;
     $('giftBtn').hidden = !available;
     $('giftTitle').textContent = available ? 'Cadeau du jour' : 'Cadeau du jour ouvert';
     $('giftSub').textContent = available
-      ? `Jour ${gift.days + 1} · ${giftAmount(gift.days + 1)} croquettes t'attendent`
+      ? `${giftAmount(gift.days + 1)} croquettes t'attendent (jour ${gift.days + 1})`
       : `Reviens demain pour ${giftAmount(gift.days + 1)} croquettes`;
   }
   function openGift() {
@@ -3345,9 +3398,13 @@
 
   // ---------- Sensations ----------
   function shake(mag, t) { shakeMag = mag; shakeT = t; }
+  // Floating texts stack upwards above the cat instead of overlapping (3 at most).
   function popup(text, color, size) {
     const p = proj(cat.x, cat.y + 95, 0);
-    popups.push({ text, color: color || '#ffffff', size: size || 28, x: p.x + rand(-12, 12), y: p.y, life: 1.1, max: 1.1 });
+    size = size || 28;
+    if (popups.length >= 3) popups.shift();
+    const top = popups.reduce((y, q) => Math.min(y, q.y - q.size * 1.15), p.y + size * 1.15);
+    popups.push({ text, color: color || '#ffffff', size, x: p.x, y: Math.min(p.y, top), life: 1.1, max: 1.1 });
   }
   function drawPopups(dt) {
     ctx.textAlign = 'center';
@@ -3489,14 +3546,14 @@
   let lastBonusHtml = '';
   function updateHudExtras() {
     const m = Math.floor(dist / 10), lo = level > 1 ? levelAt(level - 1) : 0, hi = levelAt(level);
-    $('levelLabel').textContent = `Niveau ${level}`;
+    $('levelLabel').textContent = `Quartier ${level}`;
     $('levelBar').style.width = Math.min(100, Math.max(0, 100 * (m - lo) / (hi - lo))) + '%';
     const html = Object.keys(active).map(k => `<div class="chip" style="--c:${BONUSES[k].color}"><span>${BONUSES[k].name}</span><i style="width:${Math.round(100 * active[k] / BONUSES[k].dur)}%"></i></div>`).join('');
     if (html !== lastBonusHtml) { $('bonusBar').innerHTML = html; lastBonusHtml = html; }
   }
 
   // ---------- Class and quiz ----------
-  const GRADES = [['CP', 1], ['CE1', 1], ['CE2', 2], ['CM1', 2], ['CM2', 3], ['6e', 3], ['5e', 4], ['4e', 4], ['3e', 4], ['Plus grand', 4]];
+  const GRADES = [['CP', 1], ['CE1', 1], ['CE2', 2], ['CM1', 2], ['CM2', 3], ['6e', 3], ['5e', 4], ['4e', 4], ['3e', 4], ['Lycée et +', 4]];
   let quizState = load(QUIZ_KEY, { grade: null, adj: 0, asked: [] });
   if (!Array.isArray(quizState.asked)) quizState.asked = [];
   const gradeName = () => quizState.grade;
@@ -3557,7 +3614,7 @@
     objs = objs.filter(o => o.z > 900);
     kibs = kibs.filter(k => k.z > 900);
     quiz = { i: 0, subjects: shuffle(['sci', 'hist', 'fr', 'art']) };
-    $('quizLevel').textContent = `Niveau ${level} !`;
+    $('quizLevel').textContent = `Quartier ${level} !`;
     updateHudExtras();
     show('quizScreen');
     nextQuestion();
@@ -3578,14 +3635,14 @@
       const b = document.createElement('button');
       b.className = 'quiz-choice';
       b.id = 'quizChoice' + i;
-      b.innerHTML = `<kbd>${i + 1}</kbd><span></span>`;
+      b.innerHTML = `<kbd class="kbd-only">${i + 1}</kbd><span></span>`;
       b.querySelector('span').textContent = c;
       b.addEventListener('click', () => answer(i));
       box.append(b);
     });
     $('quizFeedback').hidden = true;
     $('quizNext').hidden = true;
-    $('quizResume').textContent = 'Passer et reprendre la course';
+    $('quizResume').textContent = 'Passer les questions';
     $('quizResume').className = 'btn ghost';
     box.firstChild.focus({ preventScroll: true });
   }
@@ -3621,7 +3678,7 @@
     store(QUIZ_KEY, quizState);
     const more = quiz.i < 2;
     $('quizNext').hidden = !more;
-    $('quizResume').textContent = 'Reprendre la course';
+    $('quizResume').textContent = 'Continuer la course';
     $('quizResume').className = more ? 'btn ghost' : 'btn';
     (more ? $('quizNext') : $('quizResume')).focus({ preventScroll: true });
   }
@@ -3684,8 +3741,7 @@
     $('playerLevel').textContent = `Niveau ${profile.level}`;
     $('xpBar').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
     const fresh = unlockedChapters() > (profile.read || 0);
-    $('storyBtn').textContent = fresh ? 'Histoire (nouveau !)' : 'Histoire';
-    $('storyBtn').classList.toggle('glow', fresh);
+    $('storyBadge').hidden = !fresh;
   }
 
   // ---------- Intro and story screens ----------
@@ -3854,7 +3910,8 @@
       const left = nx.it.price - bank;
       $('nextText').textContent = left > 0
         ? `Encore ${left} croquettes avant ${nx.kind} ${nx.it.name}`
-        : `Tu peux débloquer ${nx.kind} ${nx.it.name} dans la boutique !`;
+        : `Tu peux débloquer ${nx.kind} ${nx.it.name} !`;
+      $('nextShopBtn').hidden = left > 0;
       $('nextBar').style.width = Math.min(100, 100 * bank / nx.it.price) + '%';
     }
     renderPlayer();
@@ -3916,7 +3973,7 @@
     c.fillText(String(r.score), 540, 420);
     c.fillStyle = '#c9cbef';
     c.font = 'bold 38px Nunito, system-ui, sans-serif';
-    c.fillText(`points · niveau ${r.level} atteint · ${r.kibbles} croquettes`, 540, 490);
+    c.fillText(`points · quartier ${r.level} · ${r.kibbles} croquettes`, 540, 490);
     if (THEME_ID) {
       c.fillStyle = TH.accent;
       c.font = '40px "Lilita One", "Arial Rounded MT Bold", sans-serif';

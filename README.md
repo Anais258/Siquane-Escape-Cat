@@ -25,6 +25,12 @@ Pendant un saut, la roulade fait retomber le chat plus vite et il roule dès qu'
 
 La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreux. Le score compte la distance parcourue et les croquettes. Le meilleur score est enregistré dans le navigateur.
 
+## Interface
+
+- **Accueil** : le bouton **Jouer** reste toujours visible en bas de l'écran. Les missions, le défi du jour, la bannière de fête et « Comment jouer » se déplient d'un geste. Boutique, Album, Histoire et Classe sont des tuiles avec icône. Les boutons de musique et de bruitages sont en haut à droite.
+- **Fin de partie** : le score et le bouton **Rejouer** d'abord, puis l'expérience, le prochain chat à débloquer et les missions.
+- **Système de design** : toutes les couleurs, tailles de texte (7), arrondis (4) et espacements viennent de variables CSS. Les textes font au moins 13 px et chaque bouton au moins 44 px de haut.
+
 ## L'histoire
 
 Une nuit d'orage, un petit chat s'abrite dans un camion de livraison et se réveille au cœur d'une ville inconnue, loin de sa famille. Pour rentrer, il court de toit en toit. Au premier lancement, le joueur donne un nom à son chat (« Siquane » par défaut). Il peut le changer ensuite dans l'écran **Histoire**.
@@ -52,15 +58,15 @@ L'album montre tous les chats et tous les chapeaux, avec des silhouettes pour ce
 - **Pigeons** : ils se posent sur le rebord du toit et s'envolent au passage du chat.
 - **Filou, le chat errant** : il court quelques secondes à côté du chat sur le rebord, puis repart en le saluant (+30 points).
 
-## Niveaux et questions de culture générale
+## Quartiers et questions de culture générale
 
-La course est découpée en niveaux. À chaque nouveau niveau, elle fait une pause et propose jusqu'à 3 questions de culture générale (sciences et nature, histoire et géographie, français et maths, arts et culture). Chaque bonne réponse rapporte 1 croquette. En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course.
+La ville est découpée en quartiers. À chaque nouveau quartier, la course fait une pause et propose jusqu'à 3 questions de culture générale (sciences et nature, histoire et géographie, français et maths, arts et culture). Chaque bonne réponse rapporte 1 croquette. En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course.
 
-Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Plus grand »). Elle se change avec le bouton **Classe** de l'écran d'accueil. Le jeu ajuste ensuite un peu la difficulté : après 3 bonnes réponses d'affilée, les questions deviennent plus difficiles, et après 2 erreurs d'affilée, plus faciles. Les calculs sont générés automatiquement et changent à chaque fois.
+Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Lycée et + »). Elle se change avec la tuile **Classe** de l'écran d'accueil. Le jeu ajuste ensuite un peu la difficulté : après 3 bonnes réponses d'affilée, les questions deviennent plus difficiles, et après 2 erreurs d'affilée, plus faciles. Les calculs sont générés automatiquement et changent à chaque fois.
 
 ## Missions, défi du jour et cadeau du jour
 
-- **3 missions** à la fois (par exemple « Saute par-dessus 5 antennes basses » ou « Réponds juste à 3 questions »). Chaque mission réussie rapporte de 25 à 60 croquettes et est remplacée par une nouvelle, un peu plus difficile au fil du temps.
+- **3 missions** à la fois (par exemple « Saute 5 antennes basses » ou « Donne 3 bonnes réponses »). Chaque mission réussie rapporte de 25 à 60 croquettes et est remplacée par une nouvelle, un peu plus difficile au fil du temps.
 - **Défi du jour** : un objectif plus difficile qui change chaque jour, pour 100 croquettes.
 - **Cadeau du jour** : des croquettes offertes une fois par jour, de plus en plus nombreuses au fil des jours de jeu (de 25 à 70). On ne perd pas sa progression si on rate un jour.
 
