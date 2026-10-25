@@ -4,7 +4,9 @@ Un petit jeu de course (*runner*) où tu incarnes un chat qui court la nuit sur 
 
 ## Comment jouer
 
-Ouvre `index.html` dans un navigateur (sur ordinateur ou sur téléphone). Il n'y a rien à installer.
+Ouvre `index.html` dans un navigateur (sur ordinateur ou sur téléphone).
+
+**Installer le jeu comme une application** : sur la version publiée sur GitHub Pages, ouvre le menu du navigateur et choisis **Installer** (Chrome, Edge) ou **Partager › Sur l'écran d'accueil** (Safari sur iPhone). Le jeu s'ouvre alors en plein écran avec son icône, et marche aussi sans connexion (sauf le classement).
 
 | Action | Clavier | Tactile |
 | --- | --- | --- |
@@ -13,7 +15,7 @@ Ouvre `index.html` dans un navigateur (sur ordinateur ou sur téléphone). Il n'
 | Roulade | `↓` ou `S` | Swipe vers le bas |
 | Pause | `Échap` ou `P` | Bouton pause |
 
-Pendant un saut, la roulade fait retomber le chat plus vite et il roule dès qu'il touche le toit.
+Pendant un saut, la roulade fait retomber le chat plus vite et il roule dès qu'il touche le toit. Après une pause, un compte à rebours 3-2-1 relance la course.
 
 ## Sur les toits
 
@@ -43,7 +45,22 @@ Le chat est dessiné dans un style « kawaii » : grosse tête ronde, oreilles e
 
 ## Niveau du joueur
 
-Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut environ 500 parties pour atteindre le niveau 100. Chaque nouveau niveau rapporte des croquettes.
+Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut environ 3 à 5 parties par niveau, et à peu près 600 parties pour atteindre le niveau 100. Chaque nouveau niveau rapporte des croquettes (50 + 5 par niveau, au maximum 250).
+
+### Ce qui change sur les toits avec le niveau
+
+Plus le joueur monte de niveau, plus les toits sont chargés : un peu plus d'obstacles, des enchaînements plus serrés et une vitesse de départ un peu plus élevée, jusqu'au niveau 60. De nouvelles choses apparaissent aussi :
+
+| Niveau | Nouveauté | Comment faire |
+| --- | --- | --- |
+| 5 | Cordes à linge | roule dessous |
+| 8 | Croquettes dorées | elles valent 5 croquettes |
+| 12 | Climatiseurs | ils sont hauts : saute au bon moment |
+| 18 | Pelotes de laine | +300 points |
+| 20 | Pots de fleurs qui roulent vers toi | saute par-dessus |
+| 30 | Sacs de croquettes | +15 croquettes |
+
+L'écran de fin annonce la nouveauté quand elle se débloque.
 
 ## Écran de fin de partie
 
@@ -64,7 +81,7 @@ L'album montre tous les chats et tous les chapeaux, avec des silhouettes pour ce
 
 ## Poissons d'or
 
-Les poissons d'or sont des objets très rares : il y a **1 chance sur 25** qu'un poisson d'or se cache dans chaque quartier (chaque kilomètre). Il brille et flotte au-dessus du toit, et rapporte aussi 100 points. On les garde d'une partie à l'autre.
+Les poissons d'or sont des objets très rares : il y a **1 chance sur 15** qu'un poisson d'or se cache dans chaque quartier. Il brille et flotte au-dessus du toit, et rapporte aussi 100 points. On les garde d'une partie à l'autre.
 
 - **Seconde chance** : quand le chat perd, une fenêtre propose pendant 10 secondes d'utiliser 1 poisson d'or pour repartir au même endroit (l'obstacle disparaît, un bouclier protège 2 secondes, puis compte à rebours 3-2-1). C'est possible **une seule fois par partie**. Un bouton « Passer » permet de refuser.
 - **Déguisements de fête** (6 poissons d'or) : un ou deux par fête, en vente seulement pendant sa fête, gardé ensuite toute l'année. Ils se portent avec n'importe quel chat et n'importe quel chapeau.
@@ -90,7 +107,7 @@ Tout se trouve dans l'onglet **Poissons d'or** de la boutique. L'album montre au
 
 ## Quartiers et questions de culture générale
 
-Toutes les 30 secondes, la course fait une pause et propose jusqu'à 3 questions, tirées parmi 6 sujets (sciences et nature, histoire et géographie, français et maths, arts et culture, **les chats** et **anglais**). Chaque bonne réponse rapporte 1 croquette. Chaque question passée retire 2 croquettes du compteur de la partie (jamais en dessous de 0). En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course. Tous les kilomètres, le chat entre dans un nouveau quartier (sans pause).
+Toutes les 30 secondes, la course fait une pause et propose jusqu'à 3 questions, tirées parmi 6 sujets (sciences et nature, histoire et géographie, français et maths, arts et culture, **les chats** et **anglais**). Chaque bonne réponse rapporte 1 croquette. Chaque question passée retire 2 croquettes du compteur de la partie (jamais en dessous de 0). En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course. Le chat entre ensuite dans de nouveaux quartiers (sans pause) : le quartier 1 fait 1 km, puis chaque quartier fait 500 m de plus que le précédent (1,5 km, 2 km, 2,5 km…).
 
 **Reprendre au quartier atteint** : le jeu retient le quartier le plus loin que tu as atteint. Dès que tu as atteint le quartier 2, « Jouer » et « Rejouer » te proposent de « Reprendre au quartier N » ou de « Repartir du quartier 1 ». Quand tu reprends plus loin, tu as 3 secondes de bouclier, et les points ne comptent que pour la distance que tu cours vraiment. Le record reste donc juste.
 

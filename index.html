@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Neko Odyssey</title>
 <meta name="theme-color" content="#0b1030">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Neko Odyssey">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@500;700;800&display=swap">
@@ -485,7 +492,7 @@
           <div class="row"><svg viewBox="0 0 34 24" aria-hidden="true"><path d="M17 2l9 10h-5v10h-8V12H8z" fill="#5aff8a" stroke="#1a6a2a" stroke-width="1.5"/></svg><span><b>Super-saut</b> : saute si haut que tu peux passer au-dessus des cheminées.</span></div>
         </div>
         <div class="label">Poissons d'or</div>
-        <p class="small-text">Très rares : il y a 1 chance sur 25 qu'un poisson d'or se cache dans chaque quartier. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
+        <p class="small-text">Très rares : il y a 1 chance sur 15 qu'un poisson d'or se cache dans chaque quartier. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
         <div class="label">Quartiers et questions</div>
         <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Tous les kilomètres, tu entres dans un nouveau quartier. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
@@ -1860,7 +1867,7 @@
   let speed, dist, elapsed, kibbles, nextRowZ, deathCause, deathT, time = 0;
   let bonusPts = 0, startDist = 0, quizClock = 0, level = 1, comboMult = 1, recordShown = false, lastOufT = -9, nextBonusAt = 6;
   let active = {}, shakeT = 0, shakeMag = 0, slowT = 0, popups = [];
-  let decos = [], strayAt = 25, starAt = 30, shootStar = null, quizRight = 0, trailAcc = 0;
+  let decos = [], strayAt = 25, starAt = 30, shootStar = null, quizRight = 0, trailAcc = 0, nextYarnAt = 20, nextSackAt = 40;
   // Golden fish state (loaded with the shop data further down)
   let gold = { count: 0, costumes: [], costume: 'none', pending: {} };
   let runPowers = {}, fishAt = null, revived = false, reviveT = 0, shieldT = 0;
@@ -1875,6 +1882,7 @@
     bonusPts = 0; level = 1; startDist = 0; quizClock = 0; comboMult = 1; recordShown = false; lastOufT = -9; nextBonusAt = 6;
     active = {}; shakeT = 0; slowT = 0; kibCombo = 0;
     decos = []; strayAt = rand(18, 30); starAt = rand(22, 35); shootStar = null; quizRight = 0;
+    nextYarnAt = rand(15, 25); nextSackAt = rand(35, 50);
     runPowers = {}; fishAt = null; revived = false; shieldT = 0;
     nextRowZ = 1100;
     deathCause = null; deathT = 0;
@@ -1890,10 +1898,30 @@
     antLow:  { d: 16,  hw: 50 },
     antHigh: { d: 16,  hw: 58 },
     chimney: { d: 70,  hw: 50 },
+    linge:   { d: 16,  hw: 58 },
+    clim:    { d: 60,  hw: 48 },
+    pot:     { d: 30,  hw: 26 },
   };
+
+  // New things on the roofs, unlocked by the player level
+  const ROAD_UNLOCKS = [
+    { level: 5,  id: 'linge',  name: 'les cordes à linge', text: 'roule dessous' },
+    { level: 8,  id: 'golden', name: 'les croquettes dorées', text: 'elles valent 5 croquettes' },
+    { level: 12, id: 'clim',   name: 'les climatiseurs', text: 'ils sont hauts : saute au bon moment' },
+    { level: 18, id: 'yarn',   name: 'les pelotes de laine', text: '+300 points' },
+    { level: 20, id: 'pot',    name: 'les pots de fleurs qui roulent', text: 'ils foncent vers toi : saute par-dessus' },
+    { level: 30, id: 'sack',   name: 'les sacs de croquettes', text: '+15 croquettes' },
+  ];
+  let runLevel = 1;
+  const roadHas = id => ROAD_UNLOCKS.some(u => u.id === id && runLevel >= u.level);
+  // Higher player levels make the roofs busier, up to level 60
+  const playerDiff = () => Math.min(1, (runLevel - 1) / 60);
 
   function pickType(diff) {
     const w = [['puddle', 3], ['antLow', 2], ['antHigh', 1 + diff * 1.5], ['chimney', 1.2 + diff]];
+    if (roadHas('linge')) w.push(['linge', 0.9 + diff * 0.6]);
+    if (roadHas('clim')) w.push(['clim', 0.8 + diff * 0.6]);
+    if (roadHas('pot')) w.push(['pot', 0.5 + diff * 0.5]);
     let total = w.reduce((a, b) => a + b[1], 0), r = Math.random() * total;
     for (const [t, v] of w) { if ((r -= v) < 0) return t; }
     return 'puddle';
@@ -1904,10 +1932,13 @@
   }
 
   function spawnRow(z) {
-    const diff = Math.min(1, elapsed / 110);
-    const pObs = 0.32 + 0.33 * diff;
+    const pd = playerDiff();
+    const diff = Math.min(1, elapsed / 110 + 0.35 * pd);
+    const pObs = Math.min(0.72, 0.32 + 0.33 * diff + 0.06 * pd);
     const types = [-1, 0, 1].map(() => (Math.random() < pObs ? pickType(diff) : null));
     if (types.every(t => t === 'chimney')) types[Math.floor(Math.random() * 3)] = null;
+    // At most one rolling pot per row, so there is always a calm lane
+    if (types.filter(t => t === 'pot').length > 1) types[types.lastIndexOf('pot')] = null;
     if (types.every(t => t === null) && Math.random() < 0.6) types[Math.floor(Math.random() * 3)] = pickType(diff);
 
     types.forEach((t, i) => { if (t) addObstacle(t, i - 1, z); });
@@ -1923,23 +1954,37 @@
         nextBonusAt = elapsed + rand(9, 15);
       }
     }
+    // Level rewards: a bag of kibbles or a ball of yarn now and then, in a free lane
+    const special = bonusLane !== -9 ? null
+      : roadHas('sack') && elapsed >= nextSackAt ? 'sack'
+      : roadHas('yarn') && elapsed >= nextYarnAt ? 'yarn' : null;
+    if (special) {
+      const free = [0, 1, 2].filter(i => !types[i]);
+      if (free.length) {
+        bonusLane = pick(free);
+        kibs.push({ x: (bonusLane - 1) * LANE_W, y: 30, z: z + 40, p: Math.random() * TAU, special });
+        if (special === 'sack') nextSackAt = elapsed + rand(40, 60);
+        else nextYarnAt = elapsed + rand(18, 28);
+      }
+    }
 
-    // Kibbles
+    // Kibbles, now and then a golden one
+    const addKib = k => { if (roadHas('golden') && Math.random() < 0.06) k.special = 'golden'; kibs.push(k); };
     if (Math.random() < 0.75) {
-      const options = [0, 1, 2].filter(i => types[i] !== 'chimney' && i !== bonusLane);
+      const options = [0, 1, 2].filter(i => types[i] !== 'chimney' && types[i] !== 'pot' && i !== bonusLane);
       if (!options.length) return;
       const li = pick(options);
       const lane = li - 1, x = lane * LANE_W, t = types[li];
-      if (t === 'puddle' || t === 'antLow') {
+      if (t === 'puddle' || t === 'antLow' || t === 'clim') {
         const c = z + OBSTACLES[t].d / 2;
         for (let i = -2; i <= 2; i++) {
           const dz = i * 65;
-          kibs.push({ x, y: 30 + 62 * (1 - (dz / 140) ** 2), z: c + dz, p: Math.random() * TAU });
+          addKib({ x, y: 30 + 62 * (1 - (dz / 140) ** 2), z: c + dz, p: Math.random() * TAU });
         }
-      } else if (t === 'antHigh') {
-        for (let i = -2; i <= 2; i++) kibs.push({ x, y: 12, z: z + i * 55, p: Math.random() * TAU });
+      } else if (t === 'antHigh' || t === 'linge') {
+        for (let i = -2; i <= 2; i++) addKib({ x, y: 12, z: z + i * 55, p: Math.random() * TAU });
       } else {
-        for (let i = 0; i < 5; i++) kibs.push({ x, y: 22, z: z + 20 + i * 52, p: Math.random() * TAU });
+        for (let i = 0; i < 5; i++) addKib({ x, y: 22, z: z + 20 + i * 52, p: Math.random() * TAU });
       }
     }
   }
@@ -2030,7 +2075,7 @@
     elapsed += dt;
     quizClock += dt;
     if (shieldT > 0) shieldT -= dt;
-    speed = Math.min(MAX_SPEED, START_SPEED + elapsed * 7);
+    speed = Math.min(MAX_SPEED, START_SPEED + 80 * playerDiff() + elapsed * 7);
     const dz = speed * dt;
     dist += dz;
     cat.anim += dt * speed * 0.022;
@@ -2054,7 +2099,13 @@
     if (cat.rollT > 0) cat.rollT -= dt;
 
     // Scroll the world
-    for (const o of objs) o.z -= dz;
+    for (const o of objs) {
+      o.z -= dz;
+      if (o.type === 'pot' && o.z < 1500 && !objs.some(b => b !== o && b.lane === o.lane && b.z < o.z && b.z + b.d > -18)) {
+        o.roll = true;
+        o.z -= 260 * dt;
+      }
+    }
     for (const k of kibs) k.z -= dz;
     objs = objs.filter(o => o.z + o.d > -CAM_D * 0.7);
     kibs = kibs.filter(k => k.z > -CAM_D * 0.7 && !k.taken);
@@ -2107,6 +2158,9 @@
       }
       if (o.type === 'antHigh' && cat.y + h > 44 && cat.y < 155) return die('antenna');
       if (o.type === 'chimney' && cat.y < 145) return die('chimney');
+      if (o.type === 'linge' && cat.y + h > 44 && cat.y < 150) return die('linge');
+      if (o.type === 'clim' && cat.y < 66) return die('clim');
+      if (o.type === 'pot' && cat.y < 32) return die('pot');
     }
     for (const k of kibs) {
       if (k.taken || Math.abs(k.z) > 24) continue;
@@ -2116,6 +2170,7 @@
       if (k.star) { catchStar(k); continue; }
       if (k.goldfish) { catchGoldFish(k); continue; }
       if (k.bonus) { activateBonus(k.bonus); continue; }
+      if (k.special) { catchSpecial(k); continue; }
       const gain = active.double ? 2 : 1;
       kibbles += gain;
       track('kib', gain);
@@ -2349,11 +2404,171 @@
     ctx.globalAlpha = 1;
   }
 
+  // ---------- Obstacles unlocked by the player level ----------
+  function drawLinge(o) {
+    const z = o.z + o.d / 2, x = o.x, wood = '#8a5a34', dark = '#3a220f';
+    ctx.globalAlpha = fade(o.z);
+    ctx.lineCap = 'round';
+    for (const sx of [-56, 56]) {
+      const p = proj(x + sx, 0, z);
+      ctx.fillStyle = 'rgba(5, 6, 20, 0.35)';
+      ctx.beginPath(); ctx.ellipse(p.x, p.y, 9 * p.s, 3.5 * p.s, 0, 0, TAU); ctx.fill();
+      line3(x + sx, 0, z, x + sx, 140, z, 8, dark);
+      line3(x + sx, 0, z, x + sx, 140, z, 5, wood);
+    }
+    // Sagging rope
+    const ropeY = rx => 128 - 10 * (1 - (rx / 56) ** 2);
+    for (let i = -4; i < 4; i++) {
+      const a = i * 14, b = a + 14;
+      line3(x + a, ropeY(a), z, x + b, ropeY(b), z, 2, '#e8e2d0');
+    }
+    // Clothes hanging down to about 50, swaying in the wind
+    const clothes = [[-38, 14, 64, '#ff6b6b'], [-14, 9, 74, '#5bb8ff'], [8, 16, 58, '#ffd34d'], [34, 8, 70, '#7ad97a']];
+    clothes.forEach(([cx, hw, len, col], i) => {
+      const sw = Math.sin(time * 3 + o.seed + i * 1.7) * 5;
+      const top = ropeY(cx), bot = top - len;
+      const pts = [proj(x + cx - hw, top, z), proj(x + cx + hw, top, z), proj(x + cx + hw + sw, bot, z), proj(x + cx - hw + sw, bot, z)];
+      poly(pts, col);
+      ctx.strokeStyle = 'rgba(20, 16, 40, 0.6)'; ctx.lineWidth = Math.max(1, 1.5 * pts[0].s);
+      ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); for (const q of pts.slice(1)) ctx.lineTo(q.x, q.y); ctx.closePath(); ctx.stroke();
+      // Pegs
+      for (const px of [cx - hw + 2, cx + hw - 2]) {
+        const q = proj(x + px, top + 3, z);
+        ctx.fillStyle = '#c98a4a'; ctx.fillRect(q.x - 1.5 * q.s, q.y - 3 * q.s, 3 * q.s, 7 * q.s);
+      }
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function drawClim(o) {
+    const x0 = o.x - o.hw, x1 = o.x + o.hw, zf = o.z, zb = o.z + o.d, h = 62;
+    ctx.globalAlpha = fade(o.z);
+    if (x0 > 0) poly([proj(x0, 0, zf), proj(x0, 0, zb), proj(x0, h, zb), proj(x0, h, zf)], '#8a90a6');
+    if (x1 < 0) poly([proj(x1, 0, zf), proj(x1, 0, zb), proj(x1, h, zb), proj(x1, h, zf)], '#8a90a6');
+    poly([proj(x0, h, zf), proj(x1, h, zf), proj(x1, h, zb), proj(x0, h, zb)], '#e4e7f0');
+    const tl = proj(x0, h, zf), br = proj(x1, 0, zf), s = tl.s;
+    ctx.fillStyle = '#c9ced8';
+    ctx.fillRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+    ctx.strokeStyle = '#4c5378'; ctx.lineWidth = Math.max(1, 2 * s);
+    ctx.strokeRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+    // Grille on the left, spinning fan on the right
+    ctx.strokeStyle = 'rgba(76, 83, 120, 0.7)'; ctx.lineWidth = Math.max(1, 1.2 * s);
+    for (let y = 10; y < h - 6; y += 8) { const a = proj(x0 + 6, y, zf), b = proj(o.x - 10, y, zf); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+    const c = proj(o.x + 20, h / 2, zf), r = 22 * s;
+    ctx.fillStyle = '#4c5378'; ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#9aa3b5';
+    for (let k = 0; k < 3; k++) {
+      const a = time * 12 + o.seed + k * TAU / 3;
+      ctx.beginPath(); ctx.ellipse(c.x + Math.cos(a) * r * 0.5, c.y + Math.sin(a) * r * 0.5, r * 0.45, r * 0.2, a, 0, TAU); ctx.fill();
+    }
+    ctx.fillStyle = '#e4e7f0'; ctx.beginPath(); ctx.arc(c.x, c.y, r * 0.18, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawPot(o) {
+    const z = o.z + o.d / 2, x = o.x;
+    ctx.globalAlpha = fade(o.z);
+    const g = proj(x, 0, z);
+    ctx.fillStyle = 'rgba(5, 6, 20, 0.4)';
+    ctx.beginPath(); ctx.ellipse(g.x, g.y, 26 * g.s, 6 * g.s, 0, 0, TAU); ctx.fill();
+    // A terracotta pot lying on its side, rolling toward the camera
+    const wob = o.roll ? Math.sin(time * 14 + o.seed) * 2 : 0;
+    const tl = proj(x - 22 + wob, 30, z), br = proj(x + 18 + wob, 0, z), s = tl.s;
+    ctx.fillStyle = '#c8643a';
+    ctx.beginPath(); ctx.roundRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y, 6 * s); ctx.fill();
+    ctx.strokeStyle = '#5a2412'; ctx.lineWidth = Math.max(1, 1.8 * s); ctx.stroke();
+    // Bands scrolling down to show the roll
+    ctx.save();
+    ctx.beginPath(); ctx.roundRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y, 6 * s); ctx.clip();
+    ctx.fillStyle = 'rgba(90, 36, 18, 0.35)';
+    const ph = o.roll ? (time * 60) % 15 : 0;
+    for (let y = -15 + ph; y < 30; y += 15) { const a = proj(x - 22 + wob, 30 - y, z); ctx.fillRect(tl.x, a.y, br.x - tl.x, 4 * s); }
+    ctx.restore();
+    // Rim and plant at the open end
+    const rim = proj(x + 20 + wob, 15, z);
+    ctx.fillStyle = '#a84e2a';
+    ctx.beginPath(); ctx.ellipse(rim.x, rim.y, 7 * s, 18 * s, 0, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#5a3a1a';
+    ctx.beginPath(); ctx.ellipse(rim.x, rim.y, 4.5 * s, 14 * s, 0, 0, TAU); ctx.fill();
+    for (const [dx, dy, col] of [[10, -8, '#3fbf6a'], [14, 4, '#2f9e4a'], [9, 10, '#ff6b9a']]) {
+      ctx.fillStyle = col;
+      ctx.beginPath(); ctx.ellipse(rim.x + dx * s, rim.y + dy * s, 6 * s, 3.5 * s, dy * 0.05, 0, TAU); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // Golden kibbles, balls of yarn and bags of kibbles
+  function drawSpecialItem(k) {
+    const bob = Math.sin(time * 4 + k.p) * 4;
+    const p = proj(k.x, k.y + bob, k.z), gnd = proj(k.x, 0, k.z), s = p.s;
+    ctx.globalAlpha = fade(k.z);
+    ctx.fillStyle = 'rgba(5, 6, 20, 0.3)';
+    ctx.beginPath(); ctx.ellipse(gnd.x, gnd.y, 12 * s, 4 * s, 0, 0, TAU); ctx.fill();
+    const col = { golden: '255, 210, 74', yarn: '255, 143, 199', sack: '255, 207, 74' }[k.special];
+    glow(ctx, p.x, p.y, (k.special === 'golden' ? 26 : 38) * s, col, 0.55 + 0.15 * Math.sin(time * 5 + k.p));
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.scale(s, s);
+    ctx.lineJoin = 'round';
+    if (k.special === 'golden') {
+      const spin = Math.cos(time * 3 + k.p);
+      ctx.scale(Math.abs(spin) * 0.8 + 0.2, 1);
+      fishPath(ctx, 0, 0, 12, 1);
+      ctx.fillStyle = '#ffd24a'; ctx.fill();
+      ctx.strokeStyle = '#8a5a00'; ctx.lineWidth = 1.8; ctx.stroke();
+      ctx.fillStyle = '#fff3b0'; ctx.beginPath(); ctx.ellipse(-3, -3, 3, 1.6, -0.4, 0, TAU); ctx.fill();
+    } else if (k.special === 'yarn') {
+      ctx.rotate(time * 2 + k.p);
+      ctx.strokeStyle = '#ff8fc7'; ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.moveTo(12, 6); ctx.quadraticCurveTo(22, 12, 18, 22); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 14, 0, TAU);
+      ctx.fillStyle = '#ff8fc7'; ctx.fill(); ctx.strokeStyle = '#8a2a5a'; ctx.lineWidth = 1.8; ctx.stroke();
+      ctx.strokeStyle = '#c84a8a'; ctx.lineWidth = 1.4;
+      for (const r of [-0.6, 0, 0.6]) { ctx.beginPath(); ctx.ellipse(0, 0, 13, 5, r, 0, TAU); ctx.stroke(); }
+    } else {
+      ctx.rotate(Math.sin(time * 3 + k.p) * 0.15);
+      ctx.beginPath();
+      ctx.moveTo(-14, 16); ctx.quadraticCurveTo(-18, -2, -9, -12); ctx.lineTo(9, -12); ctx.quadraticCurveTo(18, -2, 14, 16); ctx.closePath();
+      ctx.fillStyle = '#c99a5a'; ctx.fill(); ctx.strokeStyle = '#5a3a1a'; ctx.lineWidth = 1.8; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-9, -12); ctx.lineTo(-5, -20); ctx.lineTo(0, -14); ctx.lineTo(5, -20); ctx.lineTo(9, -12);
+      ctx.fillStyle = '#c99a5a'; ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#e8445a'; ctx.fillRect(-10, -13, 20, 3.5);
+      fishPath(ctx, 0, 3, 8, 1); ctx.fillStyle = '#ffd24a'; ctx.fill(); ctx.strokeStyle = '#8a5a00'; ctx.lineWidth = 1.2; ctx.stroke();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+  function catchSpecial(k) {
+    if (k.special === 'golden') {
+      const gain = 5 * (active.double ? 2 : 1);
+      kibbles += gain;
+      track('kib', gain);
+      bonusPts += 50;
+      popup(`+${gain} croquettes !`, '#ffd24a', 24);
+      sfx.combo();
+      burst(k.x, k.y, k.z, 14, { colors: ['#ffd24a', '#fff3b0', '#ffffff'], spread: 110, vyMin: 60, vyMax: 200, life: 0.6, size: 3.5, g: 200, kind: 'star' });
+    } else if (k.special === 'yarn') {
+      bonusPts += 300;
+      popup('Pelote ! +300', '#ff8fc7', 28);
+      sfx.bonus();
+      burst(k.x, k.y, k.z, 18, { colors: ['#ff8fc7', '#ffd6ec', '#ffffff'], spread: 140, vyMin: 60, vyMax: 240, life: 0.7, size: 4, g: 250 });
+    } else {
+      const gain = 15 * (active.double ? 2 : 1);
+      kibbles += gain;
+      track('kib', gain);
+      popup(`Sac de croquettes ! +${gain}`, '#ffcf4a', 28);
+      sfx.record();
+      shake(3, 0.12);
+      burst(k.x, k.y, k.z, 22, { colors: ['#ffe08a', '#e0a458', '#ffffff'], spread: 160, vyMin: 80, vyMax: 280, life: 0.8, size: 4, g: 250, kind: 'spark' });
+    }
+  }
+
   function drawKibble(k) {
     if (k.z < -CAM_D * 0.6) return;
     if (k.bonus) return drawBonusItem(k);
     if (k.star) return drawStarItem(k);
     if (k.goldfish) return drawGoldFish(k);
+    if (k.special) return drawSpecialItem(k);
     const bob = Math.sin(time * 4 + k.p) * 4;
     const p = proj(k.x, k.y + bob, k.z), gnd = proj(k.x, 0, k.z), s = p.s;
     ctx.globalAlpha = fade(k.z);
@@ -2556,9 +2771,17 @@
       }
     }
 
-    // Collar at the neck
-    c.fillStyle = sk.collar || '#e8445a';
-    c.beginPath(); c.ellipse(0, hy + 17, 12, 3.4, 0, 0, TAU); c.fill();
+    // Thin collar following the neck, with a little golden bell
+    const col = sk.collar || '#e8445a';
+    c.lineCap = 'round';
+    c.strokeStyle = sk.outline; c.lineWidth = 4.6;
+    c.beginPath(); c.ellipse(0, hy + 14.5, 11.5, 4, 0, 0.12 * Math.PI, 0.88 * Math.PI); c.stroke();
+    c.strokeStyle = col; c.lineWidth = 2.6;
+    c.beginPath(); c.ellipse(0, hy + 14.5, 11.5, 4, 0, 0.12 * Math.PI, 0.88 * Math.PI); c.stroke();
+    const swing = o.still ? 0 : Math.sin(o.ph * 2) * 1.2;
+    c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1;
+    c.beginPath(); c.arc(swing, hy + 20.5, 2.5, 0, TAU); c.fill(); c.stroke();
+    c.fillStyle = '#8a5a00'; c.fillRect(swing - 0.5, hy + 21, 1, 1.6);
 
     // Highlights
     c.fillStyle = 'rgba(255, 255, 255, 0.32)';
@@ -3036,7 +3259,7 @@
     ctx.globalAlpha = 1;
   }
 
-  const DRAWERS = { antLow: drawAntLow, antHigh: drawAntHigh, chimney: drawChimney };
+  const DRAWERS = { antLow: drawAntLow, antHigh: drawAntHigh, chimney: drawChimney, linge: drawLinge, clim: drawClim, pot: drawPot };
 
   function render() {
     ctx.save();
@@ -3109,6 +3332,7 @@
   function startGame(fromQ = 1) {
     initAudio();
     resetWorld();
+    runLevel = profile.level;
     if (fromQ > 1) {
       level = fromQ;
       dist = startDist = levelAt(fromQ - 1) * 10;
@@ -3130,6 +3354,9 @@
     puddle: ['Plouf !', `Le chat a mis les pattes dans ${PUD.name}.`, 'puddle'],
     antenna: ['Bonk !', "Le chat s'est cogné contre une antenne.", 'hit'],
     chimney: ['Aïe !', 'Le chat a foncé dans une cheminée.', 'hit'],
+    linge: ['Emmêlé !', "Le chat s'est pris dans une corde à linge.", 'hit'],
+    clim: ['Bing !', "Le chat s'est cogné contre un climatiseur.", 'hit'],
+    pot: ['Paf !', 'Le chat a été renversé par un pot de fleurs.', 'hit'],
   };
 
   function showGameOver() {
@@ -3174,7 +3401,10 @@
   }
   function resume() {
     if (state !== 'pause') return;
-    state = 'play';
+    // Count down 3-2-1 before running again
+    state = 'ready';
+    readyT = 3;
+    lastCount = 0;
     show(null);
     last = performance.now();
   }
@@ -4026,7 +4256,8 @@
   }
 
   // HUD: level progress and active bonus timers
-  const levelAt = L => 1000 * L;
+  // Quarter 1 is 1 km long, then each quarter is 500 m longer than the previous one.
+  const levelAt = L => 1000 * L + 250 * L * (L - 1);
   let lastBonusHtml = '';
   function updateHudExtras() {
     const m = Math.floor(dist / 10), lo = level > 1 ? levelAt(level - 1) : 0, hi = levelAt(level);
@@ -4225,9 +4456,9 @@
   }
   grantSpecials();
   const catName = () => profile.name || 'Neko';
-  // About 500 runs from level 1 to level 100.
+  // About 3 to 5 runs per level, roughly 600 runs from level 1 to level 100.
   const MAX_LEVEL = 100;
-  const xpNeed = L => 150 + 15 * (L - 1);
+  const xpNeed = L => 200 + 20 * (L - 1);
   const saveProfile = () => store(PROFILE_KEY, profile);
 
   // One chapter unlocks at each of these player levels.
@@ -4579,14 +4810,14 @@
       : `Record avec le chat ${sk.name} : ${Math.max(sc, prev)}`;
 
     // Experience
-    const gain = Math.floor(dist / 10 / 20) + kibbles * 2 + quizRight * 10 + runMissions * 25;
+    const gain = Math.floor(dist / 10 / 100) + kibbles + quizRight * 5 + runMissions * 20;
     profile.xp += gain;
     let reward = 0, newChapter = 0;
-    const before = unlockedChapters();
+    const before = unlockedChapters(), levelBefore = profile.level;
     while (profile.level < MAX_LEVEL && profile.xp >= xpNeed(profile.level)) {
       profile.xp -= xpNeed(profile.level);
       profile.level++;
-      reward += Math.min(120, 20 + 2 * profile.level);
+      reward += Math.min(250, 50 + 5 * profile.level);
     }
     if (profile.level >= MAX_LEVEL) profile.xp = Math.min(profile.xp, xpNeed(MAX_LEVEL));
     const gifts = grantSpecials();
@@ -4598,7 +4829,9 @@
     $('xpLevel').textContent = `${catName()} · niveau ${profile.level}`;
     $('xpBarOver').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
     $('levelUp').hidden = !reward;
-    $('levelUp').textContent = `Niveau supérieur ! +${reward} croquettes` + gifts.map(g => ` · Nouveau chat offert : ${g.name} !`).join('');
+    const news = ROAD_UNLOCKS.filter(u => u.level > levelBefore && u.level <= profile.level);
+    $('levelUp').textContent = `Niveau supérieur ! +${reward} croquettes` + gifts.map(g => ` · Nouveau chat offert : ${g.name} !`).join('')
+      + news.map(u => ` · Nouveau sur les toits : ${u.name} (${u.text})`).join('');
     if (reward) { sfx.fanfare(); }
     $('chapterBox').hidden = !newChapter;
     if (newChapter) {
@@ -4853,7 +5086,7 @@
   gold.costumes = Array.isArray(gold.costumes) ? gold.costumes : [];
   gold.pending = gold.pending || {};
   const saveGold = () => store(GOLD_KEY, gold);
-  const FISH_CHANCE = 1 / 25;
+  const FISH_CHANCE = 1 / 15;
 
   const COSTUMES = [
     { id: 'vampire', name: 'Vampire', theme: 'halloween' },
@@ -4878,7 +5111,7 @@
     { id: 'hint', name: 'Indice aux questions', price: 2, text: 'Pendant la prochaine partie, une mauvaise réponse disparaît à chaque question.' },
     { id: 'magnet', name: 'Aimant de départ', price: 2, text: 'La prochaine partie commence avec un aimant qui dure 30 secondes.' },
   ];
-  // One chance in 25 that a golden fish hides somewhere in each quarter.
+  // One chance in 15 that a golden fish hides somewhere in each quarter.
   function rollGoldFish(quarter) {
     fishAt = Math.random() < FISH_CHANCE ? (quarter - 1) * 1000 + rand(200, 800) : null;
   }
@@ -5432,6 +5665,9 @@
       get fishLane() { const k = kibs.find(k => k.goldfish && !k.taken); return k ? { lane: Math.round(k.x / LANE_W), z: k.z } : null; },
       get gold() { return gold.count; },
       get catLane() { return cat.lane; },
+      place(type, lane, z) { addObstacle(type, lane, z); },
+      item(special, lane, z) { kibs.push({ x: lane * LANE_W, y: 30, z, p: 0, special }); },
+      get road() { return { objs: objs.map(o => o.type + (o.roll ? '*' : '')), items: kibs.filter(k => k.special).map(k => k.special) }; },
       // Peak and average level of the music over the last frame (0 to 1)
       musicLevel() {
         if (!musicBus) return null;
@@ -5532,6 +5768,10 @@
     requestAnimationFrame(frame);
   }
   resize();
+  // Installable app: offline copy of the game (only over http(s), not from a local file)
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
   requestAnimationFrame(frame);
 })();
 </script>
