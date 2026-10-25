@@ -270,7 +270,7 @@
   .bank { justify-self: center; display: flex; align-items: center; gap: var(--s2); font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
   .bank svg { width: 26px; height: 17px; }
   .bank span { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-xl); color: var(--ink); }
-  .skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--s2); }
+  .skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: var(--s2); }
   .skin, .album-item { display: grid; justify-items: center; align-content: start; gap: var(--s1); padding: var(--s2) 6px; border-radius: var(--r-md); border: 2px solid transparent; background: var(--surface); min-width: 0; }
   .skin.selected { border-color: var(--accent); background: rgba(255, 162, 76, 0.12); }
   .skin canvas, .album-item canvas { width: 76px; height: 76px; }
@@ -681,12 +681,21 @@
     { id: 'dore', name: 'Doré', price: 800, fur: '#f2c14e', paw: '#fff0b8', stripe: '#c8901c', outline: '#6b4706', shimmer: true, collar: '#c0392b' },
     { id: 'arcenciel', name: 'Arc-en-ciel', price: 1000, fur: '#ffffff', paw: '#ffffff', stripe: '#ff5e5e', outline: '#4a3a6a', rainbow: true, collar: '#ffffff' },
     // Special cats from the story, offered every 20 player levels
-    { id: 'filou', name: 'Filou', price: 0, special: 20, fur: '#8a8d9c', paw: '#c9ccd8', stripe: '#5a5d6c', outline: '#25273a', earTip: '#5a5d6c', collar: '#3fbf6a' },
-    { id: 'comete', name: 'Comète', price: 0, special: 40, fur: '#f1edff', paw: '#ffffff', stripe: '#b9a6ff', outline: '#4a3f7a', sparkles: true, shimmer: true, tailTip: '#ffd34d', collar: '#ffd34d' },
-    { id: 'plume', name: 'Plume', price: 0, special: 60, fur: '#f7e3c2', paw: '#fff6e6', stripe: '#e3bb88', outline: '#6b4a2a', earTip: '#e3bb88', collar: '#e8263a' },
-    { id: 'capitaine', name: 'Capitaine', price: 0, special: 80, fur: '#5b4636', paw: '#efe7dc', stripe: '#2e2219', outline: '#1e150f', tailTip: '#efe7dc', collar: '#2f4fb0' },
-    { id: 'legende', name: 'Légende', price: 0, special: 100, fur: '#ffe7a3', paw: '#fff6d6', stripe: '#f0a92a', outline: '#6b4706', shimmer: true, sparkles: true, tailTip: '#ffffff', collar: '#c0392b' },
+    { id: 'filou', name: 'Filou', price: 0, fx: 'smoke', special: 20, fur: '#8a8d9c', paw: '#c9ccd8', stripe: '#5a5d6c', outline: '#25273a', earTip: '#5a5d6c', collar: '#3fbf6a' },
+    { id: 'comete', name: 'Comète', price: 0, fx: 'stars', special: 40, fur: '#f1edff', paw: '#ffffff', stripe: '#b9a6ff', outline: '#4a3f7a', sparkles: true, shimmer: true, tailTip: '#ffd34d', collar: '#ffd34d' },
+    { id: 'plume', name: 'Plume', price: 0, fx: 'feathers', special: 60, fur: '#f7e3c2', paw: '#fff6e6', stripe: '#e3bb88', outline: '#6b4a2a', earTip: '#e3bb88', collar: '#e8263a' },
+    { id: 'capitaine', name: 'Capitaine', price: 0, fx: 'bubbles', special: 80, fur: '#5b4636', paw: '#efe7dc', stripe: '#2e2219', outline: '#1e150f', tailTip: '#efe7dc', collar: '#2f4fb0' },
+    { id: 'legende', name: 'Légende', price: 0, fx: 'gold', special: 100, fur: '#ffe7a3', paw: '#fff6d6', stripe: '#f0a92a', outline: '#6b4706', shimmer: true, sparkles: true, tailTip: '#ffffff', collar: '#c0392b' },
   ];
+
+  // Special cats glow and leave a trail while running.
+  const SPECIAL_FX = {
+    smoke:    { aura: null,            colors: ['#9aa0b5', '#c9ccd8', '#6c7184'], kind: 'puff' },
+    stars:    { aura: '185, 160, 255', colors: ['#fff6c8', '#d6c8ff', '#ffffff'], kind: 'star' },
+    feathers: { aura: '255, 214, 196', colors: ['#ffffff', '#ffe9ef'], kind: 'feather' },
+    bubbles:  { aura: '120, 190, 255', colors: ['#bfe6ff', '#8fd3ff'], kind: 'bubble' },
+    gold:     { aura: '255, 205, 90',  colors: ['#ffd24a', '#fff3b0', '#ffffff'], kind: 'star' },
+  };
 
   let bank = 0, owned = ['roux'], skinId = 'roux', ownedHats = ['none'], hatId = 'none';
   try {
@@ -1759,7 +1768,7 @@
   let speed, dist, elapsed, kibbles, nextRowZ, deathCause, deathT, time = 0;
   let bonusPts = 0, level = 1, comboMult = 1, recordShown = false, lastOufT = -9, nextBonusAt = 6;
   let active = {}, shakeT = 0, shakeMag = 0, slowT = 0, popups = [];
-  let decos = [], strayAt = 25, starAt = 30, shootStar = null, quizRight = 0;
+  let decos = [], strayAt = 25, starAt = 30, shootStar = null, quizRight = 0, trailAcc = 0;
   let best = 0;
   try { best = parseInt(localStorage.getItem(BEST_KEY), 10) || 0; } catch (e) {}
 
@@ -1956,6 +1965,7 @@
 
     for (const o of objs) if (!o.passed && o.z + o.d < -18) { o.passed = true; passedObstacle(o); }
     updateSurprises(dt, dz);
+    emitTrail(dt);
 
     kibComboT -= dt;
     if (kibComboT <= 0) { kibCombo = 0; comboMult = 1; }
@@ -2254,8 +2264,14 @@
     ctx.globalAlpha = 1;
   }
 
+  function drawAura(c, x, y, r, sk) {
+    const fx = SPECIAL_FX[sk.fx];
+    if (fx && fx.aura) glow(c, x, y, r, fx.aura, 0.32 + 0.12 * Math.sin(time * 4));
+  }
+
   function drawCat() {
     const p = proj(cat.x, cat.y, 0), g = proj(cat.x, 0, 0), s = p.s;
+    drawAura(ctx, p.x, p.y - 34 * s, 62 * s, currentSkin());
     const sh = Math.max(0.4, 1 - cat.y / 170);
     ctx.fillStyle = 'rgba(5, 6, 20, 0.45)';
     ctx.beginPath(); ctx.ellipse(g.x, g.y, 26 * s * sh, 7 * s * sh, 0, 0, TAU); ctx.fill();
@@ -2280,9 +2296,11 @@
     }
   }
 
+  // Cat style "D · Mélange", kawaii: round head and ears, soft shading, highlights, a bell.
+  const OUTLINE_W = 1.9;
   function strokeFill(c, sk, fill) {
     c.fillStyle = fill; c.fill();
-    c.strokeStyle = sk.outline; c.lineWidth = 2.2; c.stroke();
+    c.strokeStyle = sk.outline; c.lineWidth = OUTLINE_W; c.stroke();
   }
 
   // Fill a path, paint coat patches clipped inside it, then outline it.
@@ -2296,14 +2314,35 @@
       }
       c.restore();
     }
-    path(); c.strokeStyle = sk.outline; c.lineWidth = 2.2; c.stroke();
+    path(); c.strokeStyle = sk.outline; c.lineWidth = OUTLINE_W; c.stroke();
+  }
+
+  // Light from the top left, soft shade at the bottom, then outline again on top.
+  function shadeShape(c, sk, path, cy, r) {
+    c.save(); path(); c.clip();
+    const g = c.createRadialGradient(-r * 0.4, cy - r * 0.45, 1, -r * 0.2, cy - r * 0.2, r * 1.3);
+    g.addColorStop(0, 'rgba(255, 255, 255, 0.28)');
+    g.addColorStop(0.5, 'rgba(255, 255, 255, 0.05)');
+    g.addColorStop(1, 'rgba(0, 0, 0, 0.16)');
+    c.fillStyle = g;
+    c.fillRect(-r * 2, cy - r * 2, r * 4, r * 4);
+    c.restore();
+    path(); c.strokeStyle = sk.outline; c.lineWidth = OUTLINE_W; c.stroke();
   }
 
   function stripeColor(sk, i) {
     return sk.hue == null ? sk.stripe : `hsl(${(sk.hue + 150 + i * 55) % 360}, 85%, 55%)`;
   }
 
-  // o: { ph: run phase, air, still, t: time, wet }
+  function roundEar(c, sd, hy) {
+    c.beginPath();
+    c.moveTo(sd * 16, hy - 7);
+    c.quadraticCurveTo(sd * 18.5, hy - 27, sd * 12.5, hy - 28);
+    c.quadraticCurveTo(sd * 7, hy - 24, sd * 3, hy - 16);
+    c.closePath();
+  }
+
+  // o: { ph: run phase, air, still, t: time, wet, hat }
   function drawCatRun(c, sk, o) {
     const ph = o.ph, air = o.air;
     const bob = air || o.still ? 0 : Math.abs(Math.sin(ph)) * 3.5;
@@ -2312,96 +2351,117 @@
     c.lineJoin = 'round';
     c.lineCap = 'round';
 
-    // Tail
+    // Tail, with a light tip
     const sway = Math.sin(o.t * 6) * 10;
     const tipX = 12 + sway, tipY = (air ? -78 : -68) - bob;
     c.beginPath();
     c.moveTo(4, -12 - bob);
     c.bezierCurveTo(22 + sway * 0.3, -18, 26 + sway, -48, tipX, tipY);
-    c.strokeStyle = sk.outline; c.lineWidth = 9.5; c.stroke();
-    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 6; c.stroke();
-    if (sk.tailTip) {
-      c.fillStyle = sk.tailTip;
-      c.beginPath(); c.arc(tipX, tipY, 3.3, 0, TAU); c.fill();
+    c.strokeStyle = sk.outline; c.lineWidth = 10.5; c.stroke();
+    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 7; c.stroke();
+    c.fillStyle = sk.tailTip || sk.paw;
+    c.beginPath(); c.arc(tipX, tipY, 3.6, 0, TAU); c.fill();
+
+    // Round back paws
+    for (const [px, lift] of [[-10, legA], [10, legB]]) {
+      c.beginPath(); c.arc(px, -5 - lift, 6.5, 0, TAU); strokeFill(c, sk, sk.paw);
     }
 
-    // Back paws
-    for (const [px, lift] of [[-11, legA], [11, legB]]) {
-      c.beginPath(); c.ellipse(px, -4 - lift, 7, 5, 0, 0, TAU); strokeFill(c, sk, sk.paw);
-    }
-
-    // Body
-    const body = () => { c.beginPath(); c.ellipse(0, -24 - bob, 21, 20, 0, 0, TAU); };
+    // Body, with the stripes kept inside it
+    const by = -23 - bob;
+    const body = () => { c.beginPath(); c.ellipse(0, by, 20, 19, 0, 0, TAU); };
     furShape(c, sk, body, sk.fur, sk.patches && sk.patches.map(([x, y, rx, ry, col]) => [x, y - bob, rx, ry, col]));
+    c.save(); body(); c.clip();
     if (sk.stripe) {
-      c.lineWidth = 3.2;
-      [-34, -25, -16].forEach((y, i) => {
+      c.lineWidth = 3.6;
+      [-32, -24, -16].forEach((y, i) => {
         c.strokeStyle = stripeColor(sk, i);
         for (const sd of [-1, 1]) {
           c.beginPath();
-          c.moveTo(sd * 18, y + 4 - bob);
-          c.quadraticCurveTo(sd * 10, y - 2 - bob, sd * 4, y - bob);
+          c.moveTo(sd * 21, y + 4 - bob);
+          c.quadraticCurveTo(sd * 12, y - 2 - bob, sd * 5, y - bob);
           c.stroke();
         }
       });
       c.strokeStyle = stripeColor(sk, 3);
-      c.beginPath(); c.moveTo(0, -38 - bob); c.lineTo(0, -12 - bob); c.stroke();
+      c.beginPath(); c.moveTo(0, -36 - bob); c.lineTo(0, -13 - bob); c.stroke();
     }
     if (sk.shimmer) {
       const sx = ((o.t * 45) % 90) - 45;
-      c.save(); body(); c.clip();
       c.fillStyle = 'rgba(255, 255, 255, 0.5)';
       c.beginPath();
       c.moveTo(sx - 2, -46 - bob); c.lineTo(sx + 6, -46 - bob); c.lineTo(sx - 6, -2 - bob); c.lineTo(sx - 14, -2 - bob);
       c.closePath(); c.fill();
-      c.restore();
     }
     if (sk.sparkles) {
-      [[-10, -30], [9, -19], [4, -37], [-5, -14], [13, -31]].forEach(([x, y], i) => {
+      [[-10, -29], [9, -18], [4, -35], [-5, -13], [12, -30]].forEach(([x, y], i) => {
         c.globalAlpha = 0.35 + 0.65 * Math.max(0, Math.sin(o.t * 3 + i * 1.7));
         drawStar(c, x, y - bob, 2.6, '#fff6c8');
       });
       c.globalAlpha = 1;
     }
+    c.restore();
+    shadeShape(c, sk, body, by, 20);
 
-    // Collar
-    c.fillStyle = sk.collar || '#e8445a';
-    c.beginPath(); c.ellipse(0, -40 - bob, 12, 3.6, 0, 0, TAU); c.fill();
-
-    // Head
+    // Fluffy cheeks behind the head
     const hy = -50 - bob;
-    const head = () => { c.beginPath(); c.arc(0, hy, 16, 0, TAU); };
-    furShape(c, sk, head, sk.head || sk.fur, sk.headPatches && sk.headPatches.map(([x, y, rx, ry, col]) => [x, hy + y, rx, ry, col]));
-    // Ears
-    const earTip = sk.earTip || stripeColor(sk, 1);
     for (const sd of [-1, 1]) {
       c.beginPath();
-      c.moveTo(sd * 15, hy - 5);
-      c.lineTo(sd * 12, hy - 23);
-      c.lineTo(sd * 2, hy - 13);
+      c.moveTo(sd * 13, hy - 4); c.quadraticCurveTo(sd * 22, hy - 1, sd * 20, hy + 3);
+      c.quadraticCurveTo(sd * 23, hy + 7, sd * 18, hy + 10);
+      c.quadraticCurveTo(sd * 18, hy + 14, sd * 9, hy + 12);
       c.closePath();
+      strokeFill(c, sk, sk.head || sk.fur);
+    }
+
+    // Head
+    const head = () => { c.beginPath(); c.arc(0, hy, 18, 0, TAU); };
+    furShape(c, sk, head, sk.head || sk.fur, sk.headPatches && sk.headPatches.map(([x, y, rx, ry, col]) => [x, hy + y, rx, ry, col]));
+    if (sk.stripe) {
+      c.save(); head(); c.clip();
+      c.lineWidth = 3;
+      [-5.5, 0, 5.5].forEach((sx, i) => {
+        c.strokeStyle = stripeColor(sk, i + 2);
+        c.beginPath(); c.moveTo(sx, hy - 16 + Math.abs(sx) * 0.3); c.lineTo(sx * 0.8, hy - 9); c.stroke();
+      });
+      c.restore();
+    }
+    shadeShape(c, sk, head, hy, 18);
+
+    // Round ears, with a rounded tip of color
+    const earTip = sk.earTip || stripeColor(sk, 1);
+    for (const sd of [-1, 1]) {
+      roundEar(c, sd, hy);
       strokeFill(c, sk, sk.ear || sk.fur);
       if (earTip) {
+        c.save(); roundEar(c, sd, hy); c.clip();
         c.fillStyle = earTip;
-        c.beginPath(); c.moveTo(sd * 12.6, hy - 17); c.lineTo(sd * 12, hy - 22); c.lineTo(sd * 8, hy - 18); c.closePath(); c.fill();
+        c.beginPath(); c.arc(sd * 13, hy - 27, 5.5, 0, TAU); c.fill();
+        c.restore();
+        roundEar(c, sd, hy); c.strokeStyle = sk.outline; c.lineWidth = OUTLINE_W; c.stroke();
       }
     }
-    // Head stripes
-    if (sk.stripe) {
-      c.lineWidth = 2.6;
-      [-5, 0, 5].forEach((sx, i) => {
-        c.strokeStyle = stripeColor(sk, i + 2);
-        c.beginPath(); c.moveTo(sx, hy - 14 + Math.abs(sx) * 0.3); c.lineTo(sx * 0.8, hy - 7); c.stroke();
-      });
-    }
+
+    // Collar and bell at the neck
+    c.fillStyle = sk.collar || '#e8445a';
+    c.beginPath(); c.ellipse(0, hy + 17, 12, 3.4, 0, 0, TAU); c.fill();
+    c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1.1;
+    c.beginPath(); c.arc(8, hy + 19.5, 3.2, 0, TAU); c.fill(); c.stroke();
+    c.beginPath(); c.moveTo(8, hy + 20.5); c.lineTo(8, hy + 22.3); c.stroke();
+
+    // Highlights
+    c.fillStyle = 'rgba(255, 255, 255, 0.32)';
+    c.beginPath(); c.ellipse(-7, hy - 8, 4.5, 2.4, -0.5, 0, TAU); c.fill();
+    c.beginPath(); c.ellipse(-10, by - 9, 6, 2.8, -0.6, 0, TAU); c.fill();
+
     // Whiskers
     c.strokeStyle = 'rgba(255, 255, 255, 0.75)'; c.lineWidth = 1.2;
     for (const sd of [-1, 1]) {
-      c.beginPath(); c.moveTo(sd * 14, hy + 4); c.lineTo(sd * 27, hy + 2); c.stroke();
-      c.beginPath(); c.moveTo(sd * 14, hy + 6); c.lineTo(sd * 26, hy + 10); c.stroke();
+      c.beginPath(); c.moveTo(sd * 16, hy + 4); c.lineTo(sd * 29, hy + 2); c.stroke();
+      c.beginPath(); c.moveTo(sd * 16, hy + 6); c.lineTo(sd * 28, hy + 10); c.stroke();
     }
 
-    if (o.hat) { c.save(); c.translate(0, hy - 12); drawHat(c, o.hat, o.t); c.restore(); }
+    if (o.hat) { c.save(); c.translate(0, hy - 14); drawHat(c, o.hat, o.t); c.restore(); }
 
     // Wet cat drips
     if (o.wet) {
@@ -2417,12 +2477,13 @@
     const r = 17;
     c.translate(0, -r);
     c.lineJoin = 'round';
-    // Ears peeking out
+    // Round ears peeking out
     for (const sd of [-1, 1]) {
-      c.beginPath(); c.moveTo(sd * 13, -8); c.lineTo(sd * 12, -22); c.lineTo(sd * 3, -15); c.closePath();
+      c.beginPath(); c.moveTo(sd * 14, -8); c.quadraticCurveTo(sd * 15, -24, sd * 10, -24); c.quadraticCurveTo(sd * 6, -20, sd * 3, -15); c.closePath();
       strokeFill(c, sk, sk.ear || sk.fur);
     }
-    c.beginPath(); c.arc(0, 0, r, 0, TAU); strokeFill(c, sk, sk.fur);
+    const ball = () => { c.beginPath(); c.arc(0, 0, r, 0, TAU); };
+    ball(); strokeFill(c, sk, sk.fur);
     // Stripes or patches scrolling downward to read as a forward roll
     const marks = sk.stripe ? null : sk.patches;
     if (sk.stripe || marks) {
@@ -2442,12 +2503,17 @@
       }
       c.restore();
     }
+    shadeShape(c, sk, ball, 0, r);
+    c.fillStyle = 'rgba(255, 255, 255, 0.32)';
+    c.beginPath(); c.ellipse(-6, -8, 5, 2.6, -0.6, 0, TAU); c.fill();
     if (o.hat) { c.save(); c.translate(0, -14); drawHat(c, o.hat, o.t); c.restore(); }
-    // Tail wrapped around
-    c.strokeStyle = sk.outline; c.lineWidth = 8; c.lineCap = 'round';
+    // Tail wrapped around, with a light tip
+    c.strokeStyle = sk.outline; c.lineWidth = 9; c.lineCap = 'round';
     c.beginPath(); c.arc(0, 2, r + 1, 0.3, 1.9); c.stroke();
-    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 5;
+    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 6;
     c.beginPath(); c.arc(0, 2, r + 1, 0.3, 1.9); c.stroke();
+    c.fillStyle = sk.tailTip || sk.paw;
+    c.beginPath(); c.arc((r + 1) * Math.cos(1.9), 2 + (r + 1) * Math.sin(1.9), 3, 0, TAU); c.fill();
   }
 
   // ---------- Hats (drawn from behind, base of the hat at y = 0, going up) ----------
@@ -2745,13 +2811,46 @@
     c.closePath(); c.fill();
   }
 
+  function emitTrail(dt) {
+    const fx = SPECIAL_FX[currentSkin().fx];
+    if (!fx) return;
+    trailAcc += dt * 34;
+    while (trailAcc >= 1) {
+      trailAcc--;
+      const k = fx.kind;
+      particles.push({
+        x: cat.x + rand(-16, 16), y: cat.y + rand(6, 50), z: rand(0, 14),
+        vx: rand(-45, 45), vy: k === 'feather' ? rand(-10, 15) : k === 'bubble' ? rand(20, 55) : rand(5, 35), vz: -rand(10, 40),
+        g: k === 'feather' ? 20 : k === 'bubble' ? -40 : k === 'puff' ? -25 : 40,
+        life: rand(0.45, 0.85), max: 0.85,
+        size: k === 'puff' ? rand(6, 9) : k === 'feather' ? rand(4, 5.5) : k === 'bubble' ? rand(2.5, 4) : rand(3.2, 5),
+        color: pick(fx.colors), kind: k, rot: rand(0, TAU),
+      });
+    }
+  }
+
   function drawParticles() {
     for (const p of particles) {
       if (p.z < -CAM_D * 0.7) continue;
       const q = proj(p.x, p.y, p.z);
       ctx.globalAlpha = Math.max(0, p.life / p.max);
       if (p.kind === 'star') drawStar(ctx, q.x, q.y, p.size * q.s * 1.4, p.color);
-      else {
+      else if (p.kind === 'puff') {
+        ctx.globalAlpha *= 0.45;
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(q.x, q.y, p.size * q.s * (1.6 - p.life / p.max * 0.6), 0, TAU); ctx.fill();
+      } else if (p.kind === 'feather') {
+        const r = p.size * q.s;
+        ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(p.rot + time * 2);
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.ellipse(0, 0, r * 1.6, r * 0.6, 0, 0, TAU); ctx.fill();
+        ctx.strokeStyle = 'rgba(200, 170, 180, 0.8)'; ctx.lineWidth = Math.max(0.8, r * 0.18);
+        ctx.beginPath(); ctx.moveTo(-r * 1.9, 0); ctx.lineTo(r * 1.4, 0); ctx.stroke();
+        ctx.restore();
+      } else if (p.kind === 'bubble') {
+        ctx.strokeStyle = p.color; ctx.lineWidth = Math.max(1, p.size * q.s * 0.3);
+        ctx.beginPath(); ctx.arc(q.x, q.y, Math.max(1.5, p.size * q.s), 0, TAU); ctx.stroke();
+      } else {
         ctx.fillStyle = p.color;
         ctx.beginPath(); ctx.arc(q.x, q.y, Math.max(1, p.size * q.s), 0, TAU); ctx.fill();
       }
@@ -3020,6 +3119,7 @@
       const isCat = shopTab === 'cats';
       const owns = SHOP[shopTab].owned().includes(it.id);
       const sk = isCat ? it : currentSkin();
+      c.save(); c.setTransform(dpr, 0, 0, dpr, 0, 0); drawAura(c, 38, 44, 38, sk); c.restore();
       drawCatRun(c, skinPaint(sk, time), { ph: owns ? time * 9 : 0, air: false, still: !owns, t: time, wet: false, hat: isCat ? hatId : it.id });
     }
   }
@@ -3951,6 +4051,7 @@
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.clearRect(0, 0, 76, 76);
     if (kind === 'cat') {
+      if (has) drawAura(c, 38, 44, 38, it);
       c.translate(38, 71); c.scale(0.7, 0.7);
       drawCatRun(c, skinPaint(it, 0), { ph: 0, air: false, still: true, t: 0, wet: false });
     } else {
@@ -4069,6 +4170,7 @@
     c.save();
     c.fillStyle = 'rgba(5, 6, 20, 0.45)';
     c.beginPath(); c.ellipse(540, 1250, 120, 30, 0, 0, TAU); c.fill();
+    drawAura(c, 540, 1100, 300, currentSkin());
     c.translate(540, 1250); c.scale(4.4, 4.4);
     drawCatRun(c, skinPaint(currentSkin(), time), { ph: 0, air: false, still: true, t: time, wet: false, hat: hatId });
     c.restore();
