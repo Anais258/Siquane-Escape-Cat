@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>Siquane Escape Cat</title>
+<title>Neko Odyssey</title>
 <meta name="theme-color" content="#0b1030">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -384,7 +384,7 @@
     <div class="card">
       <div class="home-head">
         <span></span>
-        <h1><small>Siquane</small>Escape Cat</h1>
+        <h1><small>Neko</small>Odyssey</h1>
         <div class="sounds">
           <button class="icon-btn sound" data-toggle="music" aria-label="Couper la musique">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="16.5" cy="16" r="2.5" fill="currentColor"/><path class="slash" d="M4 4l16 16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
@@ -395,7 +395,7 @@
         </div>
       </div>
       <div class="player">
-        <button class="name-btn" id="playerName" aria-label="Changer le nom du chat"><span id="playerNameText">Siquane</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
+        <button class="name-btn" id="playerName" aria-label="Changer le nom du chat"><span id="playerNameText">Neko</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
         <span id="playerLevel">Niveau 1</span>
         <span class="bar"><i id="xpBar"></i></span>
       </div>
@@ -487,7 +487,7 @@
         <div class="label">Poissons d'or</div>
         <p class="small-text">Très rares : il y a 1 chance sur 25 qu'un poisson d'or se cache dans chaque quartier. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
         <div class="label">Quartiers et questions</div>
-        <p class="small-text">Tous les kilomètres, tu entres dans un nouveau quartier : la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
+        <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Tous les kilomètres, tu entres dans un nouveau quartier. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
       <div class="play-bar">
         <button class="btn big" id="playBtn">Jouer</button>
@@ -529,7 +529,7 @@
       </div>
       <p class="hint kbd-only">ou appuie sur Espace</p>
       <div class="box">
-        <div class="box-head"><b id="xpLevel">Siquane · niveau 1</b><span id="xpGain">+0 XP</span></div>
+        <div class="box-head"><b id="xpLevel">Neko · niveau 1</b><span id="xpGain">+0 XP</span></div>
         <div class="bar"><i id="xpBarOver"></i></div>
         <p class="good" id="levelUp" hidden></p>
       </div>
@@ -552,7 +552,7 @@
 
   <div class="overlay" id="introScreen" hidden>
     <form class="card" id="introForm">
-      <h1><small>Siquane</small>Escape Cat</h1>
+      <h1><small>Neko</small>Odyssey</h1>
       <p class="story-text">Une nuit d'orage, un petit chat s'est abrité dans un camion de livraison. À son réveil, il était au cœur d'une ville inconnue, très loin de sa famille. Du haut d'un toit, il aperçoit au loin le clocher de son quartier. Pour rentrer, il n'y a qu'un chemin : courir de toit en toit !</p>
       <label class="label" for="nameInput">Comment s'appelle ton chat ?</label>
       <input class="name-input" id="nameInput" maxlength="16" autocomplete="off" spellcheck="false">
@@ -592,7 +592,7 @@
       <h2>Ton score</h2>
       <img class="share-img" id="shareImg" alt="Image du score avec ton chat">
       <button class="btn" id="shareNative" hidden>Partager</button>
-      <a class="btn ghost" id="shareSave" href="#" download="siquane-escape-cat.png">Enregistrer l'image</a>
+      <a class="btn ghost" id="shareSave" href="#" download="neko-odyssey.png">Enregistrer l'image</a>
       <p class="small-text center">Sur téléphone, tu peux aussi faire un appui long sur l'image pour l'enregistrer ou la partager.</p>
       <button class="btn ghost" id="shareBack">Retour</button>
     </div>
@@ -642,14 +642,14 @@
   <div class="overlay" id="classScreen" hidden>
     <div class="card">
       <h2>Ta classe</h2>
-      <p>À chaque nouveau quartier, la course te pose jusqu'à 3 questions. Choisis ta classe pour avoir des questions à ton niveau. Le jeu s'adapte ensuite à tes réponses.</p>
+      <p>Toutes les 30 secondes de course, le jeu te pose jusqu'à 3 questions. Choisis ta classe pour avoir des questions à ton niveau. Le jeu s'adapte ensuite à tes réponses.</p>
       <div class="grades" id="gradeGrid"></div>
     </div>
   </div>
 
   <div class="overlay" id="quizScreen" hidden>
     <div class="card quiz">
-      <div class="quiz-head"><span class="quiz-level" id="quizLevel">Quartier 2 !</span><span class="quiz-count" id="quizCount">Question 1 sur 3</span></div>
+      <div class="quiz-head"><span class="quiz-level" id="quizLevel">Pause questions !</span><span class="quiz-count" id="quizCount">Question 1 sur 3</span></div>
       <div class="quiz-subject" id="quizSubject"></div>
       <h3 class="quiz-q" id="quizQ"></h3>
       <div class="quiz-choices" id="quizChoices"></div>
@@ -1844,7 +1844,7 @@
   let state = 'start'; // start | play | pause | dying | over
   let cat, objs, kibs, particles;
   let speed, dist, elapsed, kibbles, nextRowZ, deathCause, deathT, time = 0;
-  let bonusPts = 0, startDist = 0, level = 1, comboMult = 1, recordShown = false, lastOufT = -9, nextBonusAt = 6;
+  let bonusPts = 0, startDist = 0, quizClock = 0, level = 1, comboMult = 1, recordShown = false, lastOufT = -9, nextBonusAt = 6;
   let active = {}, shakeT = 0, shakeMag = 0, slowT = 0, popups = [];
   let decos = [], strayAt = 25, starAt = 30, shootStar = null, quizRight = 0, trailAcc = 0;
   // Golden fish state (loaded with the shop data further down)
@@ -1858,7 +1858,7 @@
     cat = { lane: 0, x: 0, y: 0, vy: 0, onGround: true, rollT: 0, rollQueued: false, fastFall: false, anim: 0, tilt: 0, prevLane: 0, laneT: -9 };
     objs = []; kibs = []; particles = []; popups = [];
     speed = START_SPEED; dist = 0; elapsed = 0; kibbles = 0;
-    bonusPts = 0; level = 1; startDist = 0; comboMult = 1; recordShown = false; lastOufT = -9; nextBonusAt = 6;
+    bonusPts = 0; level = 1; startDist = 0; quizClock = 0; comboMult = 1; recordShown = false; lastOufT = -9; nextBonusAt = 6;
     active = {}; shakeT = 0; slowT = 0; kibCombo = 0;
     decos = []; strayAt = rand(18, 30); starAt = rand(22, 35); shootStar = null; quizRight = 0;
     runPowers = {}; fishAt = null; revived = false; shieldT = 0;
@@ -1867,6 +1867,7 @@
   }
   resetWorld();
 
+  const QUIZ_EVERY = 30;
   const score = () => Math.floor((dist - startDist) / 10) + bonusPts;
 
   // ---------- Spawning ----------
@@ -2013,6 +2014,7 @@
     if (state === 'revive') { updateRevive(dt); return; }
 
     elapsed += dt;
+    quizClock += dt;
     if (shieldT > 0) shieldT -= dt;
     speed = Math.min(MAX_SPEED, START_SPEED + elapsed * 7);
     const dz = speed * dt;
@@ -2065,6 +2067,11 @@
       reachQuarter(level);
       rollGoldFish(level);
       sfx.level();
+      toast(`Quartier ${level} !`);
+    }
+    // A question break every 30 seconds of running
+    if (state === 'play' && quizClock >= QUIZ_EVERY) {
+      quizClock = 0;
       startQuiz();
     }
   }
@@ -3071,7 +3078,7 @@
     const gap = best - sc;
     $('nearBest').hidden = isBest || gap > Math.max(100, best * 0.25);
     $('nearBest').textContent = `Plus que ${gap} points pour battre ton record !`;
-    $('levelOver').textContent = level > 1 ? `Tu as atteint le quartier ${level}.` : 'Atteins le quartier 2 pour répondre à des questions.';
+    $('levelOver').textContent = level > 1 ? `Tu as atteint le quartier ${level}.` : 'Cours 1 km pour atteindre le quartier 2.';
     $('missionsGain').innerHTML = runMissions ? `${runMissions} réussie${runMissions > 1 ? 's' : ''} · +${runRewards} ${FISH_SVG}` : '';
     renderPanels();
     hud.hidden = true;
@@ -3486,7 +3493,7 @@
     ['en', 2, 'Comment dit-on « lundi » en anglais ?', ['Monday', 'Sunday', 'Friday'], 'Monday = lundi, Friday = vendredi, Sunday = dimanche.'],
     ['en', 2, 'Que veut dire « Where is the cat? » ?', ['Où est le chat ?', 'Qui est le chat ?', 'Quand vient le chat ?'], 'Where = où, who = qui, when = quand.'],
     ['en', 2, 'Quel est le pluriel de « cat » ?', ['Cats', 'Cates', 'Catties'], 'En anglais, on ajoute souvent un « s » pour le pluriel : one cat, two cats.'],
-    ['en', 2, 'Complète : « My name ___ Siquane. »', ['is', 'are', 'am'], 'On dit « I am », « you are », mais « my name is ».'],
+    ['en', 2, 'Complète : « My name ___ Neko. »', ['is', 'are', 'am'], 'On dit « I am », « you are », mais « my name is ».'],
     ['en', 2, 'Que veut dire « kitten » ?', ['Chaton', 'Cuisine', 'Moufle'], 'Kitten = chaton. Attention : « kitchen » veut dire cuisine.'],
     ['en', 3, 'Complète : « The cats ___ on the roof. »', ['are', 'is', 'am'], '« The cats » est au pluriel, on utilise donc « are ».'],
     ['en', 3, 'Que veut dire « The cat jumps over the puddle » ?', ['Le chat saute par-dessus la flaque', 'Le chat tombe dans la flaque', 'Le chat boit la flaque'], 'To jump = sauter, over = par-dessus, puddle = flaque.'],
@@ -3926,7 +3933,7 @@
     objs = objs.filter(o => o.z > 900);
     kibs = kibs.filter(k => k.z > 900);
     quiz = { i: 0, subjects: shuffle(Object.keys(SUBJECTS)).slice(0, 3) };
-    $('quizLevel').textContent = `Quartier ${level} !`;
+    $('quizLevel').textContent = 'Pause questions !';
     updateHudExtras();
     show('quizScreen');
     nextQuestion();
@@ -4052,7 +4059,7 @@
     return fresh;
   }
   grantSpecials();
-  const catName = () => profile.name || 'Siquane';
+  const catName = () => profile.name || 'Neko';
   // About 500 runs from level 1 to level 100.
   const MAX_LEVEL = 100;
   const xpNeed = L => 150 + 15 * (L - 1);
@@ -4095,14 +4102,14 @@
 
   // ---------- Intro and story screens ----------
   function openIntro() {
-    $('nameInput').value = profile.name || 'Siquane';
+    $('nameInput').value = profile.name || 'Neko';
     show('introScreen');
     $('nameInput').focus({ preventScroll: true });
     $('nameInput').select();
   }
   function cleanName(v) {
     const n = (v || '').replace(/\s+/g, ' ').trim().slice(0, 16);
-    return n || 'Siquane';
+    return n || 'Neko';
   }
   function finishIntro() {
     profile.name = cleanName($('nameInput').value);
@@ -4496,7 +4503,7 @@
     c.textAlign = 'center';
     c.fillStyle = '#ffa24c';
     c.font = '44px "Lilita One", "Arial Rounded MT Bold", sans-serif';
-    c.fillText('SIQUANE ESCAPE CAT', 540, 150);
+    c.fillText('NEKO ODYSSEY', 540, 150);
     c.fillStyle = '#f4f1ff';
     c.font = '78px "Lilita One", "Arial Rounded MT Bold", sans-serif';
     c.fillText(catName(), 540, 250);
@@ -4531,10 +4538,10 @@
   }
   async function shareNative() {
     if (!shareBlob) return;
-    const file = new File([shareBlob], 'siquane-escape-cat.png', { type: 'image/png' });
+    const file = new File([shareBlob], 'neko-odyssey.png', { type: 'image/png' });
     try {
       if (navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Siquane Escape Cat', text: `${catName()} a fait ${(lastRun && lastRun.score) || best} points à Siquane Escape Cat !` });
+        await navigator.share({ files: [file], title: 'Neko Odyssey', text: `${catName()} a fait ${(lastRun && lastRun.score) || best} points à Neko Odyssey !` });
       } else {
         toast("Ton appareil ne permet pas de partager l'image ici. Enregistre-la plutôt.");
       }

@@ -1,5 +1,5 @@
 rules_version = '2';
-// Rules for the Siquane Escape Cat leaderboard (see FIREBASE.md).
+// Rules for the Neko Odyssey leaderboard (see FIREBASE.md).
 service cloud.firestore {
   match /databases/{database}/documents {
 

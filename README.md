@@ -1,4 +1,4 @@
-# Siquane Escape Cat
+# Neko Odyssey
 
 Un petit jeu de course (*runner*) où tu incarnes un chat qui court la nuit sur les toits de la ville.
 
@@ -33,7 +33,7 @@ La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreu
 
 ## L'histoire
 
-Une nuit d'orage, un petit chat s'abrite dans un camion de livraison et se réveille au cœur d'une ville inconnue, loin de sa famille. Pour rentrer, il court de toit en toit. Au premier lancement, le joueur donne un nom à son chat (« Siquane » par défaut). Pour le changer ensuite, il suffit de toucher le nom sur l'écran d'accueil.
+Une nuit d'orage, un petit chat s'abrite dans un camion de livraison et se réveille au cœur d'une ville inconnue, loin de sa famille. Pour rentrer, il court de toit en toit. Au premier lancement, le joueur donne un nom à son chat (« Neko » par défaut). Pour le changer ensuite, il suffit de toucher le nom sur l'écran d'accueil.
 
 L'histoire dure **100 niveaux** et compte 21 chapitres, un tous les 5 niveaux : Gaston le pigeon, Filou le chat errant, la chouette du musée, les chats du port, Plume la petite sœur… jusqu'au retour à la maison au niveau 100.
 
@@ -90,7 +90,7 @@ Tout se trouve dans l'onglet **Poissons d'or** de la boutique. L'album montre au
 
 ## Quartiers et questions de culture générale
 
-Tous les kilomètres, le chat entre dans un nouveau quartier : la course fait une pause et propose jusqu'à 3 questions, tirées parmi 6 sujets (sciences et nature, histoire et géographie, français et maths, arts et culture, **les chats** et **anglais**). Chaque bonne réponse rapporte 1 croquette. Chaque question passée retire 2 croquettes du compteur de la partie (jamais en dessous de 0). En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course.
+Toutes les 30 secondes, la course fait une pause et propose jusqu'à 3 questions, tirées parmi 6 sujets (sciences et nature, histoire et géographie, français et maths, arts et culture, **les chats** et **anglais**). Chaque bonne réponse rapporte 1 croquette. Chaque question passée retire 2 croquettes du compteur de la partie (jamais en dessous de 0). En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course. Tous les kilomètres, le chat entre dans un nouveau quartier (sans pause).
 
 **Reprendre au quartier atteint** : le jeu retient le quartier le plus loin que tu as atteint. Dès que tu as atteint le quartier 2, « Jouer » et « Rejouer » te proposent de « Reprendre au quartier N » ou de « Repartir du quartier 1 ». Quand tu reprends plus loin, tu as 3 secondes de bouclier, et les points ne comptent que pour la distance que tu cours vraiment. Le record reste donc juste.
 

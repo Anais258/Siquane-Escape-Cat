@@ -7,7 +7,7 @@ Le classement marche sur la version du jeu publiée sur **GitHub Pages**. Il ne 
 ## 1. Créer le projet Firebase
 
 1. Va sur <https://console.firebase.google.com> et connecte-toi avec ton compte Google.
-2. Clique sur **Créer un projet**. Donne-lui un nom, par exemple `siquane-escape-cat`. Tu peux désactiver Google Analytics, il ne sert pas.
+2. Clique sur **Créer un projet**. Donne-lui un nom, par exemple `neko-odyssey`. Tu peux désactiver Google Analytics, il ne sert pas.
 3. Dans le projet, clique sur l'icône **Web** (`</>`) pour ajouter une application web. Donne-lui un nom et ne coche pas Firebase Hosting.
 4. Firebase affiche un bloc `firebaseConfig`. Garde de côté deux valeurs : `apiKey` et `projectId`.
 
@@ -38,7 +38,7 @@ Tu peux aussi me donner ces deux valeurs et je fais la modification. La clé `ap
 
 1. Sur GitHub, ouvre le dépôt, puis **Settings › Pages**.
 2. Dans **Source**, choisis **Deploy from a branch**. Prends la branche `main` (ou la branche du jeu tant que la pull request n'est pas fusionnée) et le dossier `/ (root)`, puis enregistre.
-3. Après une minute, GitHub affiche le lien du jeu, du type `https://<compte>.github.io/Siquane-Escape-Cat/`. Partage ce lien avec tes amis.
+3. Après une minute, GitHub affiche le lien du jeu, du type `https://<compte>.github.io/neko-odyssey/`. Partage ce lien avec tes amis.
 
 ## Bon à savoir
 
