@@ -67,7 +67,7 @@ L'album montre tous les chats et tous les chapeaux, avec des silhouettes pour ce
 Les poissons d'or sont des objets très rares : il y a **1 chance sur 25** qu'un poisson d'or se cache dans chaque quartier (chaque kilomètre). Il brille et flotte au-dessus du toit, et rapporte aussi 100 points. On les garde d'une partie à l'autre.
 
 - **Seconde chance** : quand le chat perd, une fenêtre propose pendant 10 secondes d'utiliser 1 poisson d'or pour repartir au même endroit (l'obstacle disparaît, un bouclier protège 2 secondes, puis compte à rebours 3-2-1). C'est possible **une seule fois par partie**. Un bouton « Passer » permet de refuser.
-- **Déguisements de fête** (8 poissons d'or) : un par fête, en vente seulement pendant sa fête, gardé ensuite toute l'année. Ils se portent avec n'importe quel chat et n'importe quel chapeau.
+- **Déguisements de fête** (6 poissons d'or) : un par fête, en vente seulement pendant sa fête, gardé ensuite toute l'année. Ils se portent avec n'importe quel chat et n'importe quel chapeau.
 
 | Fête | Déguisement |
 | --- | --- |
@@ -82,7 +82,7 @@ Les poissons d'or sont des objets très rares : il y a **1 chance sur 25** qu'un
 | Poisson d'avril | Sardine (écailles et nageoires) |
 | Journée du chat | Super-chat (cape) |
 
-- **Pouvoirs pour la prochaine partie** : bonus deux fois plus longs (3 poissons), départ rapide au quartier 2 avec un bouclier de 5 secondes (3), indice qui élimine une mauvaise réponse à chaque question (2), aimant de départ de 30 secondes (2).
+- **Pouvoirs pour la prochaine partie** : bonus deux fois plus longs (3 poissons), départ rapide un quartier plus loin avec un bouclier de 5 secondes (3), indice qui élimine une mauvaise réponse à chaque question (2), aimant de départ de 30 secondes (2).
 - **Changer une mission** : 1 poisson d'or, avec le bouton « Changer » sous chaque mission.
 - **Échange** : 1 poisson d'or contre 500 croquettes.
 
@@ -91,6 +91,8 @@ Tout se trouve dans l'onglet **Poissons d'or** de la boutique. L'album montre au
 ## Quartiers et questions de culture générale
 
 Tous les kilomètres, le chat entre dans un nouveau quartier : la course fait une pause et propose jusqu'à 3 questions, tirées parmi 6 sujets (sciences et nature, histoire et géographie, français et maths, arts et culture, **les chats** et **anglais**). Chaque bonne réponse rapporte 1 croquette. Chaque question passée retire 2 croquettes du compteur de la partie (jamais en dessous de 0). En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course.
+
+**Reprendre au quartier atteint** : le jeu retient le quartier le plus loin que tu as atteint. Dès que tu as atteint le quartier 2, « Jouer » et « Rejouer » te proposent de « Reprendre au quartier N » ou de « Repartir du quartier 1 ». Quand tu reprends plus loin, tu as 3 secondes de bouclier, et les points ne comptent que pour la distance que tu cours vraiment. Le record reste donc juste.
 
 Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Lycée et + »). Elle se change avec la tuile **Classe** de l'écran d'accueil. Le jeu ajuste ensuite un peu la difficulté : après 3 bonnes réponses d'affilée, les questions deviennent plus difficiles, et après 2 erreurs d'affilée, plus faciles. Les calculs sont générés automatiquement et changent à chaque fois.
 

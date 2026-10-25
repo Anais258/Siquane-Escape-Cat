@@ -578,6 +578,16 @@
     </div>
   </div>
 
+  <div class="overlay" id="choiceScreen" hidden>
+    <div class="card">
+      <h2>D'où repars-tu ?</h2>
+      <p>Tu as déjà atteint le <b class="good">quartier <span id="choiceBest">2</span></b>. Les points ne comptent que pour la distance que tu cours vraiment.</p>
+      <button class="btn big" id="choiceResume">Reprendre au quartier <span id="choiceQ">2</span></button>
+      <button class="btn ghost" id="choiceFresh">Repartir du quartier 1</button>
+      <button class="btn ghost small" id="choiceBack">Retour</button>
+    </div>
+  </div>
+
   <div class="overlay" id="reviveScreen" hidden>
     <div class="card">
       <h2>Encore une chance ?</h2>
@@ -1791,7 +1801,7 @@
   let state = 'start'; // start | play | pause | dying | over
   let cat, objs, kibs, particles;
   let speed, dist, elapsed, kibbles, nextRowZ, deathCause, deathT, time = 0;
-  let bonusPts = 0, level = 1, comboMult = 1, recordShown = false, lastOufT = -9, nextBonusAt = 6;
+  let bonusPts = 0, startDist = 0, level = 1, comboMult = 1, recordShown = false, lastOufT = -9, nextBonusAt = 6;
   let active = {}, shakeT = 0, shakeMag = 0, slowT = 0, popups = [];
   let decos = [], strayAt = 25, starAt = 30, shootStar = null, quizRight = 0, trailAcc = 0;
   // Golden fish state (loaded with the shop data further down)
@@ -1805,7 +1815,7 @@
     cat = { lane: 0, x: 0, y: 0, vy: 0, onGround: true, rollT: 0, rollQueued: false, fastFall: false, anim: 0, tilt: 0, prevLane: 0, laneT: -9 };
     objs = []; kibs = []; particles = []; popups = [];
     speed = START_SPEED; dist = 0; elapsed = 0; kibbles = 0;
-    bonusPts = 0; level = 1; comboMult = 1; recordShown = false; lastOufT = -9; nextBonusAt = 6;
+    bonusPts = 0; level = 1; startDist = 0; comboMult = 1; recordShown = false; lastOufT = -9; nextBonusAt = 6;
     active = {}; shakeT = 0; slowT = 0; kibCombo = 0;
     decos = []; strayAt = rand(18, 30); starAt = rand(22, 35); shootStar = null; quizRight = 0;
     runPowers = {}; fishAt = null; revived = false; shieldT = 0;
@@ -1814,7 +1824,7 @@
   }
   resetWorld();
 
-  const score = () => Math.floor(dist / 10) + bonusPts;
+  const score = () => Math.floor((dist - startDist) / 10) + bonusPts;
 
   // ---------- Spawning ----------
   const OBSTACLES = {
@@ -2009,6 +2019,7 @@
     if (state === 'play' && Math.floor(dist / 10) >= levelAt(level)) {
       level++;
       track('level', level);
+      reachQuarter(level);
       rollGoldFish(level);
       sfx.level();
       startQuiz();
@@ -2940,12 +2951,40 @@
   }
 
   function show(id) {
-    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen', 'reviveScreen']) $(s).hidden = s !== id;
+    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen', 'reviveScreen', 'choiceScreen']) $(s).hidden = s !== id;
   }
 
-  function startGame() {
+  // Highest quarter ever reached: runs can restart from there.
+  const bestQuarter = () => Math.max(1, profile.bestQ || 1);
+  function reachQuarter(q) {
+    if (q > bestQuarter()) { profile.bestQ = q; store(PROFILE_KEY, profile); }
+  }
+  let choiceFrom = 'start', choiceAt = 0;
+  function requestStart() {
+    const q = bestQuarter();
+    if (q < 2) { startGame(1); return; }
+    choiceFrom = state;
+    choiceAt = performance.now();
+    state = 'choose';
+    $('choiceBest').textContent = q;
+    $('choiceQ').textContent = q;
+    show('choiceScreen');
+    $('choiceResume').focus({ preventScroll: true });
+  }
+  function closeChoice() {
+    state = choiceFrom;
+    show(choiceFrom === 'over' ? 'overScreen' : 'startScreen');
+  }
+
+  function startGame(fromQ = 1) {
     initAudio();
     resetWorld();
+    if (fromQ > 1) {
+      level = fromQ;
+      dist = startDist = levelAt(fromQ - 1) * 10;
+      elapsed = Math.min(60, (fromQ - 1) * 12);
+      shieldT = 3;
+    }
     resetRunMissions();
     applyRunPowers();
     transpose = 0;
@@ -2981,7 +3020,7 @@
     $('newBest').hidden = !isBest;
     $('bestStart').textContent = best;
     bank += kibbles;
-    track('meters', Math.floor(dist / 10));
+    track('meters', Math.floor((dist - startDist) / 10));
     lastRun = { score: sc, kibbles, level };
     endOfRun(sc);
     saveProgress();
@@ -3020,8 +3059,13 @@
   }
 
 
-  $('playBtn').addEventListener('click', startGame);
-  $('againBtn').addEventListener('click', startGame);
+  $('playBtn').addEventListener('click', requestStart);
+  $('againBtn').addEventListener('click', requestStart);
+  // Ignore the key release that opened the choice (Space clicks on keyup).
+  const choiceReady = () => performance.now() - choiceAt > 350;
+  $('choiceResume').addEventListener('click', () => { if (choiceReady()) startGame(bestQuarter()); });
+  $('choiceFresh').addEventListener('click', () => { if (choiceReady()) startGame(1); });
+  $('choiceBack').addEventListener('click', closeChoice);
   $('resumeBtn').addEventListener('click', resume);
   $('quitBtn').addEventListener('click', toMenu);
   $('pauseBtn').addEventListener('click', e => { e.currentTarget.blur(); pause(); });
@@ -4436,7 +4480,7 @@
     { id: 'sardine', name: 'Sardine', theme: 'avril' },
     { id: 'superchat', name: 'Super-chat', theme: 'chats' },
   ];
-  const COSTUME_PRICE = 8;
+  const COSTUME_PRICE = 6;
   const POWERS = [
     { id: 'long', name: 'Bonus plus longs', price: 3, text: 'Les bonus durent deux fois plus longtemps pendant la prochaine partie.' },
     { id: 'quick', name: 'Départ rapide', price: 3, text: 'La prochaine partie commence au quartier 2, avec un bouclier pendant 5 secondes.' },
@@ -4498,10 +4542,10 @@
     saveGold();
     const names = [];
     if (runPowers.quick) {
-      dist = levelAt(1) * 10;
-      level = 2;
+      dist = startDist = levelAt(level) * 10;
+      level++;
       shieldT = 5;
-      track('level', level);
+      reachQuarter(level);
       names.push('départ rapide');
     }
     if (runPowers.magnet) { active.magnet = 30; names.push('aimant'); }
@@ -4957,8 +5001,12 @@
       if (code === 'Escape') skipRevive();
       return;
     }
+    if (state === 'choose') {
+      if (code === 'Escape') closeChoice();
+      return;
+    }
     if (state === 'start' || state === 'over') {
-      if ((code === 'Space' || code === 'Enter') && !e.repeat) { e.preventDefault(); startGame(); }
+      if ((code === 'Space' || code === 'Enter') && !e.repeat) { e.preventDefault(); requestStart(); }
       return;
     }
     if (state === 'pause') {
