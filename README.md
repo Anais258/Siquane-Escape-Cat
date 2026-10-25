@@ -25,4 +25,23 @@ Pendant un saut, la roulade fait retomber le chat plus vite et il roule dès qu'
 
 La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreux. Le score compte la distance parcourue et les croquettes. Le meilleur score est enregistré dans le navigateur.
 
+## Les chats à débloquer
+
+Les croquettes ramassées pendant les parties vont dans une tirelire. Dans le menu **Les chats**, tu peux les dépenser pour débloquer de nouveaux chats, puis choisir celui avec lequel tu cours. La tirelire et les chats débloqués sont enregistrés dans le navigateur.
+
+| Chat | Prix |
+| --- | --- |
+| Roux | offert |
+| Gris | 50 |
+| Noir | 80 |
+| Blanc | 120 |
+| Tigré brun | 160 |
+| Tuxedo | 250 |
+| Siamois | 350 |
+| Calico | 450 |
+| Rose | 550 |
+| Bleu nuit (avec des étoiles) | 650 |
+| Doré (qui brille) | 800 |
+| Arc-en-ciel (qui change de couleur) | 1000 |
+
 Tout le jeu tient dans un seul fichier, `index.html` (HTML, CSS et JavaScript, dessin sur `<canvas>`, sons générés avec la Web Audio API).

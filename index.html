@@ -144,6 +144,45 @@
   .result strong { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
   .badge { justify-self: center; background: var(--kibble); color: #2b1600; font-weight: 800; border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; }
   .hint { font-size: 0.82rem; }
+  .unlock { color: var(--kibble); font-weight: 800; }
+  .card.shop { max-width: 560px; }
+  .bank { justify-self: center; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; color: var(--kibble); font-variant-numeric: tabular-nums; }
+  .bank svg { width: 26px; height: 17px; }
+  .bank span { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; color: var(--ink); }
+  .skins { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .skin {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 8px 6px;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.05);
+    min-width: 0;
+  }
+  .skin.selected { border-color: var(--cat); background: rgba(255, 162, 76, 0.12); }
+  .skin canvas { width: 76px; height: 76px; }
+  .skin.locked canvas { opacity: 0.55; }
+  .skin-name { font-weight: 800; font-size: 0.85rem; }
+  .skin-btn {
+    width: 100%;
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 0.8rem;
+    padding: 6px 4px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .skin-btn svg { width: 16px; height: 10px; }
+  .skin-btn.buy { background: var(--kibble); color: #2b1600; border-color: transparent; }
+  .skin-btn:disabled { cursor: default; color: var(--muted); }
+  .skin.selected .skin-btn { color: var(--cat); border-color: transparent; }
+  .skin-btn:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
   #overTitle.puddle { color: var(--water); }
   #overTitle.hit { color: var(--danger); }
   @media (pointer: coarse) { .kbd-only { display: none; } }
@@ -207,8 +246,9 @@
         </div>
       </div>
 
-      <p>Record : <span class="best" id="bestStart">0</span></p>
+      <p>Record : <span class="best" id="bestStart">0</span> · Tirelire : <span class="best" id="bankStart">0</span> croquettes</p>
       <button class="btn" id="playBtn">Jouer</button>
+      <button class="btn ghost" id="shopBtnStart">Choisir mon chat</button>
     </div>
   </div>
 
@@ -231,8 +271,24 @@
         <div class="result"><span>Croquettes</span><strong id="finalKibbles">0</strong></div>
         <div class="result"><span>Record</span><strong id="finalBest">0</strong></div>
       </div>
+      <p>Tirelire : <span class="best" id="bankOver">0</span> croquettes</p>
+      <p class="unlock" id="unlockHint" hidden>Tu as assez de croquettes pour un nouveau chat !</p>
       <button class="btn" id="againBtn">Rejouer</button>
+      <button class="btn ghost" id="shopBtnOver">Les chats</button>
       <p class="hint kbd-only">ou appuie sur Espace</p>
+    </div>
+  </div>
+
+  <div class="overlay" id="shopScreen" hidden>
+    <div class="card shop">
+      <h2>Les chats</h2>
+      <div class="bank">
+        <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
+        <span id="bankShop">0</span> croquettes
+      </div>
+      <p>Les croquettes ramassées pendant tes parties vont dans ta tirelire. Dépense-les pour débloquer de nouveaux chats.</p>
+      <div class="skins" id="skinGrid"></div>
+      <button class="btn" id="shopBack">Retour</button>
     </div>
   </div>
 </div>
@@ -258,8 +314,51 @@
   const START_SPEED = 560;
   const MAX_SPEED = 1300;
 
-  const FUR = '#f5a04a', FUR_LIGHT = '#ffd3a1', STRIPE = '#c4661f', OUTLINE = '#5a2d12';
   const BEST_KEY = 'siquane-escape-cat-best';
+  const BANK_KEY = 'siquane-escape-cat-bank';
+  const OWNED_KEY = 'siquane-escape-cat-owned';
+  const SKIN_KEY = 'siquane-escape-cat-skin';
+
+  // ---------- Cat coats, bought with kibbles ----------
+  const SKINS = [
+    { id: 'roux', name: 'Roux', price: 0, fur: '#f5a04a', paw: '#ffd3a1', stripe: '#c4661f', outline: '#5a2d12' },
+    { id: 'gris', name: 'Gris', price: 50, fur: '#9a9fb0', paw: '#d9dce6', stripe: '#6c7184', outline: '#2e3140' },
+    { id: 'noir', name: 'Noir', price: 80, fur: '#2b2b36', paw: '#3d3d4c', stripe: null, outline: '#0d0d12', earTip: '#5a4458' },
+    { id: 'blanc', name: 'Blanc', price: 120, fur: '#f6f4f0', paw: '#ffffff', stripe: null, outline: '#6b6872', earTip: '#f2b8c6' },
+    { id: 'brun', name: 'Tigré brun', price: 160, fur: '#a8774a', paw: '#d9b48c', stripe: '#5e3b1f', outline: '#3a220f' },
+    { id: 'tuxedo', name: 'Tuxedo', price: 250, fur: '#25252f', paw: '#ffffff', stripe: null, outline: '#0d0d12', tailTip: '#ffffff', earTip: '#5a4458', collar: '#3d7bff' },
+    { id: 'siamois', name: 'Siamois', price: 350, fur: '#f1e3c8', paw: '#5b3a2a', stripe: null, outline: '#5b3a2a', ear: '#6e4a36', tail: '#6e4a36', earTip: '#4a2c1e', collar: '#2fb7a5' },
+    { id: 'calico', name: 'Calico', price: 450, fur: '#fbf7f0', paw: '#ffffff', stripe: null, outline: '#5a4a40', tailTip: '#2e2a2f', earTip: '#f08a3c',
+      patches: [[-11, -31, 11, 9, '#f08a3c'], [10, -17, 10, 8, '#2e2a2f'], [8, -38, 7, 5, '#f08a3c']],
+      headPatches: [[-8, -6, 9, 8, '#f08a3c'], [9, -9, 7, 6, '#2e2a2f']] },
+    { id: 'rose', name: 'Rose', price: 550, fur: '#ff9ccf', paw: '#ffd6ec', stripe: '#e8569f', outline: '#7a1f4f', collar: '#ffffff' },
+    { id: 'nuit', name: 'Bleu nuit', price: 650, fur: '#2f4fb0', paw: '#7d9cff', stripe: '#1b2c6e', outline: '#0b1440', sparkles: true, collar: '#ffd34d' },
+    { id: 'dore', name: 'Doré', price: 800, fur: '#f2c14e', paw: '#fff0b8', stripe: '#c8901c', outline: '#6b4706', shimmer: true, collar: '#c0392b' },
+    { id: 'arcenciel', name: 'Arc-en-ciel', price: 1000, fur: '#ffffff', paw: '#ffffff', stripe: '#ff5e5e', outline: '#4a3a6a', rainbow: true, collar: '#ffffff' },
+  ];
+
+  let bank = 0, owned = ['roux'], skinId = 'roux';
+  try {
+    bank = parseInt(localStorage.getItem(BANK_KEY), 10) || 0;
+    const ow = JSON.parse(localStorage.getItem(OWNED_KEY) || 'null');
+    if (Array.isArray(ow)) owned = Array.from(new Set(['roux', ...ow.filter(id => SKINS.some(s => s.id === id))]));
+    const sel = localStorage.getItem(SKIN_KEY);
+    if (sel && owned.includes(sel)) skinId = sel;
+  } catch (e) {}
+  function saveProgress() {
+    try {
+      localStorage.setItem(BANK_KEY, String(bank));
+      localStorage.setItem(OWNED_KEY, JSON.stringify(owned));
+      localStorage.setItem(SKIN_KEY, skinId);
+    } catch (e) {}
+  }
+  const currentSkin = () => SKINS.find(s => s.id === skinId) || SKINS[0];
+  // The rainbow coat cycles its colors over time.
+  function skinPaint(sk, t) {
+    if (!sk.rainbow) return sk;
+    const h = Math.floor(t * 80) % 360;
+    return Object.assign({}, sk, { fur: `hsl(${h}, 90%, 74%)`, paw: `hsl(${(h + 40) % 360}, 90%, 86%)`, hue: h });
+  }
 
   // ---------- Screen / camera ----------
   let W = 0, H = 0, dpr = 1, F = 1, camH = 160, horizon = 0;
@@ -906,7 +1005,9 @@
     ctx.translate(p.x, p.y);
     ctx.scale(s, s);
     ctx.rotate(cat.tilt);
-    if (rolling()) drawCatBall(); else drawCatRun();
+    const sk = skinPaint(currentSkin(), time);
+    const o = { ph: cat.anim, air: !cat.onGround, still: state === 'dying' || state === 'over' || state === 'pause', t: time, wet: state === 'dying' && deathCause === 'puddle' };
+    if (rolling()) drawCatBall(ctx, sk, o); else drawCatRun(ctx, sk, o);
     ctx.restore();
 
     // Dizzy stars after hitting something
@@ -914,123 +1015,186 @@
       for (let i = 0; i < 3; i++) {
         const a = time * 5 + i * TAU / 3;
         const sp = proj(cat.x + Math.cos(a) * 24, cat.y + 66 + Math.sin(a) * 6, 0);
-        drawStar(sp.x, sp.y, 5 * s, '#ffe066');
+        drawStar(ctx, sp.x, sp.y, 5 * s, '#ffe066');
       }
     }
   }
 
-  function strokeFill(fill) {
-    ctx.fillStyle = fill; ctx.fill();
-    ctx.strokeStyle = OUTLINE; ctx.lineWidth = 2.2; ctx.stroke();
+  function strokeFill(c, sk, fill) {
+    c.fillStyle = fill; c.fill();
+    c.strokeStyle = sk.outline; c.lineWidth = 2.2; c.stroke();
   }
 
-  function drawCatRun() {
-    const ph = cat.anim, air = !cat.onGround;
-    const still = state === 'dying' || state === 'over' || state === 'pause';
-    const bob = air || still ? 0 : Math.abs(Math.sin(ph)) * 3.5;
-    const legA = air ? 6 : Math.max(0, Math.sin(ph)) * 7;
-    const legB = air ? 6 : Math.max(0, -Math.sin(ph)) * 7;
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
+  // Fill a path, paint coat patches clipped inside it, then outline it.
+  function furShape(c, sk, path, fill, patches) {
+    path(); c.fillStyle = fill; c.fill();
+    if (patches) {
+      c.save(); path(); c.clip();
+      for (const [px, py, rx, ry, col] of patches) {
+        c.fillStyle = col;
+        c.beginPath(); c.ellipse(px, py, rx, ry, 0, 0, TAU); c.fill();
+      }
+      c.restore();
+    }
+    path(); c.strokeStyle = sk.outline; c.lineWidth = 2.2; c.stroke();
+  }
+
+  function stripeColor(sk, i) {
+    return sk.hue == null ? sk.stripe : `hsl(${(sk.hue + 150 + i * 55) % 360}, 85%, 55%)`;
+  }
+
+  // o: { ph: run phase, air, still, t: time, wet }
+  function drawCatRun(c, sk, o) {
+    const ph = o.ph, air = o.air;
+    const bob = air || o.still ? 0 : Math.abs(Math.sin(ph)) * 3.5;
+    const legA = air ? 6 : o.still ? 0 : Math.max(0, Math.sin(ph)) * 7;
+    const legB = air ? 6 : o.still ? 0 : Math.max(0, -Math.sin(ph)) * 7;
+    c.lineJoin = 'round';
+    c.lineCap = 'round';
 
     // Tail
-    const sway = Math.sin(time * 6) * 10;
-    ctx.beginPath();
-    ctx.moveTo(4, -12 - bob);
-    ctx.bezierCurveTo(22 + sway * 0.3, -18, 26 + sway, -48, 12 + sway, (air ? -78 : -68) - bob);
-    ctx.strokeStyle = OUTLINE; ctx.lineWidth = 9.5; ctx.stroke();
-    ctx.strokeStyle = FUR; ctx.lineWidth = 6; ctx.stroke();
+    const sway = Math.sin(o.t * 6) * 10;
+    const tipX = 12 + sway, tipY = (air ? -78 : -68) - bob;
+    c.beginPath();
+    c.moveTo(4, -12 - bob);
+    c.bezierCurveTo(22 + sway * 0.3, -18, 26 + sway, -48, tipX, tipY);
+    c.strokeStyle = sk.outline; c.lineWidth = 9.5; c.stroke();
+    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 6; c.stroke();
+    if (sk.tailTip) {
+      c.fillStyle = sk.tailTip;
+      c.beginPath(); c.arc(tipX, tipY, 3.3, 0, TAU); c.fill();
+    }
 
     // Back paws
     for (const [px, lift] of [[-11, legA], [11, legB]]) {
-      ctx.beginPath(); ctx.ellipse(px, -4 - lift, 7, 5, 0, 0, TAU); strokeFill(FUR_LIGHT);
+      c.beginPath(); c.ellipse(px, -4 - lift, 7, 5, 0, 0, TAU); strokeFill(c, sk, sk.paw);
     }
 
     // Body
-    ctx.beginPath(); ctx.ellipse(0, -24 - bob, 21, 20, 0, 0, TAU); strokeFill(FUR);
-    ctx.strokeStyle = STRIPE; ctx.lineWidth = 3.2;
-    for (const y of [-34, -25, -16]) {
-      for (const sd of [-1, 1]) {
-        ctx.beginPath();
-        ctx.moveTo(sd * 18, y + 4 - bob);
-        ctx.quadraticCurveTo(sd * 10, y - 2 - bob, sd * 4, y - bob);
-        ctx.stroke();
-      }
+    const body = () => { c.beginPath(); c.ellipse(0, -24 - bob, 21, 20, 0, 0, TAU); };
+    furShape(c, sk, body, sk.fur, sk.patches && sk.patches.map(([x, y, rx, ry, col]) => [x, y - bob, rx, ry, col]));
+    if (sk.stripe) {
+      c.lineWidth = 3.2;
+      [-34, -25, -16].forEach((y, i) => {
+        c.strokeStyle = stripeColor(sk, i);
+        for (const sd of [-1, 1]) {
+          c.beginPath();
+          c.moveTo(sd * 18, y + 4 - bob);
+          c.quadraticCurveTo(sd * 10, y - 2 - bob, sd * 4, y - bob);
+          c.stroke();
+        }
+      });
+      c.strokeStyle = stripeColor(sk, 3);
+      c.beginPath(); c.moveTo(0, -38 - bob); c.lineTo(0, -12 - bob); c.stroke();
     }
-    ctx.beginPath(); ctx.moveTo(0, -38 - bob); ctx.lineTo(0, -12 - bob); ctx.stroke();
+    if (sk.shimmer) {
+      const sx = ((o.t * 45) % 90) - 45;
+      c.save(); body(); c.clip();
+      c.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      c.beginPath();
+      c.moveTo(sx - 2, -46 - bob); c.lineTo(sx + 6, -46 - bob); c.lineTo(sx - 6, -2 - bob); c.lineTo(sx - 14, -2 - bob);
+      c.closePath(); c.fill();
+      c.restore();
+    }
+    if (sk.sparkles) {
+      [[-10, -30], [9, -19], [4, -37], [-5, -14], [13, -31]].forEach(([x, y], i) => {
+        c.globalAlpha = 0.35 + 0.65 * Math.max(0, Math.sin(o.t * 3 + i * 1.7));
+        drawStar(c, x, y - bob, 2.6, '#fff6c8');
+      });
+      c.globalAlpha = 1;
+    }
 
     // Collar
-    ctx.fillStyle = '#e8445a';
-    ctx.beginPath(); ctx.ellipse(0, -40 - bob, 12, 3.6, 0, 0, TAU); ctx.fill();
+    c.fillStyle = sk.collar || '#e8445a';
+    c.beginPath(); c.ellipse(0, -40 - bob, 12, 3.6, 0, 0, TAU); c.fill();
 
     // Head
     const hy = -50 - bob;
-    ctx.beginPath(); ctx.arc(0, hy, 16, 0, TAU); strokeFill(FUR);
+    const head = () => { c.beginPath(); c.arc(0, hy, 16, 0, TAU); };
+    furShape(c, sk, head, sk.head || sk.fur, sk.headPatches && sk.headPatches.map(([x, y, rx, ry, col]) => [x, hy + y, rx, ry, col]));
     // Ears
+    const earTip = sk.earTip || stripeColor(sk, 1);
     for (const sd of [-1, 1]) {
-      ctx.beginPath();
-      ctx.moveTo(sd * 15, hy - 5);
-      ctx.lineTo(sd * 12, hy - 23);
-      ctx.lineTo(sd * 2, hy - 13);
-      ctx.closePath();
-      strokeFill(FUR);
-      ctx.fillStyle = STRIPE;
-      ctx.beginPath(); ctx.moveTo(sd * 12.6, hy - 17); ctx.lineTo(sd * 12, hy - 22); ctx.lineTo(sd * 8, hy - 18); ctx.closePath(); ctx.fill();
+      c.beginPath();
+      c.moveTo(sd * 15, hy - 5);
+      c.lineTo(sd * 12, hy - 23);
+      c.lineTo(sd * 2, hy - 13);
+      c.closePath();
+      strokeFill(c, sk, sk.ear || sk.fur);
+      if (earTip) {
+        c.fillStyle = earTip;
+        c.beginPath(); c.moveTo(sd * 12.6, hy - 17); c.lineTo(sd * 12, hy - 22); c.lineTo(sd * 8, hy - 18); c.closePath(); c.fill();
+      }
     }
     // Head stripes
-    ctx.strokeStyle = STRIPE; ctx.lineWidth = 2.6;
-    for (const sx of [-5, 0, 5]) { ctx.beginPath(); ctx.moveTo(sx, hy - 14 + Math.abs(sx) * 0.3); ctx.lineTo(sx * 0.8, hy - 7); ctx.stroke(); }
+    if (sk.stripe) {
+      c.lineWidth = 2.6;
+      [-5, 0, 5].forEach((sx, i) => {
+        c.strokeStyle = stripeColor(sk, i + 2);
+        c.beginPath(); c.moveTo(sx, hy - 14 + Math.abs(sx) * 0.3); c.lineTo(sx * 0.8, hy - 7); c.stroke();
+      });
+    }
     // Whiskers
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)'; ctx.lineWidth = 1.2;
+    c.strokeStyle = 'rgba(255, 255, 255, 0.75)'; c.lineWidth = 1.2;
     for (const sd of [-1, 1]) {
-      ctx.beginPath(); ctx.moveTo(sd * 14, hy + 4); ctx.lineTo(sd * 27, hy + 2); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(sd * 14, hy + 6); ctx.lineTo(sd * 26, hy + 10); ctx.stroke();
+      c.beginPath(); c.moveTo(sd * 14, hy + 4); c.lineTo(sd * 27, hy + 2); c.stroke();
+      c.beginPath(); c.moveTo(sd * 14, hy + 6); c.lineTo(sd * 26, hy + 10); c.stroke();
     }
 
     // Wet cat drips
-    if (state === 'dying' && deathCause === 'puddle') {
-      ctx.fillStyle = 'rgba(91, 184, 255, 0.85)';
+    if (o.wet) {
+      c.fillStyle = 'rgba(91, 184, 255, 0.85)';
       for (let i = 0; i < 5; i++) {
-        const dx = -16 + i * 8, dy = ((time * 60 + i * 13) % 30);
-        ctx.beginPath(); ctx.ellipse(dx, -30 + dy, 1.8, 3, 0, 0, TAU); ctx.fill();
+        const dx = -16 + i * 8, dy = ((o.t * 60 + i * 13) % 30);
+        c.beginPath(); c.ellipse(dx, -30 + dy, 1.8, 3, 0, 0, TAU); c.fill();
       }
     }
   }
 
-  function drawCatBall() {
+  function drawCatBall(c, sk, o) {
     const r = 17;
-    ctx.translate(0, -r);
-    ctx.lineJoin = 'round';
+    c.translate(0, -r);
+    c.lineJoin = 'round';
     // Ears peeking out
     for (const sd of [-1, 1]) {
-      ctx.beginPath(); ctx.moveTo(sd * 13, -8); ctx.lineTo(sd * 12, -22); ctx.lineTo(sd * 3, -15); ctx.closePath();
-      strokeFill(FUR);
+      c.beginPath(); c.moveTo(sd * 13, -8); c.lineTo(sd * 12, -22); c.lineTo(sd * 3, -15); c.closePath();
+      strokeFill(c, sk, sk.ear || sk.fur);
     }
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); strokeFill(FUR);
-    // Stripes scrolling downward to read as a forward roll
-    ctx.save();
-    ctx.beginPath(); ctx.arc(0, 0, r - 1.5, 0, TAU); ctx.clip();
-    ctx.strokeStyle = STRIPE; ctx.lineWidth = 4;
-    const off = (cat.anim * 14) % 12;
-    for (let y = -r - 12 + off; y < r + 12; y += 12) {
-      ctx.beginPath(); ctx.moveTo(-r, y + 3); ctx.quadraticCurveTo(0, y - 4, r, y + 3); ctx.stroke();
+    c.beginPath(); c.arc(0, 0, r, 0, TAU); strokeFill(c, sk, sk.fur);
+    // Stripes or patches scrolling downward to read as a forward roll
+    const marks = sk.stripe ? null : sk.patches;
+    if (sk.stripe || marks) {
+      c.save();
+      c.beginPath(); c.arc(0, 0, r - 1.5, 0, TAU); c.clip();
+      c.lineWidth = 4;
+      const off = (o.ph * 14) % 12;
+      let i = 0;
+      for (let y = -r - 12 + off; y < r + 12; y += 12, i++) {
+        if (marks) {
+          c.fillStyle = marks[i % marks.length][4];
+          c.beginPath(); c.ellipse((i % 2 ? 6 : -7), y, 7, 5, 0, 0, TAU); c.fill();
+        } else {
+          c.strokeStyle = stripeColor(sk, i);
+          c.beginPath(); c.moveTo(-r, y + 3); c.quadraticCurveTo(0, y - 4, r, y + 3); c.stroke();
+        }
+      }
+      c.restore();
     }
-    ctx.restore();
     // Tail wrapped around
-    ctx.strokeStyle = OUTLINE; ctx.lineWidth = 8; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.arc(0, 2, r + 1, 0.3, 1.9); ctx.stroke();
-    ctx.strokeStyle = FUR; ctx.lineWidth = 5;
-    ctx.beginPath(); ctx.arc(0, 2, r + 1, 0.3, 1.9); ctx.stroke();
+    c.strokeStyle = sk.outline; c.lineWidth = 8; c.lineCap = 'round';
+    c.beginPath(); c.arc(0, 2, r + 1, 0.3, 1.9); c.stroke();
+    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 5;
+    c.beginPath(); c.arc(0, 2, r + 1, 0.3, 1.9); c.stroke();
   }
 
-  function drawStar(x, y, r, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
+  function drawStar(c, x, y, r, color) {
+    c.fillStyle = color;
+    c.beginPath();
     for (let i = 0; i < 10; i++) {
       const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r;
-      ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+      c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
     }
-    ctx.closePath(); ctx.fill();
+    c.closePath(); c.fill();
   }
 
   function drawParticles() {
@@ -1038,7 +1202,7 @@
       if (p.z < -CAM_D * 0.7) continue;
       const q = proj(p.x, p.y, p.z);
       ctx.globalAlpha = Math.max(0, p.life / p.max);
-      if (p.kind === 'star') drawStar(q.x, q.y, p.size * q.s * 1.4, p.color);
+      if (p.kind === 'star') drawStar(ctx, q.x, q.y, p.size * q.s * 1.4, p.color);
       else {
         ctx.fillStyle = p.color;
         ctx.beginPath(); ctx.arc(q.x, q.y, Math.max(1, p.size * q.s), 0, TAU); ctx.fill();
@@ -1078,7 +1242,7 @@
   }
 
   function show(id) {
-    for (const s of ['startScreen', 'pauseScreen', 'overScreen']) $(s).hidden = s !== id;
+    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen']) $(s).hidden = s !== id;
   }
 
   function startGame() {
@@ -1114,6 +1278,10 @@
     $('finalBest').textContent = best;
     $('newBest').hidden = !isBest;
     $('bestStart').textContent = best;
+    bank += kibbles;
+    saveProgress();
+    updateBank();
+    $('unlockHint').hidden = !SKINS.some(sk => !owned.includes(sk.id) && sk.price <= bank);
     hud.hidden = true;
     show('overScreen');
     $('againBtn').focus({ preventScroll: true });
@@ -1157,6 +1325,93 @@
   $('bestStart').textContent = best;
   setMuted(muted);
 
+  // ---------- Cat shop ----------
+  const FISH_SVG = '<svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/></svg>';
+  let shopReturn = 'startScreen';
+  let previews = [];
+
+  function updateBank() {
+    for (const id of ['bankStart', 'bankOver', 'bankShop']) $(id).textContent = bank;
+  }
+
+  function buildShop() {
+    const grid = $('skinGrid');
+    grid.textContent = '';
+    previews = [];
+    for (const sk of SKINS) {
+      const isOwned = owned.includes(sk.id), isSel = sk.id === skinId, canBuy = !isOwned && bank >= sk.price;
+      const card = document.createElement('div');
+      card.className = 'skin' + (isSel ? ' selected' : '') + (!isOwned && !canBuy ? ' locked' : '');
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = Math.round(76 * dpr);
+      const name = document.createElement('div');
+      name.className = 'skin-name';
+      name.textContent = sk.name;
+      const btn = document.createElement('button');
+      btn.className = 'skin-btn';
+      btn.id = 'skin-' + sk.id;
+      if (isSel) { btn.textContent = 'Choisi'; btn.disabled = true; }
+      else if (isOwned) { btn.textContent = 'Choisir'; }
+      else {
+        btn.innerHTML = (canBuy ? 'Acheter ' : '') + FISH_SVG + ' ' + sk.price;
+        btn.setAttribute('aria-label', (canBuy ? 'Acheter ' : 'Il faut ') + sk.price + ' croquettes pour ' + sk.name);
+        if (canBuy) btn.classList.add('buy'); else btn.disabled = true;
+      }
+      btn.addEventListener('click', () => chooseSkin(sk));
+      card.append(cv, name, btn);
+      grid.append(card);
+      previews.push({ cv, sk });
+    }
+  }
+
+  function chooseSkin(sk) {
+    initAudio();
+    if (!owned.includes(sk.id)) {
+      if (bank < sk.price) return;
+      bank -= sk.price;
+      owned.push(sk.id);
+      sfx.kibble();
+    }
+    skinId = sk.id;
+    saveProgress();
+    updateBank();
+    meow(false);
+    buildShop();
+    const btn = $('skin-' + sk.id);
+    if (btn) btn.focus({ preventScroll: true });
+  }
+
+  function drawPreviews() {
+    for (const { cv, sk } of previews) {
+      const c = cv.getContext('2d');
+      c.setTransform(1, 0, 0, 1, 0, 0);
+      c.clearRect(0, 0, cv.width, cv.height);
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      c.fillStyle = 'rgba(5, 6, 20, 0.35)';
+      c.beginPath(); c.ellipse(38, 68, 22, 5, 0, 0, TAU); c.fill();
+      c.translate(38, 68);
+      c.scale(0.82, 0.82);
+      const owns = owned.includes(sk.id);
+      drawCatRun(c, skinPaint(sk, time), { ph: owns ? time * 9 : 0, air: false, still: !owns, t: time, wet: false });
+    }
+  }
+
+  function openShop() {
+    shopReturn = state === 'over' ? 'overScreen' : 'startScreen';
+    buildShop();
+    updateBank();
+    show('shopScreen');
+    $('shopBack').focus({ preventScroll: true });
+  }
+  function closeShop() {
+    $('unlockHint').hidden = !SKINS.some(sk => !owned.includes(sk.id) && sk.price <= bank);
+    show(shopReturn);
+  }
+  $('shopBtnStart').addEventListener('click', openShop);
+  $('shopBtnOver').addEventListener('click', openShop);
+  $('shopBack').addEventListener('click', closeShop);
+  updateBank();
+
   // ---------- Keyboard ----------
   window.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
@@ -1164,6 +1419,10 @@
     const isJump = code === 'ArrowUp' || code === 'Space' || k === 'z' || k === 'w';
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(code)) e.preventDefault();
 
+    if (!$('shopScreen').hidden) {
+      if (code === 'Escape') closeShop();
+      return;
+    }
     if (state === 'start' || state === 'over') {
       if ((code === 'Space' || code === 'Enter') && !e.repeat) { e.preventDefault(); startGame(); }
       return;
@@ -1212,6 +1471,7 @@
     update(dt);
     render();
     if (state === 'play' || state === 'dying') updateHud();
+    if (!$('shopScreen').hidden) drawPreviews();
     requestAnimationFrame(frame);
   }
   resize();
