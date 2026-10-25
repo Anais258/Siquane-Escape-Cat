@@ -39,7 +39,7 @@ L'histoire dure **100 niveaux** et compte 21 chapitres, un tous les 5 niveaux : 
 
 **Tous les 20 niveaux, un chat spécial de l'histoire est offert** : Filou (niveau 20), Comète (40), Plume (60), Capitaine (80) et Légende (100). Chacun a une aura et laisse une traînée pendant la course : fumée pour Filou, étoiles pour Comète, plumes pour Plume, bulles pour Capitaine et paillettes dorées pour Légende.
 
-Le chat est dessiné dans un style « kawaii » : grosse tête ronde, oreilles et pattes arrondies, joues duveteuses, léger relief, reflets de lumière et grelot doré au collier.
+Le chat est dessiné dans un style « kawaii » : grosse tête ronde, oreilles et pattes arrondies, joues duveteuses, léger relief et reflets de lumière.
 
 ## Niveau du joueur
 

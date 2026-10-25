@@ -2296,7 +2296,7 @@
     }
   }
 
-  // Cat style "D · Mélange", kawaii: round head and ears, soft shading, highlights, a bell.
+  // Cat style "D · Mélange", kawaii: round head and ears, soft shading, highlights.
   const OUTLINE_W = 1.9;
   function strokeFill(c, sk, fill) {
     c.fillStyle = fill; c.fill();
@@ -2442,12 +2442,9 @@
       }
     }
 
-    // Collar and bell at the neck
+    // Collar at the neck
     c.fillStyle = sk.collar || '#e8445a';
     c.beginPath(); c.ellipse(0, hy + 17, 12, 3.4, 0, 0, TAU); c.fill();
-    c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1.1;
-    c.beginPath(); c.arc(8, hy + 19.5, 3.2, 0, TAU); c.fill(); c.stroke();
-    c.beginPath(); c.moveTo(8, hy + 20.5); c.lineTo(8, hy + 22.3); c.stroke();
 
     // Highlights
     c.fillStyle = 'rgba(255, 255, 255, 0.32)';
