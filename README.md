@@ -64,7 +64,7 @@ L'album montre tous les chats et tous les chapeaux, avec des silhouettes pour ce
 
 ## Poissons d'or
 
-Les poissons d'or sont des objets très rares : il y a **1 chance sur 10** qu'un poisson d'or se cache dans chaque quartier (chaque kilomètre). Il brille et flotte au-dessus du toit, et rapporte aussi 100 points. On les garde d'une partie à l'autre.
+Les poissons d'or sont des objets très rares : il y a **1 chance sur 25** qu'un poisson d'or se cache dans chaque quartier (chaque kilomètre). Il brille et flotte au-dessus du toit, et rapporte aussi 100 points. On les garde d'une partie à l'autre.
 
 - **Seconde chance** : quand le chat perd, une fenêtre propose pendant 10 secondes d'utiliser 1 poisson d'or pour repartir au même endroit (l'obstacle disparaît, un bouclier protège 2 secondes, puis compte à rebours 3-2-1). C'est possible **une seule fois par partie**. Un bouton « Passer » permet de refuser.
 - **Déguisements de fête** (10 poissons d'or) : un par fête, en vente seulement pendant sa fête, gardé ensuite toute l'année. Ils se portent avec n'importe quel chat et n'importe quel chapeau.

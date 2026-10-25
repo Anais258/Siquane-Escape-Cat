@@ -466,7 +466,7 @@
           <div class="row"><svg viewBox="0 0 34 24" aria-hidden="true"><path d="M17 2l9 10h-5v10h-8V12H8z" fill="#5aff8a" stroke="#1a6a2a" stroke-width="1.5"/></svg><span><b>Super-saut</b> : saute si haut que tu peux passer au-dessus des cheminées.</span></div>
         </div>
         <div class="label">Poissons d'or</div>
-        <p class="small-text">Très rares : il y a 1 chance sur 10 qu'un poisson d'or se cache dans chaque quartier. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
+        <p class="small-text">Très rares : il y a 1 chance sur 25 qu'un poisson d'or se cache dans chaque quartier. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
         <div class="label">Quartiers et questions</div>
         <p class="small-text">Tous les kilomètres, tu entres dans un nouveau quartier : la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
@@ -4422,7 +4422,7 @@
   gold.costumes = Array.isArray(gold.costumes) ? gold.costumes : [];
   gold.pending = gold.pending || {};
   const saveGold = () => store(GOLD_KEY, gold);
-  const FISH_CHANCE = 0.1;
+  const FISH_CHANCE = 1 / 25;
 
   const COSTUMES = [
     { id: 'vampire', name: 'Vampire', theme: 'halloween' },
@@ -4443,7 +4443,7 @@
     { id: 'hint', name: 'Indice aux questions', price: 2, text: 'Pendant la prochaine partie, une mauvaise réponse disparaît à chaque question.' },
     { id: 'magnet', name: 'Aimant de départ', price: 2, text: 'La prochaine partie commence avec un aimant qui dure 30 secondes.' },
   ];
-  // One chance in ten that a golden fish hides somewhere in each quarter.
+  // One chance in 25 that a golden fish hides somewhere in each quarter.
   function rollGoldFish(quarter) {
     fishAt = Math.random() < FISH_CHANCE ? (quarter - 1) * 1000 + rand(200, 800) : null;
   }
