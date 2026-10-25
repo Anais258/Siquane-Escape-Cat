@@ -4436,7 +4436,7 @@
     { id: 'sardine', name: 'Sardine', theme: 'avril' },
     { id: 'superchat', name: 'Super-chat', theme: 'chats' },
   ];
-  const COSTUME_PRICE = 10;
+  const COSTUME_PRICE = 8;
   const POWERS = [
     { id: 'long', name: 'Bonus plus longs', price: 3, text: 'Les bonus durent deux fois plus longtemps pendant la prochaine partie.' },
     { id: 'quick', name: 'Départ rapide', price: 3, text: 'La prochaine partie commence au quartier 2, avec un bouclier pendant 5 secondes.' },
@@ -4742,7 +4742,7 @@
     head.innerHTML = `<div class="box-head"><b>Tes poissons d'or</b><span class="gold-count">${GOLD_SVG} ${gold.count}</span></div><p class="small-text">Ils sont très rares : un seul se cache parfois dans un quartier. Ils servent aussi à te relever une fois par partie.</p>`;
     grid.append(head);
 
-    section(grid, 'Déguisements de fête · 10 poissons d’or');
+    section(grid, `Déguisements de fête · ${COSTUME_PRICE} poissons d’or`);
     const list = [{ id: 'none', name: 'Sans déguisement' }, ...visibleCostumes()];
     for (const cs of list) {
       const has = cs.id === 'none' || gold.costumes.includes(cs.id);
