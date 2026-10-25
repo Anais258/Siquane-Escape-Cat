@@ -144,6 +144,10 @@
   .result strong { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
   .badge { justify-self: center; background: var(--kibble); color: #2b1600; font-weight: 800; border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; }
   .hint { font-size: 0.82rem; }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: rgba(255, 255, 255, 0.06); }
+  .tab { font-family: var(--font-body); font-weight: 800; font-size: 0.95rem; padding: 8px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); cursor: pointer; }
+  .tab.active { background: var(--cat); color: #3a1a04; }
+  .tab:focus-visible { outline: 3px solid var(--cat); outline-offset: 2px; }
   .unlock { color: var(--kibble); font-weight: 800; }
   .card.shop { max-width: 560px; }
   .bank { justify-self: center; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.1rem; color: var(--kibble); font-variant-numeric: tabular-nums; }
@@ -248,7 +252,7 @@
 
       <p>Record : <span class="best" id="bestStart">0</span> · Tirelire : <span class="best" id="bankStart">0</span> croquettes</p>
       <button class="btn" id="playBtn">Jouer</button>
-      <button class="btn ghost" id="shopBtnStart">Choisir mon chat</button>
+      <button class="btn ghost" id="shopBtnStart">Chats et chapeaux</button>
     </div>
   </div>
 
@@ -272,21 +276,25 @@
         <div class="result"><span>Record</span><strong id="finalBest">0</strong></div>
       </div>
       <p>Tirelire : <span class="best" id="bankOver">0</span> croquettes</p>
-      <p class="unlock" id="unlockHint" hidden>Tu as assez de croquettes pour un nouveau chat !</p>
+      <p class="unlock" id="unlockHint" hidden>Tu as assez de croquettes pour débloquer un chat ou un chapeau !</p>
       <button class="btn" id="againBtn">Rejouer</button>
-      <button class="btn ghost" id="shopBtnOver">Les chats</button>
+      <button class="btn ghost" id="shopBtnOver">Boutique</button>
       <p class="hint kbd-only">ou appuie sur Espace</p>
     </div>
   </div>
 
   <div class="overlay" id="shopScreen" hidden>
     <div class="card shop">
-      <h2>Les chats</h2>
+      <h2>Boutique</h2>
       <div class="bank">
         <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
         <span id="bankShop">0</span> croquettes
       </div>
-      <p>Les croquettes ramassées pendant tes parties vont dans ta tirelire. Dépense-les pour débloquer de nouveaux chats.</p>
+      <p>Les croquettes ramassées pendant tes parties vont dans ta tirelire. Dépense-les pour débloquer de nouveaux chats et des chapeaux.</p>
+      <div class="tabs" role="tablist">
+        <button class="tab active" id="tab-cats" role="tab" aria-selected="true">Chats</button>
+        <button class="tab" id="tab-hats" role="tab" aria-selected="false">Chapeaux</button>
+      </div>
       <div class="skins" id="skinGrid"></div>
       <button class="btn" id="shopBack">Retour</button>
     </div>
@@ -318,6 +326,27 @@
   const BANK_KEY = 'siquane-escape-cat-bank';
   const OWNED_KEY = 'siquane-escape-cat-owned';
   const SKIN_KEY = 'siquane-escape-cat-skin';
+  const HATS_KEY = 'siquane-escape-cat-hats';
+  const HAT_KEY = 'siquane-escape-cat-hat';
+
+  const HATS = [
+    { id: 'none', name: 'Sans chapeau', price: 0 },
+    { id: 'pompon', name: 'Bonnet à pompon', price: 30 },
+    { id: 'bob', name: 'Bob de pêcheur', price: 60 },
+    { id: 'toque', name: 'Toque de chef', price: 90 },
+    { id: 'pasteque', name: 'Pastèque', price: 120 },
+    { id: 'beret', name: 'Béret baguette', price: 150 },
+    { id: 'cowboy', name: 'Cow-boy', price: 200 },
+    { id: 'hautdeforme', name: 'Haut-de-forme', price: 260 },
+    { id: 'couronne', name: 'Couronne', price: 320 },
+    { id: 'bonnetnuit', name: 'Bonnet de nuit', price: 380 },
+    { id: 'antenne', name: 'Mini-antenne', price: 420 },
+    { id: 'ramoneur', name: 'Casque de ramoneur', price: 480 },
+    { id: 'sorciere', name: 'Sorcière', price: 560 },
+    { id: 'viking', name: 'Viking', price: 650 },
+    { id: 'licorne', name: 'Corne de licorne', price: 750 },
+    { id: 'aureole', name: 'Auréole', price: 900 },
+  ];
 
   // ---------- Cat coats, bought with kibbles ----------
   const SKINS = [
@@ -337,19 +366,25 @@
     { id: 'arcenciel', name: 'Arc-en-ciel', price: 1000, fur: '#ffffff', paw: '#ffffff', stripe: '#ff5e5e', outline: '#4a3a6a', rainbow: true, collar: '#ffffff' },
   ];
 
-  let bank = 0, owned = ['roux'], skinId = 'roux';
+  let bank = 0, owned = ['roux'], skinId = 'roux', ownedHats = ['none'], hatId = 'none';
   try {
     bank = parseInt(localStorage.getItem(BANK_KEY), 10) || 0;
     const ow = JSON.parse(localStorage.getItem(OWNED_KEY) || 'null');
     if (Array.isArray(ow)) owned = Array.from(new Set(['roux', ...ow.filter(id => SKINS.some(s => s.id === id))]));
     const sel = localStorage.getItem(SKIN_KEY);
     if (sel && owned.includes(sel)) skinId = sel;
+    const oh = JSON.parse(localStorage.getItem(HATS_KEY) || 'null');
+    if (Array.isArray(oh)) ownedHats = Array.from(new Set(['none', ...oh.filter(id => HATS.some(h => h.id === id))]));
+    const hs = localStorage.getItem(HAT_KEY);
+    if (hs && ownedHats.includes(hs)) hatId = hs;
   } catch (e) {}
   function saveProgress() {
     try {
       localStorage.setItem(BANK_KEY, String(bank));
       localStorage.setItem(OWNED_KEY, JSON.stringify(owned));
       localStorage.setItem(SKIN_KEY, skinId);
+      localStorage.setItem(HATS_KEY, JSON.stringify(ownedHats));
+      localStorage.setItem(HAT_KEY, hatId);
     } catch (e) {}
   }
   const currentSkin = () => SKINS.find(s => s.id === skinId) || SKINS[0];
@@ -1006,7 +1041,7 @@
     ctx.scale(s, s);
     ctx.rotate(cat.tilt);
     const sk = skinPaint(currentSkin(), time);
-    const o = { ph: cat.anim, air: !cat.onGround, still: state === 'dying' || state === 'over' || state === 'pause', t: time, wet: state === 'dying' && deathCause === 'puddle' };
+    const o = { ph: cat.anim, air: !cat.onGround, still: state === 'dying' || state === 'over' || state === 'pause', t: time, wet: state === 'dying' && deathCause === 'puddle', hat: hatId };
     if (rolling()) drawCatBall(ctx, sk, o); else drawCatRun(ctx, sk, o);
     ctx.restore();
 
@@ -1141,6 +1176,8 @@
       c.beginPath(); c.moveTo(sd * 14, hy + 6); c.lineTo(sd * 26, hy + 10); c.stroke();
     }
 
+    if (o.hat) { c.save(); c.translate(0, hy - 12); drawHat(c, o.hat, o.t); c.restore(); }
+
     // Wet cat drips
     if (o.wet) {
       c.fillStyle = 'rgba(91, 184, 255, 0.85)';
@@ -1180,11 +1217,190 @@
       }
       c.restore();
     }
+    if (o.hat) { c.save(); c.translate(0, -14); drawHat(c, o.hat, o.t); c.restore(); }
     // Tail wrapped around
     c.strokeStyle = sk.outline; c.lineWidth = 8; c.lineCap = 'round';
     c.beginPath(); c.arc(0, 2, r + 1, 0.3, 1.9); c.stroke();
     c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 5;
     c.beginPath(); c.arc(0, 2, r + 1, 0.3, 1.9); c.stroke();
+  }
+
+  // ---------- Hats (drawn from behind, base of the hat at y = 0, going up) ----------
+  function hatPath(c, fill, outline) {
+    c.fillStyle = fill; c.fill();
+    c.strokeStyle = outline || '#1d1630'; c.lineWidth = 1.8; c.stroke();
+  }
+  function ell(c, x, y, rx, ry, fill, outline, rot) {
+    c.beginPath(); c.ellipse(x, y, rx, ry, rot || 0, 0, TAU); hatPath(c, fill, outline);
+  }
+
+  const HAT_DRAW = {
+    pompon(c) {
+      c.beginPath(); c.moveTo(-14, 2); c.quadraticCurveTo(-14, -18, 0, -18); c.quadraticCurveTo(14, -18, 14, 2); c.closePath();
+      hatPath(c, '#e84a5f');
+      c.strokeStyle = '#fff1e6'; c.lineWidth = 2.4;
+      c.beginPath(); c.moveTo(-12, -9); c.quadraticCurveTo(0, -12, 12, -9); c.stroke();
+      c.beginPath(); c.roundRect(-15, -3, 30, 7, 3); hatPath(c, '#fff1e6');
+      ell(c, 0, -21, 5.5, 5.5, '#fff1e6');
+    },
+    bob(c, t) {
+      // Little fish dangling from the brim
+      const sw = Math.sin(t * 4) * 3;
+      c.strokeStyle = '#d8d8e8'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(17, 1); c.lineTo(18 + sw, 13); c.stroke();
+      c.save(); c.translate(18 + sw, 16); c.rotate(Math.PI / 2 + sw * 0.05);
+      c.beginPath(); c.moveTo(-5, 0); c.quadraticCurveTo(0, -4, 4, 0); c.lineTo(7, -3); c.lineTo(7, 3); c.lineTo(4, 0); c.quadraticCurveTo(0, 4, -5, 0);
+      hatPath(c, '#ff9f43', '#7a3b0c');
+      c.restore();
+      ell(c, 0, 1, 20, 5, '#6d8f5a');
+      c.beginPath(); c.moveTo(-12, 0); c.lineTo(-10, -12); c.quadraticCurveTo(0, -15, 10, -12); c.lineTo(12, 0); c.closePath();
+      hatPath(c, '#7fa66a');
+      c.fillStyle = '#4a6b3c'; c.fillRect(-11.5, -4, 23, 3.5);
+    },
+    toque(c) {
+      for (const [x, y, r] of [[-8, -15, 8], [8, -15, 8], [0, -21, 10]]) ell(c, x, y, r, r, '#fbfbff', '#5c5a70');
+      c.beginPath(); c.rect(-11, -8, 22, 9); hatPath(c, '#fbfbff', '#5c5a70');
+      c.strokeStyle = '#c9c8d8'; c.lineWidth = 1;
+      for (const x of [-5, 0, 5]) { c.beginPath(); c.moveTo(x, -7); c.lineTo(x, 0); c.stroke(); }
+    },
+    pasteque(c) {
+      const half = (r, fill, outline) => { c.beginPath(); c.arc(0, 2, r, Math.PI, 0); c.closePath(); hatPath(c, fill, outline); };
+      half(17, '#3f9b4a', '#1f5a28');
+      half(14.5, '#e9f5d0', '#e9f5d0');
+      half(12.5, '#ff5a6e', '#ff5a6e');
+      c.fillStyle = '#2a1a1a';
+      for (const [x, y] of [[-6, -4], [0, -8], [6, -4], [-3, -1], [3, -1]]) { c.beginPath(); c.ellipse(x, y, 1.1, 1.8, 0, 0, TAU); c.fill(); }
+    },
+    beret(c) {
+      // Baguette tucked behind
+      c.save(); c.rotate(-0.55);
+      c.beginPath(); c.roundRect(2, -9, 34, 7, 3.5); hatPath(c, '#d9a050', '#7a4d14');
+      c.strokeStyle = '#f3d29a'; c.lineWidth = 1.4;
+      for (const x of [10, 18, 26]) { c.beginPath(); c.moveTo(x, -8); c.lineTo(x + 4, -3); c.stroke(); }
+      c.restore();
+      ell(c, 2, -5, 17, 7, '#2a2a3a', '#0d0d14', -0.15);
+      ell(c, 1, -12, 2, 2.5, '#2a2a3a', '#0d0d14');
+    },
+    cowboy(c) {
+      c.beginPath(); c.moveTo(-25, -6); c.quadraticCurveTo(-20, 4, 0, 3); c.quadraticCurveTo(20, 4, 25, -6); c.quadraticCurveTo(18, -1, 0, -2); c.quadraticCurveTo(-18, -1, -25, -6);
+      hatPath(c, '#a0673a', '#4a2a10');
+      c.beginPath(); c.moveTo(-11, -1); c.lineTo(-12, -15); c.quadraticCurveTo(-6, -19, 0, -15); c.quadraticCurveTo(6, -19, 12, -15); c.lineTo(11, -1); c.closePath();
+      hatPath(c, '#b9784a', '#4a2a10');
+      c.fillStyle = '#5b3418'; c.fillRect(-11.5, -6, 23, 3.5);
+    },
+    hautdeforme(c) {
+      ell(c, 0, 0, 17, 4.5, '#1c1c26', '#000');
+      c.beginPath(); c.rect(-11, -26, 22, 26); hatPath(c, '#1c1c26', '#000');
+      c.fillStyle = '#c0392b'; c.fillRect(-11, -8, 22, 5);
+      ell(c, 0, -26, 11, 3, '#2c2c3a', '#000');
+    },
+    couronne(c, t) {
+      c.beginPath();
+      c.moveTo(-14, 1); c.lineTo(-14, -16); c.lineTo(-8, -8); c.lineTo(-3.5, -19); c.lineTo(0, -9);
+      c.lineTo(3.5, -19); c.lineTo(8, -8); c.lineTo(14, -16); c.lineTo(14, 1); c.closePath();
+      hatPath(c, '#ffcc33', '#8a5a00');
+      ell(c, -7, -3, 2.2, 2.2, '#e8445a', '#8a5a00');
+      ell(c, 0, -3, 2.4, 2.4, '#3d7bff', '#8a5a00');
+      ell(c, 7, -3, 2.2, 2.2, '#2fb7a5', '#8a5a00');
+      c.globalAlpha = 0.5 + 0.5 * Math.sin(t * 4);
+      drawStar(c, -10, -14, 3, '#ffffff');
+      c.globalAlpha = 1;
+    },
+    bonnetnuit(c, t) {
+      const flop = Math.sin(t * 3) * 2;
+      c.beginPath();
+      c.moveTo(-13, 0); c.quadraticCurveTo(-11, -20, 6, -24);
+      c.quadraticCurveTo(20 + flop, -27, 24 + flop, -10);
+      c.quadraticCurveTo(13, -18, 13, 0); c.closePath();
+      hatPath(c, '#3b4cc0', '#16205c');
+      drawStar(c, -4, -10, 2.4, '#ffd34d');
+      drawStar(c, 6, -15, 2, '#ffd34d');
+      ell(c, 0, 0, 15, 4, '#f4f1ff', '#9a98b8');
+      drawStar(c, 24 + flop, -8, 5, '#ffd34d');
+    },
+    antenne(c, t) {
+      c.strokeStyle = '#555c7a'; c.lineWidth = 3; c.lineCap = 'round';
+      c.beginPath(); c.arc(0, 8, 14, Math.PI * 1.15, Math.PI * 1.85); c.stroke();
+      c.strokeStyle = '#c9d1e6'; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(0, -5); c.lineTo(0, -26); c.stroke();
+      c.beginPath(); c.moveTo(-12, -20); c.lineTo(12, -20); c.stroke();
+      c.lineWidth = 1.5;
+      for (const x of [-10, -5, 5, 10]) { c.beginPath(); c.moveTo(x, -24); c.lineTo(x, -16); c.stroke(); }
+      const on = Math.sin(t * 6) > 0;
+      ell(c, 0, -28, 2.6, 2.6, on ? '#ff5a5a' : '#7a2a2a', '#3a1010');
+      if (on) {
+        c.strokeStyle = 'rgba(255, 120, 120, 0.7)'; c.lineWidth = 1.3;
+        for (const r of [6, 10]) { c.beginPath(); c.arc(0, -28, r, -Math.PI * 0.8, -Math.PI * 0.2); c.stroke(); }
+      }
+    },
+    ramoneur(c, t) {
+      // Headlamp beam lighting the way ahead
+      const beam = c.createLinearGradient(0, -8, 0, -70);
+      beam.addColorStop(0, 'rgba(255, 240, 170, 0.45)');
+      beam.addColorStop(1, 'rgba(255, 240, 170, 0)');
+      c.fillStyle = beam;
+      c.beginPath(); c.moveTo(-4, -10); c.lineTo(-22, -70); c.lineTo(22, -70); c.lineTo(4, -10); c.closePath(); c.fill();
+      ell(c, 0, 0, 18, 4, '#2a2a33', '#000');
+      c.beginPath(); c.moveTo(-14, 0); c.quadraticCurveTo(-14, -19, 0, -19); c.quadraticCurveTo(14, -19, 14, 0); c.closePath();
+      hatPath(c, '#2a2a33', '#000');
+      c.strokeStyle = '#4a4a58'; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(0, -19); c.lineTo(0, -1); c.stroke();
+      ell(c, 0, -14, 4, 3.5, '#ffe9a0', '#000');
+      c.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      c.beginPath(); c.ellipse(-7, -6, 3, 2, 0.4, 0, TAU); c.fill();
+    },
+    sorciere(c) {
+      ell(c, 0, 0, 22, 5, '#3a1f5c', '#140726');
+      c.beginPath(); c.moveTo(-12, -1); c.lineTo(-3, -28); c.quadraticCurveTo(2, -36, 11, -33); c.quadraticCurveTo(3, -29, 3, -24); c.lineTo(12, -1); c.closePath();
+      hatPath(c, '#4a2a75', '#140726');
+      c.fillStyle = '#ff9f1c'; c.fillRect(-11.5, -6, 23, 4);
+      c.beginPath(); c.rect(-3, -7, 6, 6); hatPath(c, '#ffd34d', '#8a5a00');
+    },
+    viking(c) {
+      for (const sd of [-1, 1]) {
+        c.beginPath(); c.moveTo(sd * 13, -6); c.quadraticCurveTo(sd * 27, -10, sd * 24, -29); c.quadraticCurveTo(sd * 20, -14, sd * 10, -13); c.closePath();
+        hatPath(c, '#f3ead2', '#6b5a3a');
+      }
+      c.beginPath(); c.moveTo(-15, 2); c.quadraticCurveTo(-15, -19, 0, -19); c.quadraticCurveTo(15, -19, 15, 2); c.closePath();
+      hatPath(c, '#9aa3b5', '#3a3f50');
+      c.beginPath(); c.rect(-15, -3, 30, 5); hatPath(c, '#b08840', '#5a400f');
+      c.fillStyle = '#5a400f';
+      for (const x of [-10, -3.5, 3.5, 10]) { c.beginPath(); c.arc(x, -0.5, 1, 0, TAU); c.fill(); }
+      c.beginPath(); c.rect(-1.5, -19, 3, 16); hatPath(c, '#b08840', '#5a400f');
+    },
+    licorne(c, t) {
+      const g = c.createLinearGradient(0, 0, 0, -32);
+      g.addColorStop(0, '#ffd6f0'); g.addColorStop(1, '#fff7d6');
+      c.beginPath(); c.moveTo(-5.5, 0); c.lineTo(0, -32); c.lineTo(5.5, 0); c.closePath();
+      hatPath(c, g, '#b05a9a');
+      c.strokeStyle = '#ff8fd0'; c.lineWidth = 1.4;
+      for (let y = -4; y > -28; y -= 6) { const w = 5.5 * (1 + y / 32); c.beginPath(); c.moveTo(-w, y); c.lineTo(w, y - 4); c.stroke(); }
+      ['#ff9ad5', '#9ad5ff', '#fff19a'].forEach((col, i) => {
+        const a = t * 2 + i * TAU / 3;
+        c.globalAlpha = 0.6 + 0.4 * Math.sin(t * 5 + i);
+        drawStar(c, Math.cos(a) * 12, -18 + Math.sin(a) * 6, 2.6, col);
+      });
+      c.globalAlpha = 1;
+    },
+    aureole(c, t) {
+      const y = -12 + Math.sin(t * 3) * 2;
+      c.save();
+      c.shadowColor = 'rgba(255, 240, 150, 0.9)';
+      c.shadowBlur = 12;
+      c.strokeStyle = '#fff3a0'; c.lineWidth = 3.5;
+      c.beginPath(); c.ellipse(0, y, 14, 4, 0, 0, TAU); c.stroke();
+      c.restore();
+    },
+  };
+
+  function drawHat(c, id, t) {
+    const fn = HAT_DRAW[id];
+    if (!fn) return;
+    c.save();
+    c.lineJoin = 'round';
+    c.lineCap = 'round';
+    fn(c, t);
+    c.restore();
   }
 
   function drawStar(c, x, y, r, color) {
@@ -1281,7 +1497,7 @@
     bank += kibbles;
     saveProgress();
     updateBank();
-    $('unlockHint').hidden = !SKINS.some(sk => !owned.includes(sk.id) && sk.price <= bank);
+    $('unlockHint').hidden = !canUnlockSomething();
     hud.hidden = true;
     show('overScreen');
     $('againBtn').focus({ preventScroll: true });
@@ -1325,74 +1541,90 @@
   $('bestStart').textContent = best;
   setMuted(muted);
 
-  // ---------- Cat shop ----------
+  // ---------- Shop: cats and hats ----------
   const FISH_SVG = '<svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/></svg>';
+  const SHOP = {
+    cats: { items: SKINS, owned: () => owned, get: () => skinId, set: id => { skinId = id; } },
+    hats: { items: HATS, owned: () => ownedHats, get: () => hatId, set: id => { hatId = id; } },
+  };
+  let shopTab = 'cats';
   let shopReturn = 'startScreen';
   let previews = [];
 
   function updateBank() {
     for (const id of ['bankStart', 'bankOver', 'bankShop']) $(id).textContent = bank;
   }
+  function canUnlockSomething() {
+    return Object.values(SHOP).some(s => s.items.some(it => !s.owned().includes(it.id) && it.price <= bank));
+  }
 
   function buildShop() {
+    const shop = SHOP[shopTab];
+    for (const tab of ['cats', 'hats']) {
+      const b = $('tab-' + tab);
+      b.setAttribute('aria-selected', String(tab === shopTab));
+      b.classList.toggle('active', tab === shopTab);
+    }
     const grid = $('skinGrid');
     grid.textContent = '';
     previews = [];
-    for (const sk of SKINS) {
-      const isOwned = owned.includes(sk.id), isSel = sk.id === skinId, canBuy = !isOwned && bank >= sk.price;
+    for (const it of shop.items) {
+      const isOwned = shop.owned().includes(it.id), isSel = it.id === shop.get(), canBuy = !isOwned && bank >= it.price;
       const card = document.createElement('div');
       card.className = 'skin' + (isSel ? ' selected' : '') + (!isOwned && !canBuy ? ' locked' : '');
       const cv = document.createElement('canvas');
       cv.width = cv.height = Math.round(76 * dpr);
       const name = document.createElement('div');
       name.className = 'skin-name';
-      name.textContent = sk.name;
+      name.textContent = it.name;
       const btn = document.createElement('button');
       btn.className = 'skin-btn';
-      btn.id = 'skin-' + sk.id;
+      btn.id = 'item-' + it.id;
       if (isSel) { btn.textContent = 'Choisi'; btn.disabled = true; }
       else if (isOwned) { btn.textContent = 'Choisir'; }
       else {
-        btn.innerHTML = (canBuy ? 'Acheter ' : '') + FISH_SVG + ' ' + sk.price;
-        btn.setAttribute('aria-label', (canBuy ? 'Acheter ' : 'Il faut ') + sk.price + ' croquettes pour ' + sk.name);
+        btn.innerHTML = (canBuy ? 'Acheter ' : '') + FISH_SVG + ' ' + it.price;
+        btn.setAttribute('aria-label', (canBuy ? 'Acheter ' : 'Il faut ') + it.price + ' croquettes pour ' + it.name);
         if (canBuy) btn.classList.add('buy'); else btn.disabled = true;
       }
-      btn.addEventListener('click', () => chooseSkin(sk));
+      btn.addEventListener('click', () => chooseItem(shop, it));
       card.append(cv, name, btn);
       grid.append(card);
-      previews.push({ cv, sk });
+      previews.push({ cv, it });
     }
   }
 
-  function chooseSkin(sk) {
+  function chooseItem(shop, it) {
     initAudio();
-    if (!owned.includes(sk.id)) {
-      if (bank < sk.price) return;
-      bank -= sk.price;
-      owned.push(sk.id);
+    if (!shop.owned().includes(it.id)) {
+      if (bank < it.price) return;
+      bank -= it.price;
+      shop.owned().push(it.id);
       sfx.kibble();
     }
-    skinId = sk.id;
+    shop.set(it.id);
     saveProgress();
     updateBank();
     meow(false);
     buildShop();
-    const btn = $('skin-' + sk.id);
+    const btn = $('item-' + it.id);
     if (btn) btn.focus({ preventScroll: true });
   }
 
   function drawPreviews() {
-    for (const { cv, sk } of previews) {
+    for (const { cv, it } of previews) {
       const c = cv.getContext('2d');
       c.setTransform(1, 0, 0, 1, 0, 0);
       c.clearRect(0, 0, cv.width, cv.height);
       c.setTransform(dpr, 0, 0, dpr, 0, 0);
       c.fillStyle = 'rgba(5, 6, 20, 0.35)';
-      c.beginPath(); c.ellipse(38, 68, 22, 5, 0, 0, TAU); c.fill();
-      c.translate(38, 68);
-      c.scale(0.82, 0.82);
-      const owns = owned.includes(sk.id);
-      drawCatRun(c, skinPaint(sk, time), { ph: owns ? time * 9 : 0, air: false, still: !owns, t: time, wet: false });
+      c.beginPath(); c.ellipse(38, 71, 19, 4, 0, 0, TAU); c.fill();
+      c.translate(38, 71);
+      c.scale(0.7, 0.7);
+      const isCat = shopTab === 'cats';
+      const owns = SHOP[shopTab].owned().includes(it.id);
+      const sk = isCat ? it : currentSkin();
+      drawCatRun(c, skinPaint(sk, time), { ph: owns ? time * 9 : 0, air: false, still: !owns, t: time, wet: false, hat: isCat ? hatId : it.id });
     }
   }
 
@@ -1404,8 +1636,11 @@
     $('shopBack').focus({ preventScroll: true });
   }
   function closeShop() {
-    $('unlockHint').hidden = !SKINS.some(sk => !owned.includes(sk.id) && sk.price <= bank);
+    $('unlockHint').hidden = !canUnlockSomething();
     show(shopReturn);
+  }
+  for (const tab of ['cats', 'hats']) {
+    $('tab-' + tab).addEventListener('click', () => { shopTab = tab; buildShop(); });
   }
   $('shopBtnStart').addEventListener('click', openShop);
   $('shopBtnOver').addEventListener('click', openShop);

@@ -27,7 +27,7 @@ La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreu
 
 ## Les chats à débloquer
 
-Les croquettes ramassées pendant les parties vont dans une tirelire. Dans le menu **Les chats**, tu peux les dépenser pour débloquer de nouveaux chats, puis choisir celui avec lequel tu cours. La tirelire et les chats débloqués sont enregistrés dans le navigateur.
+Les croquettes ramassées pendant les parties vont dans une tirelire. Dans la **Boutique**, tu peux les dépenser pour débloquer de nouveaux chats, puis choisir celui avec lequel tu cours. La tirelire et les chats débloqués sont enregistrés dans le navigateur.
 
 | Chat | Prix |
 | --- | --- |
@@ -43,5 +43,27 @@ Les croquettes ramassées pendant les parties vont dans une tirelire. Dans le me
 | Bleu nuit (avec des étoiles) | 650 |
 | Doré (qui brille) | 800 |
 | Arc-en-ciel (qui change de couleur) | 1000 |
+
+## Les chapeaux
+
+Dans l'onglet **Chapeaux** de la boutique, les croquettes servent aussi à acheter des chapeaux. Chaque chapeau va sur n'importe quel chat.
+
+| Chapeau | Prix |
+| --- | --- |
+| Bonnet à pompon | 30 |
+| Bob de pêcheur (avec un petit poisson qui pend) | 60 |
+| Toque de chef | 90 |
+| Pastèque | 120 |
+| Béret baguette | 150 |
+| Cow-boy | 200 |
+| Haut-de-forme | 260 |
+| Couronne | 320 |
+| Bonnet de nuit étoilé | 380 |
+| Mini-antenne (avec une lumière qui clignote) | 420 |
+| Casque de ramoneur (avec une lampe qui éclaire devant) | 480 |
+| Sorcière | 560 |
+| Viking | 650 |
+| Corne de licorne | 750 |
+| Auréole | 900 |
 
 Tout le jeu tient dans un seul fichier, `index.html` (HTML, CSS et JavaScript, dessin sur `<canvas>`, sons générés avec la Web Audio API).
