@@ -151,22 +151,22 @@ Pour que la collection dure, on peut avoir **au maximum 5 chats le premier jour 
 | Chat | Prix |
 | --- | --- |
 | Roux | offert |
-| Gris | 50 |
-| Noir | 80 |
-| Crème | 100 |
-| Blanc | 120 |
-| Tigré brun | 160 |
-| Tigré argenté | 200 |
-| Tuxedo | 250 |
-| Chartreux | 300 |
-| Siamois | 350 |
-| Calico | 450 |
-| Écaille de tortue | 500 |
-| Rose | 550 |
-| Bengal (tacheté) | 600 |
-| Bleu nuit (avec des étoiles) | 650 |
-| Doré (qui brille) | 800 |
-| Arc-en-ciel (qui change de couleur) | 1000 |
+| Gris | 500 |
+| Noir | 800 |
+| Crème | 1 000 |
+| Blanc | 1 200 |
+| Tigré brun | 1 600 |
+| Tigré argenté | 2 000 |
+| Tuxedo | 2 500 |
+| Chartreux | 3 000 |
+| Siamois | 3 500 |
+| Calico | 4 500 |
+| Écaille de tortue | 5 000 |
+| Rose | 5 500 |
+| Bengal (tacheté) | 6 000 |
+| Bleu nuit (avec des étoiles) | 6 500 |
+| Doré (qui brille) | 8 000 |
+| Arc-en-ciel (qui change de couleur) | 10 000 |
 
 ## Les chapeaux
 
@@ -174,30 +174,30 @@ Dans l'onglet **Chapeaux** de la boutique, les croquettes servent aussi à achet
 
 | Chapeau | Prix |
 | --- | --- |
-| Bonnet à pompon | 30 |
-| Casquette à l'envers | 45 |
-| Bob de pêcheur (avec un petit poisson qui pend) | 60 |
-| Toque de chef | 90 |
-| Couronne de fleurs | 110 |
-| Pastèque | 120 |
-| Béret baguette | 150 |
-| Cow-boy | 200 |
-| Casque de pompier | 230 |
-| Haut-de-forme | 260 |
-| Couronne | 320 |
-| Chapeau de pirate | 350 |
-| Bonnet de nuit étoilé | 380 |
-| Mini-antenne (avec une lumière qui clignote) | 420 |
-| Bonnet à hélice (qui tourne) | 450 |
-| Casque de ramoneur (avec une lampe qui éclaire devant) | 480 |
-| Sorcière | 560 |
-| Viking | 650 |
-| Corne de licorne | 750 |
-| Auréole | 900 |
+| Bonnet à pompon | 300 |
+| Casquette à l'envers | 450 |
+| Bob de pêcheur (avec un petit poisson qui pend) | 600 |
+| Toque de chef | 900 |
+| Couronne de fleurs | 1 100 |
+| Pastèque | 1 200 |
+| Béret baguette | 1 500 |
+| Cow-boy | 2 000 |
+| Casque de pompier | 2 300 |
+| Haut-de-forme | 2 600 |
+| Couronne | 3 200 |
+| Chapeau de pirate | 3 500 |
+| Bonnet de nuit étoilé | 3 800 |
+| Mini-antenne (avec une lumière qui clignote) | 4 200 |
+| Bonnet à hélice (qui tourne) | 4 500 |
+| Casque de ramoneur (avec une lampe qui éclaire devant) | 4 800 |
+| Sorcière | 5 600 |
+| Viking | 6 500 |
+| Corne de licorne | 7 500 |
+| Auréole | 9 000 |
 
 ## Les thèmes de fête
 
-Le jeu change tout seul de décor pendant les fêtes, selon la date de l'appareil. Pendant un thème, le ciel, les toits, les obstacles et les objets à ramasser changent d'apparence (les règles restent les mêmes), et un chapeau en **édition limitée** est en vente dans la boutique à 150 croquettes. Une fois acheté, il reste à toi toute l'année.
+Le jeu change tout seul de décor pendant les fêtes, selon la date de l'appareil. Pendant un thème, le ciel, les toits, les obstacles et les objets à ramasser changent d'apparence (les règles restent les mêmes), et un chapeau en **édition limitée** est en vente dans la boutique à 1 500 croquettes. Une fois acheté, il reste à toi toute l'année.
 
 | Thème | Dates | Objets à ramasser | Les flaques deviennent | Chapeau limité |
 | --- | --- | --- | --- | --- |
