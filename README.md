@@ -25,6 +25,25 @@ Pendant un saut, la roulade fait retomber le chat plus vite et il roule dès qu'
 
 La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreux. Le score compte la distance parcourue et les croquettes. Le meilleur score est enregistré dans le navigateur.
 
+## Niveaux et questions de culture générale
+
+La course est découpée en niveaux. À chaque nouveau niveau, elle fait une pause et propose jusqu'à 3 questions de culture générale (sciences et nature, histoire et géographie, français et maths, arts et culture). Chaque bonne réponse rapporte 1 croquette. En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course.
+
+Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Plus grand »). Elle se change avec le bouton **Classe** de l'écran d'accueil. Le jeu ajuste ensuite un peu la difficulté : après 3 bonnes réponses d'affilée, les questions deviennent plus difficiles, et après 2 erreurs d'affilée, plus faciles. Les calculs sont générés automatiquement et changent à chaque fois.
+
+## Missions, défi du jour et cadeau du jour
+
+- **3 missions** à la fois (par exemple « Saute par-dessus 5 antennes basses » ou « Réponds juste à 3 questions »). Chaque mission réussie rapporte de 25 à 60 croquettes et est remplacée par une nouvelle, un peu plus difficile au fil du temps.
+- **Défi du jour** : un objectif plus difficile qui change chaque jour, pour 100 croquettes.
+- **Cadeau du jour** : des croquettes offertes une fois par jour, de plus en plus nombreuses au fil des jours de jeu (de 25 à 70). On ne perd pas sa progression si on rate un jour.
+
+## Bonus et sensations
+
+- **Bonus** à attraper sur les toits : l'aimant attire les croquettes, le parapluie protège des flaques, les croquettes x2 comptent double, et le super-saut permet de passer au-dessus des cheminées.
+- **Combos** : ramasser des croquettes d'affilée fait monter un multiplicateur de points (jusqu'à x5).
+- **« Ouf ! »** : éviter un obstacle de justesse déclenche un petit ralenti et rapporte 20 points.
+- L'écran tremble quand le chat se cogne, un message s'affiche quand on bat son record, et la fin de partie indique combien de points il manquait pour le battre.
+
 ## Les chats à débloquer
 
 Les croquettes ramassées pendant les parties vont dans une tirelire. Dans la **Boutique**, tu peux les dépenser pour débloquer de nouveaux chats, puis choisir celui avec lequel tu cours. La tirelire et les chats débloqués sont enregistrés dans le navigateur.
