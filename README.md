@@ -33,13 +33,15 @@ La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreu
 
 ## L'histoire
 
-Une nuit d'orage, un petit chat s'abrite dans un camion de livraison et se réveille au cœur d'une ville inconnue, loin de sa famille. Pour rentrer, il court de toit en toit. Au premier lancement, le joueur donne un nom à son chat (« Siquane » par défaut). Il peut le changer ensuite dans l'écran **Histoire**.
+Une nuit d'orage, un petit chat s'abrite dans un camion de livraison et se réveille au cœur d'une ville inconnue, loin de sa famille. Pour rentrer, il court de toit en toit. Au premier lancement, le joueur donne un nom à son chat (« Siquane » par défaut). Pour le changer ensuite, il suffit de toucher le nom sur l'écran d'accueil.
 
-L'histoire compte 10 chapitres, qui se débloquent avec le **niveau du joueur** : Gaston le pigeon, Filou le chat errant, le ruban rouge, Plume la petite sœur… jusqu'au retour à la maison.
+L'histoire dure **100 niveaux** et compte 21 chapitres, un tous les 5 niveaux : Gaston le pigeon, Filou le chat errant, la chouette du musée, les chats du port, Plume la petite sœur… jusqu'au retour à la maison au niveau 100.
+
+**Tous les 20 niveaux, un chat spécial de l'histoire est offert** : Filou (niveau 20), Comète (40), Plume (60), Capitaine (80) et Légende (100).
 
 ## Niveau du joueur
 
-Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Chaque nouveau niveau rapporte des croquettes et peut débloquer un chapitre de l'histoire.
+Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut environ 500 parties pour atteindre le niveau 100. Chaque nouveau niveau rapporte des croquettes.
 
 ## Écran de fin de partie
 
@@ -60,7 +62,7 @@ L'album montre tous les chats et tous les chapeaux, avec des silhouettes pour ce
 
 ## Quartiers et questions de culture générale
 
-La ville est découpée en quartiers. À chaque nouveau quartier, la course fait une pause et propose jusqu'à 3 questions de culture générale (sciences et nature, histoire et géographie, français et maths, arts et culture). Chaque bonne réponse rapporte 1 croquette. En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course.
+Tous les kilomètres, le chat entre dans un nouveau quartier : la course fait une pause et propose jusqu'à 3 questions, tirées parmi 6 sujets (sciences et nature, histoire et géographie, français et maths, arts et culture, **les chats** et **anglais**). Chaque bonne réponse rapporte 1 croquette. Chaque question passée retire 2 croquettes du compteur de la partie (jamais en dessous de 0). En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course.
 
 Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Lycée et + »). Elle se change avec la tuile **Classe** de l'écran d'accueil. Le jeu ajuste ensuite un peu la difficulté : après 3 bonnes réponses d'affilée, les questions deviennent plus difficiles, et après 2 erreurs d'affilée, plus faciles. Les calculs sont générés automatiquement et changent à chaque fois.
 
@@ -90,6 +92,8 @@ Une musique chiptune originale accompagne le jeu. Elle est générée dans le na
 ## Les chats à débloquer
 
 Les croquettes ramassées pendant les parties vont dans une tirelire. Dans la **Boutique**, tu peux les dépenser pour débloquer de nouveaux chats, puis choisir celui avec lequel tu cours. La tirelire et les chats débloqués sont enregistrés dans le navigateur.
+
+Pour que la collection dure, on peut avoir **au maximum 5 chats le premier jour de jeu** (Roux compris), puis un de plus chaque nouveau jour où l'on joue. Les chats spéciaux offerts par l'histoire ne comptent pas dans cette limite.
 
 | Chat | Prix |
 | --- | --- |
