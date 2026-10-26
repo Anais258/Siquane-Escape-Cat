@@ -105,6 +105,7 @@
   .kib { display: flex; align-items: center; gap: 6px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
   .kib svg { width: 22px; height: 14px; }
   .lvl { display: grid; gap: 3px; margin-top: 2px; font-weight: 800; font-size: var(--fs-xs); color: var(--muted); }
+  .city-label { color: var(--ink); font-size: var(--fs-sm); }
   .lvl-bar { width: 96px; height: 5px; border-radius: var(--r-pill); background: var(--surface-strong); overflow: hidden; }
   .lvl-bar i { display: block; height: 100%; width: 0; background: var(--accent); }
   .bonus-bar { display: grid; gap: var(--s1); margin-top: var(--s1); }
@@ -502,7 +503,7 @@
         <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
         <span id="kibbles">0</span>
       </div>
-      <div class="lvl"><span id="levelLabel">Quartier 1</span><span class="lvl-bar"><i id="levelBar"></i></span></div>
+      <div class="lvl"><span id="cityLabel" class="city-label">Marseille</span><span id="levelLabel">Quartier 1</span><span class="lvl-bar"><i id="levelBar"></i></span></div>
       <div class="bonus-bar" id="bonusBar"></div>
     </div>
     <div class="buttons">
@@ -1210,6 +1211,606 @@
   const TH = THEME_ID ? THEMES[THEME_ID] : {};
   const P = Object.assign({}, BASE_PALETTE, TH.palette);
   const PUD = Object.assign({}, BASE_PUDDLE, TH.puddle);
+
+
+  // ---------- The trip across France: one city every 5 player levels ----------
+  // lon/lat place the city on the map; roof and style shape the rooftops and the
+  // skyline; marks are landmarks drawn on the horizon; extras add sea, mountains...
+  const CITIES = [
+    { id: 'marseille', name: 'Marseille', region: 'Provence', lon: 5.37, lat: 43.30, roof: 'tuile', style: 'provence', marks: ['garde'], extras: ['sea'],
+      fact: "Notre-Dame-de-la-Garde, surnommée « la Bonne Mère », veille sur la ville du haut de sa colline. La statue dorée de la Vierge, tout en haut, mesure plus de 11 mètres." },
+    { id: 'sainttropez', name: 'Saint-Tropez', region: "Côte d'Azur", lon: 6.64, lat: 43.27, roof: 'tuile', style: 'provence', marks: ['clocher'], extras: ['sea', 'boats'],
+      fact: "Ce petit port de pêcheurs est devenu célèbre dans le monde entier grâce au cinéma, dans les années 1950. Son clocher jaune et ocre se voit depuis la mer." },
+    { id: 'nice', name: 'Nice', region: "Côte d'Azur", lon: 7.26, lat: 43.70, roof: 'tuile', style: 'provence', marks: ['palms', 'dome'], extras: ['sea'],
+      fact: "La promenade des Anglais longe la mer sur environ 7 kilomètres. Ses chaises bleues sont devenues le symbole de la ville." },
+    { id: 'gordes', name: 'Gordes', region: 'Luberon', lon: 5.20, lat: 43.91, roof: 'tuile', style: 'village', marks: ['hillvillage'], extras: ['lavender', 'hills'],
+      fact: "Gordes est un village perché sur une colline du Luberon, avec ses maisons en pierre serrées autour d'un château. Autour, les champs de lavande deviennent violets au début de l'été." },
+    { id: 'avignon', name: 'Avignon', region: 'Provence', lon: 4.81, lat: 43.95, roof: 'tuile', style: 'medieval', marks: ['papes', 'bridge'], extras: ['river'],
+      fact: "Au Moyen Âge, les papes ont vécu à Avignon pendant près de 70 ans, dans l'immense Palais des Papes. Et sur le célèbre pont, on chante « on y danse, tous en rond » !" },
+    { id: 'arles', name: 'Arles', region: 'Provence', lon: 4.63, lat: 43.68, roof: 'tuile', style: 'provence', marks: ['arena'], extras: [],
+      fact: "Le peintre Vincent van Gogh a vécu à Arles et y a peint plus de 200 tableaux, dont ses célèbres « Tournesols ». La ville a aussi des arènes romaines vieilles de 2 000 ans." },
+    { id: 'nimes', name: 'Nîmes', region: 'Gard', lon: 4.36, lat: 43.84, roof: 'tuile', style: 'provence', marks: ['temple', 'arena'], extras: [],
+      fact: "Le tissu « denim » des jeans tire son nom de la ville : « de Nîmes » ! Ses arènes romaines sont parmi les mieux conservées au monde." },
+    { id: 'montpellier', name: 'Montpellier', region: 'Occitanie', lon: 3.88, lat: 43.61, roof: 'tuile', style: 'modern', marks: ['arc'], extras: [],
+      fact: "Montpellier possède l'une des plus anciennes facultés de médecine du monde encore en activité : elle a ouvert au Moyen Âge, il y a plus de 800 ans." },
+    { id: 'carcassonne', name: 'Carcassonne', region: 'Aude', lon: 2.35, lat: 43.21, roof: 'tuile', style: 'medieval', marks: ['castle'], extras: ['hills'],
+      fact: "La Cité de Carcassonne est une ville fortifiée du Moyen Âge entourée de deux enceintes de remparts, avec 52 tours ! On dirait un château de conte de fées." },
+    { id: 'toulouse', name: 'Toulouse', region: 'Sud-Ouest', lon: 1.44, lat: 43.60, roof: 'rose', style: 'brick', marks: ['capitole', 'rocket'], extras: [],
+      fact: "On l'appelle « la Ville rose » à cause de ses briques. C'est aussi la capitale de l'aviation : les avions Airbus y sont assemblés, et la Cité de l'espace expose une vraie fusée Ariane 5." },
+    { id: 'lourdes', name: 'Lourdes', region: 'Pyrénées', lon: -0.05, lat: 43.10, roof: 'ardoise', style: 'village', marks: ['lourdes'], extras: ['mountains'],
+      fact: "Lourdes est au pied des Pyrénées. C'est l'un des lieux les plus visités de France : des millions de pèlerins et de visiteurs y viennent chaque année." },
+    { id: 'biarritz', name: 'Biarritz', region: 'Pays basque', lon: -1.56, lat: 43.48, roof: 'tuile', style: 'basque', marks: ['lighthouse'], extras: ['sea'],
+      fact: "Biarritz est l'un des berceaux du surf en Europe : les premières planches y sont arrivées en 1957. Les maisons basques ont des volets rouges ou verts." },
+    { id: 'bordeaux', name: 'Bordeaux', region: 'Gironde', lon: -0.58, lat: 44.84, roof: 'tuile', style: 'haussmann', marks: ['bourse', 'bridge2'], extras: ['river'],
+      fact: "Devant la place de la Bourse, le miroir d'eau est une fine couche d'eau où la ville se reflète. C'est l'un des plus grands miroirs d'eau du monde." },
+    { id: 'larochelle', name: 'La Rochelle', region: 'Charente-Maritime', lon: -1.15, lat: 46.16, roof: 'tuile', style: 'harbor', marks: ['towers2'], extras: ['sea', 'boats'],
+      fact: "À l'entrée du Vieux-Port, deux tours se font face. Autrefois, on tendait une grosse chaîne entre elles pour fermer le port la nuit." },
+    { id: 'nantes', name: 'Nantes', region: 'Pays de la Loire', lon: -1.55, lat: 47.22, roof: 'ardoise', style: 'haussmann', marks: ['castle2', 'elephant'], extras: ['river'],
+      fact: "Un éléphant mécanique de 12 mètres de haut se promène sur l'île de Nantes, avec des passagers sur son dos ! La ville a aussi le château des ducs de Bretagne." },
+    { id: 'carnac', name: 'Carnac', region: 'Bretagne', lon: -3.08, lat: 47.58, roof: 'ardoise', style: 'breton', marks: ['menhirs'], extras: ['sea'],
+      fact: "À Carnac, près de 3 000 menhirs sont alignés depuis plus de 6 000 ans. Personne ne sait vraiment pourquoi ils ont été dressés !" },
+    { id: 'quimper', name: 'Quimper', region: 'Bretagne', lon: -4.10, lat: 48.00, roof: 'ardoise', style: 'medieval', marks: ['spires2'], extras: ['river'],
+      fact: "La cathédrale de Quimper est un peu « tordue » : sa partie la plus récente n'est pas tout à fait dans l'axe de la plus ancienne. La ville est aussi connue pour ses crêpes et ses faïences." },
+    { id: 'saintmalo', name: 'Saint-Malo', region: 'Bretagne', lon: -2.03, lat: 48.65, roof: 'ardoise', style: 'breton', marks: ['ramparts'], extras: ['sea'],
+      fact: "Saint-Malo connaît parmi les plus grandes marées d'Europe : la mer peut monter de plus de 13 mètres ! La vieille ville est entourée de remparts." },
+    { id: 'montsaintmichel', name: 'Mont-Saint-Michel', region: 'Normandie', lon: -1.51, lat: 48.64, roof: 'ardoise', style: 'village', marks: ['abbey'], extras: ['sea'],
+      fact: "À marée haute, le Mont-Saint-Michel devient une île. Tout en haut du clocher de l'abbaye, une statue dorée de l'archange saint Michel brille à environ 170 mètres au-dessus de la mer." },
+    { id: 'etretat', name: 'Étretat', region: 'Normandie', lon: 0.20, lat: 49.71, roof: 'ardoise', style: 'village', marks: ['cliff'], extras: ['sea'],
+      fact: "Les falaises blanches d'Étretat ont des arches creusées par la mer. Leur « aiguille », un rocher pointu qui sort de l'eau, a inspiré des peintres et les aventures d'Arsène Lupin." },
+    { id: 'rouen', name: 'Rouen', region: 'Normandie', lon: 1.10, lat: 49.44, roof: 'ardoise', style: 'medieval', marks: ['spire', 'horloge'], extras: ['river'],
+      fact: "La flèche de la cathédrale de Rouen culmine à 151 mètres : c'est la plus haute de France. Dans la vieille ville, le Gros-Horloge donne l'heure depuis plus de 600 ans." },
+    { id: 'paris', name: 'Paris', region: 'Capitale', lon: 2.35, lat: 48.86, roof: 'zinc', style: 'haussmann', marks: ['eiffel', 'sacrecoeur'], extras: [],
+      fact: "La tour Eiffel a été construite pour l'Exposition universelle de 1889. Elle devait être démontée au bout de 20 ans… mais elle est toujours là ! Les toits de Paris sont en zinc gris-bleu." },
+    { id: 'amiens', name: 'Amiens', region: 'Picardie', lon: 2.30, lat: 49.89, roof: 'ardoise', style: 'brick', marks: ['gothic'], extras: ['river'],
+      fact: "La cathédrale d'Amiens est la plus grande cathédrale gothique de France : elle pourrait contenir deux fois Notre-Dame de Paris !" },
+    { id: 'lille', name: 'Lille', region: 'Nord', lon: 3.06, lat: 50.63, roof: 'brique', style: 'flemish', marks: ['belfry'], extras: [],
+      fact: "Le beffroi de l'hôtel de ville de Lille mesure 104 mètres : c'est le plus haut beffroi d'Europe. Les maisons flamandes ont des pignons en escalier." },
+    { id: 'reims', name: 'Reims', region: 'Champagne', lon: 4.03, lat: 49.25, roof: 'ardoise', style: 'haussmann', marks: ['gothic'], extras: ['hills'],
+      fact: "Pendant des siècles, les rois de France ont été sacrés dans la cathédrale de Reims. Sur sa façade, un ange sculpté sourit : c'est « l'Ange au sourire »." },
+    { id: 'strasbourg', name: 'Strasbourg', region: 'Alsace', lon: 7.75, lat: 48.58, roof: 'brun', style: 'alsace', marks: ['strasbourg'], extras: ['river'],
+      fact: "La cathédrale de Strasbourg n'a qu'une seule flèche. Avec ses 142 mètres, elle a été le plus haut bâtiment du monde pendant plus de 200 ans." },
+    { id: 'colmar', name: 'Colmar', region: 'Alsace', lon: 7.36, lat: 48.08, roof: 'brun', style: 'alsace', marks: ['storks'], extras: ['river'],
+      fact: "Colmar a des maisons à colombages de toutes les couleurs. En Alsace, les cigognes font leur nid sur les toits : elles sont le symbole de la région." },
+    { id: 'vesoul', name: 'Vesoul', region: 'Haute-Saône', lon: 6.15, lat: 47.62, roof: 'tuile', style: 'village', marks: ['chapel'], extras: ['lake', 'hills'],
+      fact: "Le chanteur Jacques Brel a rendu Vesoul célèbre avec sa chanson de 1968 : « T'as voulu voir Vesoul, et on a vu Vesoul ! »" },
+    { id: 'dijon', name: 'Dijon', region: 'Bourgogne', lon: 5.04, lat: 47.32, roof: 'vernis', style: 'medieval', marks: ['dijon'], extras: [],
+      fact: "À Dijon, on caresse de la main gauche une petite chouette sculptée sur l'église Notre-Dame : elle porterait bonheur ! Les toits de Bourgogne ont des tuiles vernissées colorées." },
+    { id: 'clermont', name: 'Clermont-Ferrand', region: 'Auvergne', lon: 3.08, lat: 45.78, roof: 'lave', style: 'medieval', marks: ['blackcathedral'], extras: ['volcanoes'],
+      fact: "La cathédrale de Clermont-Ferrand est noire : elle est construite en pierre de lave, venue des volcans d'Auvergne tout proches, comme le puy de Dôme." },
+    { id: 'lyon', name: 'Lyon', region: 'Rhône', lon: 4.84, lat: 45.76, roof: 'tuile', style: 'haussmann', marks: ['fourviere'], extras: ['river', 'hills'],
+      fact: "Chaque année, début décembre, la Fête des Lumières illumine Lyon. Sur la colline, la basilique de Fourvière veille sur la ville, et la vieille ville cache des passages secrets : les traboules." },
+    { id: 'grenoble', name: 'Grenoble', region: 'Alpes', lon: 5.72, lat: 45.19, roof: 'tuile', style: 'modern', marks: ['bulles'], extras: ['mountains'],
+      fact: "Le téléphérique de Grenoble, ouvert en 1934, est l'un des premiers téléphériques urbains du monde. Ses cabines rondes, qui montent à la Bastille, sont surnommées « les bulles »." },
+    { id: 'annecy', name: 'Annecy', region: 'Alpes', lon: 6.13, lat: 45.90, roof: 'tuile', style: 'alpine', marks: ['palaisile'], extras: ['lake', 'mountains'],
+      fact: "Le lac d'Annecy est l'un des lacs les plus purs d'Europe. Au milieu de la vieille ville, le Palais de l'Île, en forme de bateau, servait autrefois de prison." },
+    { id: 'chamonix', name: 'Chamonix', region: 'Mont-Blanc', lon: 6.87, lat: 45.92, roof: 'ardoise', style: 'alpine', marks: ['montblanc'], extras: [],
+      fact: "Au-dessus de Chamonix se dresse le mont Blanc, le plus haut sommet des Alpes, à environ 4 805 mètres. Les tout premiers Jeux olympiques d'hiver ont eu lieu ici, en 1924." },
+    { id: 'besancon', name: 'Besançon', region: 'Franche-Comté', lon: 6.02, lat: 47.24, roof: 'tuile', style: 'medieval', marks: ['citadel'], extras: ['river', 'hills'],
+      fact: "Besançon est la capitale de l'horlogerie française. Sa citadelle, construite par Vauban, domine la ville dans une boucle du Doubs. Et c'est ici que Neko retrouve enfin sa famille !" },
+  ];
+  const LEVELS_PER_CITY = 5;
+  const cityIndexFor = level => Math.max(0, Math.min(CITIES.length - 1, Math.floor((level - 1) / LEVELS_PER_CITY)));
+  // Night-time roof colors for each kind of roof: [top, middle, bottom], tile lines, parapet side and top
+  const ROOFS = {
+    tuile:   { roof: ['#7a4436', '#5e3029', '#43211f'], tile: '#2c1412', parSide: '#3a1d1a', parTop: '#9a5e48' },
+    rose:    { roof: ['#8a4a4e', '#6e383d', '#4e272d'], tile: '#301619', parSide: '#40202a', parTop: '#b0707a' },
+    ardoise: { roof: ['#4f5872', '#3c445c', '#2a3044'], tile: '#191d2c', parSide: '#232a3c', parTop: '#7a86a6' },
+    zinc:    { roof: ['#66708e', '#525a76', '#3b425a'], tile: '#262b3e', parSide: '#2e3448', parTop: '#9aa4c4' },
+    brique:  { roof: ['#7a3e36', '#5f2f2a', '#43211f'], tile: '#2a1210', parSide: '#3e1e1a', parTop: '#a8625a' },
+    brun:    { roof: ['#6a4232', '#523328', '#3a241e'], tile: '#24140e', parSide: '#33201a', parTop: '#94664e' },
+    vernis:  { roof: ['#5e5a3a', '#4a472e', '#343222'], tile: '#7a3a2a', parSide: '#2e2c1e', parTop: '#b0a04a' },
+    lave:    { roof: ['#45475a', '#353747', '#262833'], tile: '#15161e', parSide: '#1e2029', parTop: '#6a6d82' },
+  };
+  function mixColor(a, b, t) {
+    const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+    const ch = s => Math.round(((pa >> s) & 255) * (1 - t) + ((pb >> s) & 255) * t);
+    return '#' + ((1 << 24) + (ch(16) << 16) + (ch(8) << 8) + ch(0)).toString(16).slice(1);
+  }
+  let cityIdx = 0;
+  const CITY = () => CITIES[cityIdx];
+  // The city shapes the roof under the cat; a holiday keeps its colors as a light tint (and its snow at Christmas)
+  function applyCity(i) {
+    cityIdx = Math.max(0, Math.min(CITIES.length - 1, i));
+    const base = Object.assign({}, BASE_PALETTE, TH.palette);
+    const r = ROOFS[CITY().roof];
+    for (const k of Object.keys(P)) delete P[k];
+    Object.assign(P, base);
+    if (THEME_ID !== 'noel') {
+      const t = TH.palette && TH.palette.roof ? 0.3 : 0;
+      P.roof = r.roof.map((c, k) => (t ? mixColor(c, TH.palette.roof[k], t) : c));
+      P.tile = r.tile;
+      P.parSide = TH.palette && TH.palette.parSide ? mixColor(r.parSide, TH.palette.parSide, t) : r.parSide;
+      P.parTop = r.parTop;
+    }
+    if (W) buildBackground();
+  }
+
+  // ---------- City scenery on the horizon (drawn once into the background) ----------
+  // u is a size unit; landmarks stand on y = base and go up (negative y).
+  function cityLight(b, x, y, r, col) {
+    b.fillStyle = col; b.beginPath(); b.arc(x, y, r, 0, TAU); b.fill();
+  }
+  function shape(b, pts, col) {
+    b.fillStyle = col; b.beginPath(); b.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) b.lineTo(pts[i][0], pts[i][1]);
+    b.closePath(); b.fill();
+  }
+  function litWindows(b, x, y, w, h, u, lit) {
+    for (let wy = y + 4 * u; wy < y + h - 4 * u; wy += 7 * u) {
+      for (let wx = x + 3 * u; wx < x + w - 4 * u; wx += 6 * u) {
+        if (hash(wx * 7.1 + wy * 3.3) < 0.35) { b.fillStyle = lit; b.fillRect(wx, wy, 2.4 * u, 3.2 * u); }
+      }
+    }
+  }
+  function towerWithRoof(b, x, base, w, h, roofH, col, cone) {
+    b.fillStyle = col; b.fillRect(x - w / 2, base - h, w, h);
+    if (cone) shape(b, [[x - w / 2 - 1, base - h], [x, base - h - roofH], [x + w / 2 + 1, base - h]], col);
+    else { for (let k = 0; k < 3; k++) b.fillRect(x - w / 2 + k * w / 2.5, base - h - roofH * 0.25, w / 5, roofH * 0.25); }
+  }
+  const LANDMARKS = {
+    garde(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 70 * u, 30 * u, 0, Math.PI, TAU); b.fill();
+      b.fillRect(x - 18 * u, base - 46 * u, 30 * u, 18 * u);
+      b.fillRect(x + 6 * u, base - 92 * u, 12 * u, 64 * u);
+      b.fillRect(x + 4 * u, base - 96 * u, 16 * u, 6 * u);
+      shape(b, [[x + 6 * u, base - 96 * u], [x + 12 * u, base - 106 * u], [x + 18 * u, base - 96 * u]], c);
+      b.fillStyle = '#e8b84a'; b.fillRect(x + 10.5 * u, base - 118 * u, 3 * u, 12 * u);
+      cityLight(b, x + 12 * u, base - 120 * u, 2.2 * u, '#ffd76a');
+      litWindows(b, x - 16 * u, base - 44 * u, 26 * u, 14 * u, u, lit);
+    },
+    clocher(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 9 * u, base - 80 * u, 18 * u, 80 * u);
+      b.fillStyle = mixColor(c, '#e09a4a', 0.35); b.fillRect(x - 9 * u, base - 80 * u, 18 * u, 30 * u);
+      b.fillStyle = c; b.beginPath(); b.arc(x, base - 80 * u, 9 * u, Math.PI, TAU); b.fill();
+      b.fillRect(x - 1 * u, base - 98 * u, 2 * u, 10 * u);
+      cityLight(b, x, base - 66 * u, 3 * u, lit);
+      b.fillStyle = c; b.fillRect(x - 40 * u, base - 22 * u, 28 * u, 22 * u); b.fillRect(x + 14 * u, base - 30 * u, 34 * u, 30 * u);
+    },
+    palms(b, x, base, u, c) {
+      for (let k = 0; k < 5; k++) {
+        const px = x - 60 * u + k * 30 * u, h = (44 + (k % 2) * 12) * u;
+        b.strokeStyle = c; b.lineWidth = 3 * u;
+        b.beginPath(); b.moveTo(px, base); b.quadraticCurveTo(px + 4 * u, base - h / 2, px + 2 * u, base - h); b.stroke();
+        b.lineWidth = 2.4 * u;
+        for (let a = 0; a < 6; a++) {
+          const ang = Math.PI + a * Math.PI / 5;
+          b.beginPath(); b.moveTo(px + 2 * u, base - h);
+          b.quadraticCurveTo(px + 2 * u + Math.cos(ang) * 10 * u, base - h - 6 * u, px + 2 * u + Math.cos(ang) * 18 * u, base - h + Math.abs(Math.sin(ang)) * 4 * u + 6 * u); b.stroke();
+        }
+      }
+    },
+    dome(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 40 * u, base - 34 * u, 80 * u, 34 * u);
+      b.beginPath(); b.arc(x + 26 * u, base - 34 * u, 12 * u, Math.PI, TAU); b.fill();
+      b.fillStyle = mixColor(c, '#ff8fb0', 0.25); b.beginPath(); b.arc(x + 26 * u, base - 36 * u, 9 * u, Math.PI, TAU); b.fill();
+      litWindows(b, x - 38 * u, base - 32 * u, 60 * u, 30 * u, u, lit);
+    },
+    hillvillage(b, x, base, u, c, lit) {
+      shape(b, [[x - 90 * u, base], [x - 30 * u, base - 50 * u], [x + 30 * u, base - 54 * u], [x + 90 * u, base]], c);
+      for (let k = 0; k < 9; k++) {
+        const hx = x - 50 * u + k * 12 * u, hy = base - 30 * u - (4 - Math.abs(k - 4)) * 8 * u;
+        b.fillStyle = c; b.fillRect(hx, hy - 12 * u, 11 * u, 14 * u);
+        shape(b, [[hx - 1 * u, hy - 12 * u], [hx + 5.5 * u, hy - 17 * u], [hx + 12 * u, hy - 12 * u]], c);
+        if (hash(k * 3.7) < 0.5) { b.fillStyle = lit; b.fillRect(hx + 4 * u, hy - 7 * u, 2.4 * u, 3 * u); }
+      }
+      b.fillStyle = c; b.fillRect(x - 10 * u, base - 82 * u, 26 * u, 22 * u);
+      b.fillRect(x + 10 * u, base - 92 * u, 8 * u, 12 * u);
+    },
+    papes(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 55 * u, base - 50 * u, 110 * u, 50 * u);
+      [[-55, 70, 16], [-22, 62, 14], [12, 74, 18], [42, 66, 14]].forEach(([dx, h, w]) => {
+        b.fillRect(x + dx * u, base - h * u, w * u, h * u);
+        for (let k = 0; k < w; k += 4) b.fillRect(x + (dx + k) * u, base - (h + 3) * u, 2.4 * u, 3 * u);
+      });
+      litWindows(b, x - 50 * u, base - 46 * u, 100 * u, 40 * u, u, lit);
+    },
+    bridge(b, x, base, u, c) {
+      b.fillStyle = c;
+      for (let k = 0; k < 4; k++) {
+        const ax = x - 70 * u + k * 30 * u;
+        b.fillRect(ax, base - 14 * u, 30 * u, 6 * u);
+        b.fillRect(ax, base - 10 * u, 6 * u, 10 * u);
+      }
+      b.fillRect(x - 46 * u, base - 26 * u, 10 * u, 12 * u);
+      shape(b, [[x - 47 * u, base - 26 * u], [x - 41 * u, base - 32 * u], [x - 35 * u, base - 26 * u]], c);
+    },
+    bridge2(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 90 * u, base - 12 * u, 180 * u, 5 * u);
+      for (let k = 0; k <= 9; k++) b.fillRect(x - 90 * u + k * 20 * u - 2 * u, base - 12 * u, 4 * u, 12 * u);
+      for (let k = 0; k < 10; k++) cityLight(b, x - 80 * u + k * 20 * u, base - 15 * u, 1.4 * u, lit);
+    },
+    arena(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.beginPath(); b.ellipse(x, base - 10 * u, 62 * u, 36 * u, 0, Math.PI, TAU); b.fill();
+      b.fillRect(x - 62 * u, base - 10 * u, 124 * u, 10 * u);
+      b.fillStyle = mixColor(c, '#000000', 0.45);
+      for (let row = 0; row < 2; row++) {
+        for (let k = -5; k <= 5; k++) {
+          const ax = x + k * 10 * u, ay = base - 8 * u - row * 14 * u;
+          if (Math.abs(k) * 10 > 58 - row * 10) continue;
+          b.beginPath(); b.moveTo(ax - 3 * u, ay); b.lineTo(ax - 3 * u, ay - 6 * u); b.arc(ax, ay - 6 * u, 3 * u, Math.PI, TAU); b.lineTo(ax + 3 * u, ay); b.fill();
+        }
+      }
+      cityLight(b, x - 20 * u, base - 30 * u, 1.6 * u, lit); cityLight(b, x + 24 * u, base - 28 * u, 1.6 * u, lit);
+    },
+    temple(b, x, base, u, c) {
+      b.fillStyle = c; b.fillRect(x - 30 * u, base - 8 * u, 60 * u, 8 * u);
+      for (let k = 0; k < 6; k++) b.fillRect(x - 27 * u + k * 10.5 * u, base - 34 * u, 4 * u, 26 * u);
+      b.fillRect(x - 32 * u, base - 38 * u, 64 * u, 5 * u);
+      shape(b, [[x - 32 * u, base - 38 * u], [x, base - 50 * u], [x + 32 * u, base - 38 * u]], c);
+    },
+    arc(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 26 * u, base - 50 * u, 52 * u, 50 * u);
+      b.fillRect(x - 30 * u, base - 56 * u, 60 * u, 6 * u);
+      b.fillStyle = mixColor(c, '#000000', 0.5); b.beginPath(); b.moveTo(x - 10 * u, base); b.lineTo(x - 10 * u, base - 24 * u); b.arc(x, base - 24 * u, 10 * u, Math.PI, TAU); b.lineTo(x + 10 * u, base); b.fill();
+      cityLight(b, x, base - 58 * u, 1.6 * u, lit);
+    },
+    castle(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 80 * u, base - 30 * u, 160 * u, 30 * u);
+      for (let k = -80; k < 80; k += 6) b.fillRect(x + k * u, base - 34 * u, 3 * u, 4 * u);
+      [-80, -48, -14, 22, 56, 80].forEach((dx, k) => towerWithRoof(b, x + dx * u, base, 14 * u, (42 + (k % 3) * 8) * u, 16 * u, c, true));
+      towerWithRoof(b, x + 4 * u, base, 20 * u, 64 * u, 22 * u, c, true);
+      litWindows(b, x - 76 * u, base - 28 * u, 150 * u, 24 * u, u, lit);
+    },
+    castle2(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 60 * u, base - 32 * u, 120 * u, 32 * u);
+      for (let k = -60; k < 60; k += 6) b.fillRect(x + k * u, base - 36 * u, 3 * u, 4 * u);
+      [-60, -20, 24, 60].forEach(dx => { b.beginPath(); b.arc(x + dx * u, base - 36 * u, 10 * u, Math.PI, TAU); b.fill(); b.fillRect(x + dx * u - 10 * u, base - 36 * u, 20 * u, 36 * u); });
+      b.fillRect(x - 8 * u, base - 56 * u, 22 * u, 24 * u);
+      shape(b, [[x - 10 * u, base - 56 * u], [x + 3 * u, base - 68 * u], [x + 16 * u, base - 56 * u]], c);
+      litWindows(b, x - 56 * u, base - 30 * u, 112 * u, 26 * u, u, lit);
+    },
+    capitole(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 70 * u, base - 30 * u, 140 * u, 30 * u);
+      b.fillRect(x - 22 * u, base - 40 * u, 44 * u, 10 * u);
+      shape(b, [[x - 24 * u, base - 40 * u], [x, base - 50 * u], [x + 24 * u, base - 40 * u]], c);
+      b.fillStyle = mixColor(c, '#e08a7a', 0.25); b.fillRect(x - 70 * u, base - 30 * u, 140 * u, 4 * u);
+      for (let k = 0; k < 8; k++) { b.fillStyle = lit; b.fillRect(x - 18 * u + k * 5 * u, base - 24 * u, 2 * u, 10 * u); }
+      litWindows(b, x - 68 * u, base - 22 * u, 40 * u, 20 * u, u, lit); litWindows(b, x + 28 * u, base - 22 * u, 40 * u, 20 * u, u, lit);
+    },
+    rocket(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 5 * u, base - 80 * u, 10 * u, 80 * u);
+      b.beginPath(); b.moveTo(x - 5 * u, base - 80 * u); b.quadraticCurveTo(x, base - 96 * u, x + 5 * u, base - 80 * u); b.fill();
+      b.fillRect(x - 11 * u, base - 50 * u, 5 * u, 50 * u); b.fillRect(x + 6 * u, base - 50 * u, 5 * u, 50 * u);
+      cityLight(b, x, base - 92 * u, 1.8 * u, '#ff6a5a');
+    },
+    lourdes(b, x, base, u, c, lit) {
+      shape(b, [[x - 40 * u, base], [x - 20 * u, base - 30 * u], [x + 20 * u, base - 34 * u], [x + 40 * u, base]], c);
+      b.fillStyle = c; b.fillRect(x - 14 * u, base - 50 * u, 22 * u, 18 * u);
+      b.fillRect(x - 4 * u, base - 90 * u, 8 * u, 50 * u);
+      shape(b, [[x - 5 * u, base - 90 * u], [x, base - 112 * u], [x + 5 * u, base - 90 * u]], c);
+      cityLight(b, x, base - 70 * u, 2 * u, lit);
+      b.fillRect(x + 50 * u, base - 40 * u, 30 * u, 40 * u);
+      for (let k = 0; k < 30; k += 6) b.fillRect(x + (50 + k) * u, base - 44 * u, 3 * u, 4 * u);
+    },
+    lighthouse(b, x, base, u, c, lit) {
+      shape(b, [[x - 50 * u, base], [x - 30 * u, base - 18 * u], [x + 10 * u, base - 22 * u], [x + 40 * u, base]], c);
+      shape(b, [[x - 8 * u, base - 18 * u], [x - 5 * u, base - 92 * u], [x + 5 * u, base - 92 * u], [x + 8 * u, base - 18 * u]], c);
+      b.fillStyle = c; b.fillRect(x - 8 * u, base - 102 * u, 16 * u, 10 * u);
+      shape(b, [[x - 8 * u, base - 102 * u], [x, base - 110 * u], [x + 8 * u, base - 102 * u]], c);
+      const g = b.createRadialGradient(x, base - 97 * u, 1, x, base - 97 * u, 40 * u);
+      g.addColorStop(0, 'rgba(255, 240, 180, 0.8)'); g.addColorStop(1, 'rgba(255, 240, 180, 0)');
+      b.fillStyle = g; b.beginPath(); b.moveTo(x, base - 97 * u); b.lineTo(x - 120 * u, base - 120 * u); b.lineTo(x - 120 * u, base - 80 * u); b.closePath(); b.fill();
+      cityLight(b, x, base - 97 * u, 3 * u, '#fff3c4');
+    },
+    bourse(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 80 * u, base - 32 * u, 160 * u, 32 * u);
+      b.fillRect(x - 20 * u, base - 44 * u, 40 * u, 12 * u);
+      shape(b, [[x - 82 * u, base - 32 * u], [x - 74 * u, base - 38 * u], [x + 74 * u, base - 38 * u], [x + 82 * u, base - 32 * u]], c);
+      for (let k = 0; k < 14; k++) { b.fillStyle = lit; b.fillRect(x - 74 * u + k * 11 * u, base - 26 * u, 3 * u, 6 * u); b.fillRect(x - 74 * u + k * 11 * u, base - 14 * u, 3 * u, 6 * u); }
+      // Its reflection in the water mirror
+      b.globalAlpha = 0.25; b.fillStyle = c; b.fillRect(x - 80 * u, base + 2 * u, 160 * u, 14 * u); b.globalAlpha = 1;
+    },
+    towers2(b, x, base, u, c, lit) {
+      towerWithRoof(b, x - 40 * u, base, 26 * u, 60 * u, 10 * u, c, false);
+      b.fillStyle = c; b.beginPath(); b.arc(x + 40 * u, base - 46 * u, 15 * u, 0, TAU); b.fill(); b.fillRect(x + 25 * u, base - 46 * u, 30 * u, 46 * u);
+      towerWithRoof(b, x + 40 * u, base - 46 * u, 10 * u, 14 * u, 14 * u, c, true);
+      b.strokeStyle = mixColor(c, '#9aa3b5', 0.3); b.lineWidth = 1.4 * u;
+      b.beginPath(); b.moveTo(x - 27 * u, base - 8 * u); b.quadraticCurveTo(x, base - 2 * u, x + 25 * u, base - 8 * u); b.stroke();
+      cityLight(b, x - 40 * u, base - 50 * u, 1.8 * u, lit); cityLight(b, x + 40 * u, base - 40 * u, 1.8 * u, lit);
+    },
+    elephant(b, x, base, u, c) {
+      b.fillStyle = c;
+      b.beginPath(); b.ellipse(x, base - 34 * u, 24 * u, 16 * u, 0, 0, TAU); b.fill();
+      b.beginPath(); b.ellipse(x + 24 * u, base - 40 * u, 11 * u, 10 * u, 0, 0, TAU); b.fill();
+      for (const dx of [-16, -6, 6, 16]) b.fillRect(x + dx * u - 3 * u, base - 22 * u, 6 * u, 22 * u);
+      b.strokeStyle = c; b.lineWidth = 4 * u; b.lineCap = 'round';
+      b.beginPath(); b.moveTo(x + 32 * u, base - 38 * u); b.quadraticCurveTo(x + 42 * u, base - 26 * u, x + 36 * u, base - 14 * u); b.stroke();
+      b.fillRect(x - 12 * u, base - 58 * u, 24 * u, 10 * u);
+      cityLight(b, x - 6 * u, base - 54 * u, 1.4 * u, '#ffd27a'); cityLight(b, x + 6 * u, base - 54 * u, 1.4 * u, '#ffd27a');
+    },
+    menhirs(b, x, base, u, c) {
+      b.fillStyle = c;
+      for (let row = 0; row < 3; row++) {
+        for (let k = 0; k < 9; k++) {
+          const mx = x - 80 * u + k * 20 * u + row * 6 * u, h = (8 + hash(k * 5 + row) * 10 - row * 2) * u;
+          b.beginPath(); b.ellipse(mx, base - row * 3 * u - h / 2, 3.2 * u, h / 2, 0, 0, TAU); b.fill();
+        }
+      }
+    },
+    spires2(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 30 * u, base - 40 * u, 60 * u, 40 * u);
+      for (const dx of [-14, 14]) {
+        b.fillRect(x + dx * u - 7 * u, base - 70 * u, 14 * u, 30 * u);
+        shape(b, [[x + dx * u - 7 * u, base - 70 * u], [x + dx * u, base - 108 * u], [x + dx * u + 7 * u, base - 70 * u]], c);
+      }
+      cityLight(b, x, base - 30 * u, 6 * u, lit);
+      b.fillStyle = c; b.beginPath(); b.arc(x, base - 30 * u, 4 * u, 0, TAU); b.fill();
+    },
+    ramparts(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 100 * u, base - 20 * u, 200 * u, 20 * u);
+      for (let k = -100; k < 100; k += 7) b.fillRect(x + k * u, base - 24 * u, 3.5 * u, 4 * u);
+      for (let k = 0; k < 10; k++) {
+        const hx = x - 90 * u + k * 19 * u, h = (24 + hash(k * 2.3) * 14) * u;
+        b.fillRect(hx, base - 20 * u - h, 16 * u, h);
+        shape(b, [[hx - 1 * u, base - 20 * u - h], [hx + 8 * u, base - 28 * u - h], [hx + 17 * u, base - 20 * u - h]], c);
+        b.fillRect(hx + 10 * u, base - 30 * u - h, 3 * u, 8 * u);
+        if (hash(k) < 0.6) { b.fillStyle = lit; b.fillRect(hx + 4 * u, base - 16 * u - h, 2.4 * u, 3 * u); b.fillStyle = c; }
+      }
+      b.fillRect(x + 4 * u, base - 92 * u, 8 * u, 40 * u);
+      shape(b, [[x + 3 * u, base - 92 * u], [x + 8 * u, base - 110 * u], [x + 13 * u, base - 92 * u]], c);
+    },
+    abbey(b, x, base, u, c, lit) {
+      shape(b, [[x - 60 * u, base], [x - 34 * u, base - 30 * u], [x - 16 * u, base - 58 * u], [x + 16 * u, base - 60 * u], [x + 36 * u, base - 30 * u], [x + 60 * u, base]], c);
+      b.fillStyle = c; b.fillRect(x - 18 * u, base - 80 * u, 36 * u, 22 * u);
+      b.fillRect(x - 5 * u, base - 104 * u, 10 * u, 26 * u);
+      shape(b, [[x - 6 * u, base - 104 * u], [x, base - 132 * u], [x + 6 * u, base - 104 * u]], c);
+      b.fillStyle = '#e8b84a'; b.fillRect(x - 1 * u, base - 140 * u, 2 * u, 8 * u);
+      cityLight(b, x, base - 141 * u, 1.8 * u, '#ffd76a');
+      litWindows(b, x - 44 * u, base - 30 * u, 86 * u, 26 * u, u, lit);
+    },
+    cliff(b, x, base, u, c) {
+      const pale = mixColor(c, '#c9cfe0', 0.35);
+      shape(b, [[x - 110 * u, base], [x - 110 * u, base - 60 * u], [x - 20 * u, base - 64 * u], [x + 10 * u, base - 56 * u], [x + 30 * u, base - 30 * u], [x + 26 * u, base]], pale);
+      b.fillStyle = mixColor(c, '#000000', 0.2); b.beginPath(); b.moveTo(x - 10 * u, base); b.lineTo(x - 10 * u, base - 18 * u); b.quadraticCurveTo(x + 6 * u, base - 44 * u, x + 22 * u, base - 16 * u); b.lineTo(x + 22 * u, base); b.fill();
+      shape(b, [[x + 40 * u, base], [x + 46 * u, base - 46 * u], [x + 52 * u, base]], pale);
+    },
+    spire(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 40 * u, base - 40 * u, 80 * u, 40 * u);
+      shape(b, [[x - 42 * u, base - 40 * u], [x, base - 54 * u], [x + 42 * u, base - 40 * u]], c);
+      b.fillRect(x - 7 * u, base - 72 * u, 14 * u, 30 * u);
+      shape(b, [[x - 7 * u, base - 72 * u], [x, base - 140 * u], [x + 7 * u, base - 72 * u]], c);
+      for (const dx of [-30, 30]) { b.fillRect(x + dx * u - 6 * u, base - 64 * u, 12 * u, 24 * u); }
+      litWindows(b, x - 36 * u, base - 36 * u, 72 * u, 30 * u, u, lit);
+    },
+    horloge(b, x, base, u, c) {
+      b.fillStyle = c; b.fillRect(x - 6 * u, base - 34 * u, 12 * u, 34 * u);
+      b.fillRect(x - 22 * u, base - 28 * u, 44 * u, 10 * u);
+      b.fillStyle = '#e8c45a'; b.beginPath(); b.arc(x, base - 23 * u, 4.5 * u, 0, TAU); b.fill();
+    },
+    eiffel(b, x, base, u, c, lit) {
+      b.fillStyle = c;
+      b.beginPath();
+      b.moveTo(x - 34 * u, base); b.quadraticCurveTo(x - 14 * u, base - 50 * u, x - 4 * u, base - 120 * u);
+      b.lineTo(x - 1.5 * u, base - 150 * u); b.lineTo(x + 1.5 * u, base - 150 * u); b.lineTo(x + 4 * u, base - 120 * u);
+      b.quadraticCurveTo(x + 14 * u, base - 50 * u, x + 34 * u, base);
+      b.lineTo(x + 18 * u, base); b.quadraticCurveTo(x, base - 26 * u, x - 18 * u, base); b.closePath(); b.fill();
+      b.fillRect(x - 20 * u, base - 36 * u, 40 * u, 4 * u); b.fillRect(x - 11 * u, base - 76 * u, 22 * u, 3 * u);
+      for (let k = 0; k < 18; k++) {
+        const t = k / 17, wy = base - t * 140 * u, ww = (30 - t * 27) * u;
+        cityLight(b, x + (hash(k * 9.1) - 0.5) * ww, wy, 1.1 * u, '#ffd76a');
+      }
+      cityLight(b, x, base - 152 * u, 2 * u, '#fff3c4');
+    },
+    sacrecoeur(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 60 * u, 18 * u, 0, Math.PI, TAU); b.fill();
+      b.fillRect(x - 24 * u, base - 40 * u, 48 * u, 26 * u);
+      b.beginPath(); b.ellipse(x, base - 40 * u, 13 * u, 20 * u, 0, Math.PI, TAU); b.fill();
+      b.fillRect(x - 1.5 * u, base - 66 * u, 3 * u, 8 * u);
+      for (const dx of [-18, 18]) { b.beginPath(); b.ellipse(x + dx * u, base - 40 * u, 6 * u, 9 * u, 0, Math.PI, TAU); b.fill(); }
+      b.fillRect(x + 26 * u, base - 60 * u, 9 * u, 46 * u);
+      b.globalAlpha = 0.5; cityLight(b, x, base - 46 * u, 9 * u, '#fff8e8'); b.globalAlpha = 1;
+    },
+    gothic(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 50 * u, base - 46 * u, 100 * u, 46 * u);
+      shape(b, [[x - 52 * u, base - 46 * u], [x, base - 66 * u], [x + 52 * u, base - 46 * u]], c);
+      for (const dx of [-22, 22]) b.fillRect(x + dx * u - 10 * u, base - 92 * u, 20 * u, 46 * u);
+      b.fillRect(x - 12 * u, base - 70 * u, 24 * u, 24 * u);
+      b.fillRect(x + 40 * u, base - 84 * u, 3 * u, 30 * u);
+      cityLight(b, x, base - 56 * u, 7 * u, lit);
+      b.fillStyle = c; b.beginPath(); b.arc(x, base - 56 * u, 4.5 * u, 0, TAU); b.fill();
+      litWindows(b, x - 46 * u, base - 40 * u, 92 * u, 34 * u, u, lit);
+    },
+    belfry(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 40 * u, base - 30 * u, 80 * u, 30 * u);
+      b.fillRect(x - 10 * u, base - 120 * u, 20 * u, 90 * u);
+      b.fillRect(x - 12 * u, base - 124 * u, 24 * u, 6 * u);
+      shape(b, [[x - 8 * u, base - 124 * u], [x, base - 146 * u], [x + 8 * u, base - 124 * u]], c);
+      b.fillStyle = '#e8c45a'; b.beginPath(); b.arc(x, base - 104 * u, 5 * u, 0, TAU); b.fill();
+      litWindows(b, x - 38 * u, base - 28 * u, 76 * u, 24 * u, u, lit);
+    },
+    strasbourg(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 40 * u, base - 50 * u, 80 * u, 50 * u);
+      b.fillRect(x - 40 * u, base - 80 * u, 26 * u, 30 * u);
+      b.fillRect(x + 14 * u, base - 74 * u, 26 * u, 24 * u);
+      b.fillRect(x - 34 * u, base - 104 * u, 14 * u, 24 * u);
+      shape(b, [[x - 36 * u, base - 104 * u], [x - 27 * u, base - 150 * u], [x - 18 * u, base - 104 * u]], c);
+      cityLight(b, x, base - 40 * u, 7 * u, lit);
+      b.fillStyle = c; b.beginPath(); b.arc(x, base - 40 * u, 4.5 * u, 0, TAU); b.fill();
+    },
+    storks(b, x, base, u, c, lit) {
+      const facades = ['#d98a5a', '#8ab0d9', '#e0c25a', '#b07ac0', '#7ac08a'];
+      for (let k = 0; k < 6; k++) {
+        const hx = x - 75 * u + k * 25 * u, h = (34 + hash(k * 4.4) * 14) * u;
+        b.fillStyle = mixColor(c, facades[k % 5], 0.35); b.fillRect(hx, base - h, 22 * u, h);
+        shape(b, [[hx - 2 * u, base - h], [hx + 11 * u, base - h - 18 * u], [hx + 24 * u, base - h]], c);
+        b.strokeStyle = c; b.lineWidth = 1.2 * u;
+        b.beginPath(); b.moveTo(hx, base - h * 0.5); b.lineTo(hx + 22 * u, base - h * 0.5); b.moveTo(hx + 4 * u, base - h); b.lineTo(hx + 18 * u, base - h * 0.5); b.stroke();
+        b.fillStyle = lit; if (hash(k) < 0.7) b.fillRect(hx + 8 * u, base - h * 0.4, 5 * u, 5 * u);
+      }
+      // A stork in its nest on a roof
+      const sx = x + 1 * u, sy = base - 70 * u;
+      b.fillStyle = c; b.fillRect(sx - 6 * u, sy, 12 * u, 3 * u);
+      b.fillStyle = '#f4f1ff'; b.beginPath(); b.ellipse(sx, sy - 5 * u, 5 * u, 3 * u, -0.3, 0, TAU); b.fill();
+      b.fillRect(sx + 3 * u, sy - 12 * u, 1.4 * u, 7 * u); b.beginPath(); b.arc(sx + 4 * u, sy - 12 * u, 1.8 * u, 0, TAU); b.fill();
+      b.fillStyle = '#ff8a3c'; b.fillRect(sx + 5 * u, sy - 12.6 * u, 4 * u, 1.2 * u);
+    },
+    chapel(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 80 * u, 50 * u, 0, Math.PI, TAU); b.fill();
+      b.fillRect(x - 10 * u, base - 64 * u, 20 * u, 16 * u);
+      shape(b, [[x - 12 * u, base - 64 * u], [x, base - 74 * u], [x + 12 * u, base - 64 * u]], c);
+      b.fillRect(x - 1 * u, base - 84 * u, 2 * u, 10 * u);
+      cityLight(b, x, base - 57 * u, 2 * u, lit);
+    },
+    dijon(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.fillRect(x - 60 * u, base - 34 * u, 120 * u, 34 * u);
+      b.fillRect(x + 20 * u, base - 96 * u, 18 * u, 62 * u);
+      for (let k = 0; k < 18; k += 4) b.fillRect(x + (20 + k) * u, base - 100 * u, 2.5 * u, 4 * u);
+      // Glazed tile roof in a diamond pattern
+      shape(b, [[x - 60 * u, base - 34 * u], [x - 30 * u, base - 56 * u], [x + 10 * u, base - 56 * u], [x + 20 * u, base - 34 * u]], c);
+      const cols = ['#c9a23a', '#3a8a5a', '#a8483a', '#2a2a2a'];
+      for (let k = 0; k < 10; k++) for (let j = 0; j < 3; j++) {
+        const dx = -54 + k * 7 + j * 3, dy = -38 - j * 6;
+        if (dx > 14 - j * 3) continue;
+        b.fillStyle = mixColor(c, cols[(k + j) % 4], 0.6);
+        b.beginPath(); b.moveTo(x + dx * u, base + dy * u); b.lineTo(x + (dx + 3) * u, base + (dy - 3) * u); b.lineTo(x + (dx + 6) * u, base + dy * u); b.lineTo(x + (dx + 3) * u, base + (dy + 3) * u); b.fill();
+      }
+      litWindows(b, x - 56 * u, base - 30 * u, 110 * u, 26 * u, u, lit);
+    },
+    blackcathedral(b, x, base, u, c, lit) {
+      const dark = mixColor(c, '#000000', 0.35);
+      b.fillStyle = dark; b.fillRect(x - 40 * u, base - 46 * u, 80 * u, 46 * u);
+      for (const dx of [-24, 24]) {
+        b.fillRect(x + dx * u - 8 * u, base - 80 * u, 16 * u, 34 * u);
+        shape(b, [[x + dx * u - 8 * u, base - 80 * u], [x + dx * u, base - 116 * u], [x + dx * u + 8 * u, base - 80 * u]], dark);
+      }
+      cityLight(b, x, base - 34 * u, 5 * u, lit);
+    },
+    fourviere(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 90 * u, 44 * u, 0, Math.PI, TAU); b.fill();
+      b.fillRect(x - 26 * u, base - 66 * u, 52 * u, 26 * u);
+      for (const dx of [-26, -12, 12, 26]) { b.fillRect(x + dx * u - 5 * u, base - 82 * u, 10 * u, 18 * u); }
+      b.fillStyle = '#e8b84a'; b.fillRect(x - 1 * u, base - 92 * u, 2 * u, 8 * u);
+      b.globalAlpha = 0.45; cityLight(b, x, base - 64 * u, 16 * u, '#fff3d0'); b.globalAlpha = 1;
+      b.fillStyle = c; b.fillRect(x + 54 * u, base - 96 * u, 4 * u, 70 * u);
+      shape(b, [[x + 48 * u, base - 26 * u], [x + 56 * u, base - 96 * u], [x + 64 * u, base - 26 * u]], c);
+      cityLight(b, x + 56 * u, base - 98 * u, 1.6 * u, '#ff5a5a');
+    },
+    bulles(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.beginPath(); b.ellipse(x + 60 * u, base, 60 * u, 70 * u, 0, Math.PI, TAU); b.fill();
+      b.fillRect(x + 50 * u, base - 82 * u, 30 * u, 14 * u);
+      for (let k = 0; k < 30; k += 5) b.fillRect(x + (50 + k) * u, base - 86 * u, 3 * u, 4 * u);
+      b.strokeStyle = mixColor(c, '#c9d1e6', 0.4); b.lineWidth = 1 * u;
+      b.beginPath(); b.moveTo(x - 60 * u, base - 10 * u); b.lineTo(x + 50 * u, base - 74 * u); b.stroke();
+      for (const t of [0.3, 0.55, 0.8]) {
+        const bx = x - 60 * u + t * 110 * u, by = base - 10 * u - t * 64 * u;
+        b.fillStyle = mixColor(c, '#9ad5ff', 0.5); b.beginPath(); b.arc(bx, by + 5 * u, 4.5 * u, 0, TAU); b.fill();
+        cityLight(b, bx, by + 5 * u, 1.6 * u, lit);
+      }
+    },
+    palaisile(b, x, base, u, c, lit) {
+      b.fillStyle = c; shape(b, [[x - 40 * u, base], [x - 30 * u, base - 30 * u], [x + 20 * u, base - 30 * u], [x + 44 * u, base]], c);
+      shape(b, [[x - 32 * u, base - 30 * u], [x - 6 * u, base - 46 * u], [x + 22 * u, base - 30 * u]], c);
+      b.fillRect(x + 10 * u, base - 54 * u, 10 * u, 24 * u);
+      shape(b, [[x + 9 * u, base - 54 * u], [x + 15 * u, base - 64 * u], [x + 21 * u, base - 54 * u]], c);
+      litWindows(b, x - 28 * u, base - 28 * u, 56 * u, 24 * u, u, lit);
+      b.globalAlpha = 0.3; b.fillRect(x - 40 * u, base + 2 * u, 84 * u, 12 * u); b.globalAlpha = 1;
+    },
+    montblanc(b, x, base, u, c) {
+      const snow = mixColor(c, '#f4f8ff', 0.75);
+      shape(b, [[x - 160 * u, base], [x - 70 * u, base - 90 * u], [x - 30 * u, base - 70 * u], [x + 10 * u, base - 130 * u], [x + 70 * u, base - 80 * u], [x + 160 * u, base]], mixColor(c, '#5a6a9a', 0.25));
+      shape(b, [[x - 88 * u, base - 72 * u], [x - 70 * u, base - 90 * u], [x - 52 * u, base - 80 * u]], snow);
+      shape(b, [[x - 24 * u, base - 92 * u], [x + 10 * u, base - 130 * u], [x + 46 * u, base - 102 * u], [x + 20 * u, base - 108 * u], [x + 4 * u, base - 96 * u]], snow);
+    },
+    citadel(b, x, base, u, c, lit) {
+      b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 110 * u, 60 * u, 0, Math.PI, TAU); b.fill();
+      b.fillRect(x - 70 * u, base - 70 * u, 140 * u, 14 * u);
+      for (let k = -70; k < 70; k += 6) b.fillRect(x + k * u, base - 74 * u, 3 * u, 4 * u);
+      for (const dx of [-70, -20, 30, 70]) { b.fillRect(x + dx * u - 8 * u, base - 84 * u, 16 * u, 18 * u); }
+      b.fillRect(x - 4 * u, base - 100 * u, 10 * u, 20 * u);
+      b.fillStyle = '#e8c45a'; b.beginPath(); b.arc(x + 1 * u, base - 94 * u, 3.2 * u, 0, TAU); b.fill();
+      for (let k = 0; k < 12; k++) cityLight(b, x - 66 * u + k * 12 * u, base - 63 * u, 1.3 * u, lit);
+    },
+  };
+  // Horizon extras, drawn behind the city
+  function drawCityExtras(b, horizon, u, which) {
+    const ex = CITY().extras;
+    if (which === 'back') {
+      if (ex.includes('mountains')) {
+        const c = mixColor(P.far, '#7a8ac0', 0.22), snow = mixColor(P.far, '#e8f0ff', 0.55);
+        const peaks = [[0.0, 0.10], [0.12, 0.22], [0.26, 0.14], [0.4, 0.26], [0.55, 0.16], [0.7, 0.24], [0.86, 0.13], [1.0, 0.2]];
+        b.fillStyle = c; b.beginPath(); b.moveTo(0, horizon);
+        peaks.forEach(([px, ph]) => b.lineTo(px * W, horizon - ph * H * 0.9));
+        b.lineTo(W, horizon); b.fill();
+        peaks.forEach(([px, ph]) => {
+          const tx = px * W, ty = horizon - ph * H * 0.9, s = ph * H * 0.12;
+          shape(b, [[tx - s, ty + s * 0.9], [tx, ty], [tx + s, ty + s * 0.9], [tx + s * 0.3, ty + s * 0.6], [tx - s * 0.2, ty + s * 0.8]], snow);
+        });
+      }
+      if (ex.includes('volcanoes')) {
+        const c = mixColor(P.far, '#6a5a8a', 0.25);
+        [[0.15, 0.16], [0.42, 0.12], [0.62, 0.2], [0.9, 0.14]].forEach(([px, ph]) => {
+          const tx = px * W, th = ph * H, tw = th * 1.8;
+          b.fillStyle = c; b.beginPath(); b.moveTo(tx - tw, horizon); b.quadraticCurveTo(tx - tw * 0.3, horizon - th * 1.05, tx, horizon - th); b.quadraticCurveTo(tx + tw * 0.3, horizon - th * 1.05, tx + tw, horizon); b.fill();
+        });
+      }
+      if (ex.includes('hills')) {
+        const c = mixColor(P.far, '#3a6a5a', 0.18);
+        b.fillStyle = c; b.beginPath(); b.moveTo(0, horizon);
+        for (let px = 0; px <= W; px += W / 12) b.lineTo(px, horizon - (0.04 + 0.03 * Math.sin(px / W * 9)) * H);
+        b.lineTo(W, horizon); b.fill();
+      }
+    } else if (which === 'water') {
+      const water = ex.includes('sea') || ex.includes('lake') || ex.includes('river');
+      if (!water) return;
+      const top = horizon - (ex.includes('sea') ? H * 0.025 : H * 0.012);
+      const g = b.createLinearGradient(0, top, 0, horizon + H * 0.3);
+      g.addColorStop(0, mixColor(P.sky[2], '#1a3a6a', 0.5)); g.addColorStop(1, mixColor(P.far, '#0a1a3a', 0.4));
+      b.fillStyle = g; b.fillRect(0, top, W, H - top);
+      // Moon path on the water
+      const mx = W * 0.78;
+      for (let k = 0; k < 14; k++) {
+        const wy = top + 2 + k * (H * 0.005), ww = (14 + hash(k) * 30) * (1 - k / 20);
+        b.fillStyle = `rgba(255, 244, 214, ${0.35 - k * 0.02})`; b.fillRect(mx - ww / 2 + Math.sin(k) * 6, wy, ww, 1.4);
+      }
+      if (ex.includes('boats')) {
+        for (const bx of [0.12, 0.3, 0.58]) {
+          const x0 = bx * W, y0 = top + 2;
+          b.fillStyle = P.far; b.beginPath(); b.moveTo(x0 - 10, y0); b.lineTo(x0 + 10, y0); b.lineTo(x0 + 7, y0 + 4); b.lineTo(x0 - 7, y0 + 4); b.fill();
+          b.fillRect(x0 - 0.6, y0 - 18, 1.2, 18);
+          shape(b, [[x0, y0 - 17], [x0 + 9, y0 - 3], [x0, y0 - 3]], mixColor(P.far, '#f4f1ff', 0.35));
+          cityLight(b, x0, y0 - 18, 1.4, '#ffd27a');
+        }
+      }
+    } else if (which === 'fields' && ex.includes('lavender')) {
+      // Rows of lavender running to the horizon
+      const top = horizon - H * 0.03;
+      b.fillStyle = mixColor('#4a3a7a', P.far, 0.3); b.fillRect(0, top, W, H - top);
+      for (let row = 0; row < 12; row++) {
+        const y = top + 2 + row * row * H * 0.0009 + row * 2;
+        b.strokeStyle = mixColor('#9a6ad8', P.far, 0.25 + row * 0.04); b.lineWidth = 1 + row * 0.4;
+        b.setLineDash([3 + row, 2 + row * 0.5]); b.beginPath(); b.moveTo(0, y); b.lineTo(W, y); b.stroke();
+      }
+      b.setLineDash([]);
+    }
+  }
+  // Rooftop profiles of the near buildings, by style
+  function drawRoofProfile(b, style, x, top, w, col, u) {
+    if (style === 'haussmann') {
+      shape(b, [[x, top], [x + 6 * u, top - 10 * u], [x + w - 6 * u, top - 10 * u], [x + w, top]], col);
+      for (let k = x + 8 * u; k < x + w - 8 * u; k += 14 * u) { b.fillStyle = col; b.fillRect(k, top - 16 * u, 4 * u, 7 * u); }
+      for (let k = x + 12 * u; k < x + w - 12 * u; k += 18 * u) { b.fillStyle = P.windows[0]; if (hash(k) < 0.4) b.fillRect(k, top - 7 * u, 3 * u, 4 * u); }
+    } else if (style === 'flemish') {
+      const steps = 4, sw = w / (steps * 2 + 1);
+      b.fillStyle = col;
+      for (let s = 0; s < steps; s++) b.fillRect(x + s * sw, top - (s + 1) * 6 * u, w - 2 * s * sw, 6 * u);
+    } else if (style === 'alsace' || style === 'medieval' || style === 'breton') {
+      const h = (style === 'alsace' ? 0.7 : 0.45) * w;
+      shape(b, [[x - 2, top], [x + w / 2, top - h], [x + w + 2, top]], col);
+      if (style === 'alsace') { b.strokeStyle = mixColor(col, '#c98a5a', 0.4); b.lineWidth = 1.2 * u; b.beginPath(); b.moveTo(x + w * 0.25, top - h * 0.5); b.lineTo(x + w * 0.75, top - h * 0.5); b.stroke(); }
+      if (style === 'breton' && hash(x) < 0.6) { b.fillStyle = col; b.fillRect(x + 4 * u, top - h * 0.6, 5 * u, h * 0.4); b.fillRect(x + w - 9 * u, top - h * 0.6, 5 * u, h * 0.4); }
+    } else if (style === 'provence' || style === 'village' || style === 'basque' || style === 'brick') {
+      shape(b, [[x - 3, top], [x + w / 2, top - 0.22 * w], [x + w + 3, top]], col);
+      if (style === 'basque') { b.fillStyle = mixColor(col, '#c0392b', 0.4); for (let k = x + 6 * u; k < x + w - 6 * u; k += 12 * u) b.fillRect(k, top + 6 * u, 2 * u, 8 * u); }
+    } else if (style === 'alpine') {
+      shape(b, [[x - 8, top + 2], [x + w / 2, top - 0.3 * w], [x + w + 8, top + 2]], col);
+      shape(b, [[x - 8, top + 2], [x + w / 2, top - 0.3 * w], [x + w / 2, top - 0.3 * w + 4 * u], [x - 4, top + 5]], mixColor(col, '#f4f8ff', 0.6));
+    } else if (style === 'harbor') {
+      if (hash(x) < 0.3) {
+        b.fillStyle = col; b.fillRect(x + w * 0.4, top - 50 * u, 3 * u, 50 * u); b.fillRect(x + w * 0.4 - 20 * u, top - 50 * u, 40 * u, 3 * u);
+        cityLight(b, x + w * 0.4 - 18 * u, top - 49 * u, 1.4 * u, '#ff5a5a');
+      } else shape(b, [[x, top], [x + w / 2, top - 0.12 * w], [x + w, top]], col);
+    }
+  }
   const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
   // ---------- Theme drawing helpers ----------
@@ -1697,6 +2298,10 @@
       stars.push({ x: Math.random() * W, y: Math.random() * horizon * 0.92, r: Math.random() < 0.15 ? 1.6 : 0.9, p: Math.random() * TAU, sp: rand(1, 3) });
     }
 
+    // City scenery: mountains or hills behind, then the far skyline and the landmarks
+    const u = Math.min(W, H) / 400, ex = CITY().extras;
+    const waterTop = horizon - (ex.includes('sea') ? H * 0.025 : ex.includes('lake') || ex.includes('river') ? H * 0.012 : 0);
+    drawCityExtras(b, horizon, u, 'back');
     // Far skyline
     let x = -20;
     b.fillStyle = P.far;
@@ -1706,10 +2311,25 @@
       if (Math.random() < 0.3) { b.fillRect(x + w * 0.4, horizon - h - rand(10, 30), 2, 30); }
       x += w + rand(-4, 6);
     }
+    // Landmarks, a little lighter than the skyline and with a soft halo so they stand out
+    const marks = CITY().marks, markCol = mixColor(P.far, '#c8ccf0', 0.28), mu = u * 1.25;
+    marks.forEach((m, k) => {
+      const lx = W * (marks.length > 1 ? [0.22, 0.62][k] : 0.36);
+      const halo = b.createRadialGradient(lx, waterTop - 50 * mu, 0, lx, waterTop - 50 * mu, 110 * mu);
+      halo.addColorStop(0, `rgba(${P.haze}, 0.35)`); halo.addColorStop(1, `rgba(${P.haze}, 0)`);
+      b.fillStyle = halo; b.fillRect(lx - 110 * mu, waterTop - 160 * mu, 220 * mu, 220 * mu);
+      LANDMARKS[m](b, lx, waterTop, mu, markCol, P.windows[0]);
+    });
+    drawCityExtras(b, horizon, u, 'water');
+    drawCityExtras(b, horizon, u, 'fields');
+    // Sea, lake, river or fields stay visible in the middle, behind the end of the rooftops
+    const gap = ex.includes('sea') ? [0.3, 0.86] : ex.includes('lavender') || ex.includes('lake') ? [0.34, 0.7] : ex.includes('river') ? [0.4, 0.62] : null;
     // Near skyline: buildings that drop below the roof line, with lit windows
     x = -10;
     while (x < W) {
       const w = rand(50, 120), top = horizon - rand(-H * 0.02, H * 0.08);
+      if (gap && x + w > W * gap[0] && x < W * gap[1]) { x = W * gap[1] + rand(0, 10); continue; }
+      drawRoofProfile(b, CITY().style, x, top, w, P.near, u);
       b.fillStyle = P.near;
       b.fillRect(x, top, w, H - top);
       b.fillStyle = P.nearTop;
@@ -3893,7 +4513,7 @@
     const gap = best - sc;
     $('nearBest').hidden = isBest || gap > Math.max(100, best * 0.25);
     $('nearBest').textContent = `Plus que ${gap} points pour battre ton record !`;
-    $('levelOver').textContent = level > 1 ? `Tu as atteint le quartier ${level}.` : 'Cours 1 km pour atteindre le quartier 2.';
+    $('levelOver').textContent = level > 1 ? `Tu as atteint le quartier ${level} à ${CITY().name}.` : 'Cours 1 km pour atteindre le quartier 2.';
     $('missionsGain').innerHTML = runMissions ? `${runMissions} réussie${runMissions > 1 ? 's' : ''} · +${runRewards} ${FISH_SVG}` : '';
     renderPanels();
     hud.hidden = true;
@@ -4780,6 +5400,7 @@
   let lastBonusHtml = '';
   function updateHudExtras() {
     const m = Math.floor(dist / 10), lo = level > 1 ? levelAt(level - 1) : 0, hi = levelAt(level);
+    $('cityLabel').textContent = CITY().name;
     $('levelLabel').textContent = `Quartier ${level}`;
     $('levelBar').style.width = Math.min(100, Math.max(0, 100 * (m - lo) / (hi - lo))) + '%';
     const html = Object.keys(active).map(k => `<div class="chip" style="--c:${BONUSES[k].color}"><span>${BONUSES[k].name}</span><i style="width:${Math.min(100, Math.round(100 * active[k] / BONUSES[k].dur))}%"></i></div>`).join('');
@@ -5008,9 +5629,10 @@
     return fresh;
   }
   grantSpecials();
+  applyCity(cityIndexFor(profile.level));
   const catName = () => profile.name || 'Neko';
-  // About 3 to 5 runs per level, roughly 600 runs from level 1 to level 100.
-  const MAX_LEVEL = 100;
+  // About 3 to 5 runs per level; one new city every 5 levels, Besançon at level 171.
+  const MAX_LEVEL = CITIES.length * LEVELS_PER_CITY;
   const xpNeed = L => 200 + 20 * (L - 1);
   const saveProfile = () => store(PROFILE_KEY, profile);
 
@@ -5422,8 +6044,12 @@
     $('xpBarOver').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
     $('levelUp').hidden = !reward;
     const news = ROAD_UNLOCKS.filter(u => u.level > levelBefore && u.level <= profile.level);
-    $('levelUp').textContent = `Niveau supérieur ! +${reward} croquettes` + gifts.map(g => ` · Nouveau chat offert : ${g.name} !`).join('')
+    const cityNow = cityIndexFor(profile.level), newCity = cityNow !== cityIndexFor(levelBefore);
+    $('levelUp').textContent = `Niveau supérieur ! +${reward} croquettes`
+      + (newCity ? ` · Nouvelle ville : ${CITIES[cityNow].name} !` : '')
+      + gifts.map(g => ` · Nouveau chat offert : ${g.name} !`).join('')
       + news.map(u => ` · Nouveau sur les toits : ${u.name} (${u.text})`).join('');
+    if (newCity) applyCity(cityNow);
     if (reward) { sfx.fanfare(); }
     $('chapterBox').hidden = !newChapter;
     if (newChapter) {

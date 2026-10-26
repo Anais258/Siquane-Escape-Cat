@@ -54,7 +54,15 @@ Le chat est dessiné dans un style « kawaii » : grosse tête ronde, oreilles e
 
 ## Niveau du joueur
 
-Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut environ 3 à 5 parties par niveau, et à peu près 600 parties pour atteindre le niveau 100. Chaque nouveau niveau rapporte des croquettes (50 + 5 par niveau, au maximum 250).
+Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut environ 3 à 5 parties par niveau. Le niveau maximum est 175. Chaque nouveau niveau rapporte des croquettes (50 + 5 par niveau, au maximum 250).
+
+### Le voyage à travers la France
+
+Neko traverse la France de toit en toit : **35 villes, une nouvelle tous les 5 niveaux**. Le voyage part de Marseille, longe la Côte d'Azur et la Provence, passe par le Sud-Ouest, la Bretagne, la Normandie, Paris, le Nord, l'Alsace, l'Auvergne et les Alpes, et se termine à Besançon (niveau 171).
+
+Marseille, Saint-Tropez, Nice, Gordes, Avignon, Arles, Nîmes, Montpellier, Carcassonne, Toulouse, Lourdes, Biarritz, Bordeaux, La Rochelle, Nantes, Carnac, Quimper, Saint-Malo, le Mont-Saint-Michel, Étretat, Rouen, Paris, Amiens, Lille, Reims, Strasbourg, Colmar, Vesoul, Dijon, Clermont-Ferrand, Lyon, Grenoble, Annecy, Chamonix, Besançon.
+
+Chaque ville a son décor : ses monuments à l'horizon (la Bonne Mère, la tour Eiffel, le Mont-Saint-Michel, le mont Blanc…), la mer, un lac, une rivière, des montagnes ou des champs de lavande, la forme de ses toits (toits provençaux, haussmanniens, pignons flamands, maisons alsaciennes, chalets…) et la couleur des toits sur lesquels court le chat (tuiles, ardoise, zinc, briques…). Le nom de la ville s'affiche au-dessus du quartier pendant la course, et l'écran de fin annonce chaque nouvelle ville. Pendant les fêtes, le décor de la fête garde ses couleurs et ses objets, et la ville garde ses monuments et ses toits.
 
 ### Ce qui change sur les toits avec le niveau
 
