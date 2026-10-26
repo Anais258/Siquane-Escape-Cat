@@ -17,6 +17,15 @@ Ouvre `index.html` dans un navigateur (sur ordinateur ou sur téléphone).
 
 Pendant un saut, la roulade fait retomber le chat plus vite et il roule dès qu'il touche le toit. Après une pause, un compte à rebours 3-2-1 relance la course.
 
+## Écran d'accueil
+
+L'accueil s'inspire de Subway Surfers, avec le style de Neko Odyssey. Ton chat est debout en grand sur le toit, avec son chapeau et son déguisement, sous le titre **Neko Odyssey**. Il suffit de toucher le décor (ou « Touche pour jouer », ou `Espace`) pour lancer une partie.
+
+- **En haut** : les croquettes, les poissons d'or, la musique et les bruitages.
+- **À gauche** : le meilleur score avec le portrait du chat, le niveau et sa barre d'expérience, le cadeau du jour (quand il est disponible) et l'album.
+- **À droite** : la fête en cours, le défi du jour avec sa progression et le classement.
+- **En bas** : quatre gros boutons, **Missions** (défi du jour et missions, avec le nombre de missions en cours), **Moi** (nom du chat, classe, album, comment jouer), **Boutique** et **Histoire**.
+
 ## Sur les toits
 
 - **Croquettes en forme de poisson** : attrape-les, chacune rapporte 10 points.
