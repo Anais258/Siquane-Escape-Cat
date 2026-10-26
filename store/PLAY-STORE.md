@@ -58,7 +58,7 @@ Politique de confidentialité : `https://siquane.github.io/Neko-Odyssey/confiden
 
 **Catégorie** : Jeux › Arcade
 **Tags** : Course infinie, Arcade, Éducatif, Animaux, Hors connexion
-**E-mail de contact** : à renseigner (obligatoire, visible sur la fiche)
+**E-mail de contact** : siquane.lab@gmail.com
 **Site web** : `https://siquane.github.io/Neko-Odyssey/`
 
 ## Questionnaires de la Play Console
