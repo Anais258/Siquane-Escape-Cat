@@ -880,6 +880,19 @@
   const $ = id => document.getElementById(id);
   // Online leaderboard: fill in with the Firebase web app settings (see FIREBASE.md).
   const FIREBASE = { apiKey: 'AIzaSyCIkhH-mT4l496ngEI4pNUo85X5FKeYenI', projectId: 'neko-odyssey' };
+  // One-time fresh start for everybody: records, kibbles, cats, hats, level and story
+  // are wiped once per device (sound settings are kept). The online entry is removed
+  // further down, with the leaderboard code.
+  const RESET_KEY = 'siquane-escape-cat-reset', RESET_ID = '2026-10-26';
+  try {
+    if (localStorage.getItem(RESET_KEY) !== RESET_ID) {
+      const keep = ['music', 'muted', 'sfx'].map(k => 'siquane-escape-cat-' + k);
+      const online = localStorage.getItem('siquane-escape-cat-online');
+      Object.keys(localStorage).filter(k => k.startsWith('siquane-escape-cat-') && !keep.includes(k)).forEach(k => localStorage.removeItem(k));
+      if (online) localStorage.setItem('siquane-escape-cat-leave', online);
+      localStorage.setItem(RESET_KEY, RESET_ID);
+    }
+  } catch (e) {}
   const canvas = $('c');
   const ctx = canvas.getContext('2d');
   const TAU = Math.PI * 2;
@@ -5193,6 +5206,26 @@
     return idToken;
   }
   const authed = async () => ({ 'Content-Type': 'application/json', Authorization: 'Bearer ' + await token() });
+
+  // After the fresh start, remove our old entry and free our old pseudo (kept
+  // for the next launch if the network is down).
+  const LEAVE_KEY = 'siquane-escape-cat-leave';
+  async function leaveBoard() {
+    const old = load(LEAVE_KEY, null);
+    if (!old || !boardReady()) return;
+    if (old.refresh) {
+      const d = await api(`https://securetoken.googleapis.com/v1/token?key=${encodeURIComponent(FIREBASE.apiKey)}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(old.refresh),
+      });
+      const headers = { Authorization: 'Bearer ' + d.id_token };
+      const gone = e => { if (e.status !== 404) throw e; };
+      await api(`${DOCS()}/players/${d.user_id}`, { method: 'DELETE', headers }).catch(gone);
+      if (old.pseudo) await api(`${DOCS()}/pseudos/${encodeURIComponent(pseudoKey(old.pseudo))}`, { method: 'DELETE', headers }).catch(gone);
+    }
+    try { localStorage.removeItem(LEAVE_KEY); } catch (e) {}
+  }
+  leaveBoard().catch(() => {});
 
   function myStats() {
     return {
