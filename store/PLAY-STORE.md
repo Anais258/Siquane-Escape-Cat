@@ -10,9 +10,27 @@ Ce dossier contient tout ce qu'il faut pour la fiche du Play Store :
 
 Politique de confidentialité : `https://siquane.github.io/Neko-Odyssey/confidentialite.html`
 
+## Avant de commencer : protéger ta vie privée (micro-entreprise)
+
+Avec un compte développeur **entreprise**, Google affiche sur la fiche le nom et l'adresse de l'entreprise. Une micro-entreprise porte ton nom et a ton adresse personnelle : il faut donc d'abord les remplacer.
+
+1. **Prendre une domiciliation d'entreprise** (environ 10 à 30 € par mois, par exemple Kandbaz, SeDomicilier ou Legalstart). Tu reçois un contrat de domiciliation et une nouvelle adresse professionnelle.
+2. **Faire une seule modification sur le Guichet unique** : <https://formalites.entreprises.gouv.fr> › *Modifier une entreprise*. Dans la même demande :
+   - **transfert d'adresse** vers l'adresse de domiciliation (joindre le contrat) ;
+   - **nom commercial** : `Siquane Lab` ;
+   - **activité complémentaire** : *Édition de jeux électroniques* (code APE 58.21Z).
+   C'est gratuit pour une micro-entreprise.
+3. **Attendre le nouvel avis de situation INSEE** (sur <https://avis-situation-sirene.insee.fr>) avec la nouvelle adresse et le nom commercial. Comptez une à quelques semaines.
+4. **Demander le numéro D-U-N-S** une fois l'avis à jour, depuis le lien proposé par la Play Console à la création du compte (gratuit, quelques jours à 2 semaines). Le nom et l'adresse doivent être **exactement** ceux de l'avis INSEE.
+
+Points à vérifier :
+- Le **nom légal** d'une micro-entreprise reste ton nom : Google peut l'afficher dans les détails du développeur à côté du nom commercial. Seule une société (SASU, EURL…) permettrait de ne plus du tout l'afficher.
+- Ne jamais utiliser ton adresse personnelle dans la Play Console, le D-U-N-S ou le profil de paiement.
+- Pour la fiscalité des futurs achats (catégorie de revenus, plafonds), faire valider par l'URSSAF ou un comptable.
+
 ## Étapes
 
-1. **Compte développeur** : sur <https://play.google.com/console>, créer un compte développeur personnel (25 $ une seule fois, vérification d'identité, 18 ans ou plus).
+1. **Compte développeur entreprise** : sur <https://play.google.com/console>, créer un compte développeur de type **Organisation** (25 $ une seule fois). Renseigner le nom commercial `Siquane Lab`, l'adresse de domiciliation, le numéro D-U-N-S, le site `https://siquane.github.io/Neko-Odyssey/` et l'e-mail `siquane.lab@gmail.com`. Google vérifie l'organisation (quelques jours).
 2. **Paquet Android** : sur <https://www.pwabuilder.com>, coller `https://siquane.github.io/Neko-Odyssey/`, puis *Package for stores* › *Android* › *Generate package*.
    - Package ID : `io.github.siquane.nekoodyssey`
    - App name : `Neko Odyssey`, Launcher name : `Neko Odyssey`
@@ -22,8 +40,8 @@ Politique de confidentialité : `https://siquane.github.io/Neko-Odyssey/confiden
 3. **Prouver que le site est à toi (assetlinks)** : le fichier doit être servi à `https://siquane.github.io/.well-known/assetlinks.json`, à la racine du domaine. Le jeu étant dans le sous-dossier `/Neko-Odyssey`, il faut créer sur GitHub un dépôt public nommé exactement `siquane.github.io` et y mettre `.well-known/assetlinks.json` (plus un fichier vide `.nojekyll` pour que GitHub publie le dossier `.well-known`). Après l'envoi du `.aab`, ajouter aussi l'empreinte SHA-256 de la clé de Google (Play Console › Intégrité de l'appli › Certificat de la clé de signature). Sans ce fichier, l'appli marche mais affiche une barre d'adresse Chrome en haut.
 4. **Créer l'appli** dans la Play Console : nom `Neko Odyssey`, langue par défaut français, *Jeu*, *Gratuit*.
 5. **Remplir la fiche** avec les textes ci-dessous et les images de ce dossier.
-6. **Test fermé** : pour un nouveau compte personnel, Google demande un test fermé avec au moins 12 testeurs pendant 14 jours avant la production. Envoyer le `.aab` dans *Test fermé*, ajouter les adresses Gmail des amis testeurs, leur envoyer le lien d'inscription.
-7. **Production** : après les 14 jours, demander l'accès à la production et publier.
+6. **Test interne (conseillé)** : avec un compte entreprise, le test fermé de 14 jours n'est pas obligatoire. Envoyer quand même le `.aab` d'abord en *Test interne* pour l'installer sur ton téléphone et celui de quelques amis, et vérifier que tout marche.
+7. **Production** : envoyer le même `.aab` en *Production*, puis *Envoyer pour examen*. Google examine l'appli (de quelques heures à quelques jours) avant qu'elle apparaisse sur le Play Store.
 
 ## Textes de la fiche
 
