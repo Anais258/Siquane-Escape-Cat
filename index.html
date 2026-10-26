@@ -6,8 +6,8 @@
 <title>Neko Odyssey</title>
 <meta name="theme-color" content="#0b1030">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192-v2.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-v2.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Neko Odyssey">
@@ -172,7 +172,7 @@
   .home-cols { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: var(--s3); }
   /* Two equal columns of same-size cards */
   .home-col { display: grid; gap: var(--s2); align-content: start; min-width: 0; }
-  .home-top .icon-btn { width: 52px; height: 36px; border: 2px solid rgba(255, 255, 255, 0.14); background: rgba(5, 6, 20, 0.55); }
+  .home-top .icon-btn { width: 40px; height: 40px; border: 2px solid rgba(255, 255, 255, 0.14); background: rgba(5, 6, 20, 0.55); }
   /* Chunky tiles, like stickers on the rooftop */
   .home-card, .home-square, .nav-btn {
     position: relative; color: var(--ink); cursor: pointer; font-family: var(--font-body);
@@ -3083,17 +3083,13 @@
       }
     }
 
-    // Thin collar following the neck, with a little golden bell
+    // Collar around the neck (its bell is at the front, so not seen from behind)
     const col = sk.collar || '#e8445a';
     c.lineCap = 'round';
     c.strokeStyle = sk.outline; c.lineWidth = 4.6;
-    c.beginPath(); c.ellipse(0, hy + 14.5, 11.5, 4, 0, 0.12 * Math.PI, 0.88 * Math.PI); c.stroke();
+    c.beginPath(); c.ellipse(0, hy + 14.5, 15, 4.6, 0, 0.06 * Math.PI, 0.94 * Math.PI); c.stroke();
     c.strokeStyle = col; c.lineWidth = 2.6;
-    c.beginPath(); c.ellipse(0, hy + 14.5, 11.5, 4, 0, 0.12 * Math.PI, 0.88 * Math.PI); c.stroke();
-    const swing = o.still ? 0 : Math.sin(o.ph * 2) * 1.2;
-    c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1;
-    c.beginPath(); c.arc(swing, hy + 20.5, 2.5, 0, TAU); c.fill(); c.stroke();
-    c.fillStyle = '#8a5a00'; c.fillRect(swing - 0.5, hy + 21, 1, 1.6);
+    c.beginPath(); c.ellipse(0, hy + 14.5, 15, 4.6, 0, 0.06 * Math.PI, 0.94 * Math.PI); c.stroke();
 
     // Highlights
     c.fillStyle = 'rgba(255, 255, 255, 0.32)';
@@ -3244,9 +3240,9 @@
     // Collar with the bell in front
     const col = sk.collar || '#e8445a';
     c.strokeStyle = sk.outline; c.lineWidth = 4.6;
-    c.beginPath(); c.ellipse(0, hy + 14.5, 11.5, 4, 0, 0.12 * Math.PI, 0.88 * Math.PI); c.stroke();
+    c.beginPath(); c.ellipse(0, hy + 14.5, 15, 4.6, 0, 0.06 * Math.PI, 0.94 * Math.PI); c.stroke();
     c.strokeStyle = col; c.lineWidth = 2.6;
-    c.beginPath(); c.ellipse(0, hy + 14.5, 11.5, 4, 0, 0.12 * Math.PI, 0.88 * Math.PI); c.stroke();
+    c.beginPath(); c.ellipse(0, hy + 14.5, 15, 4.6, 0, 0.06 * Math.PI, 0.94 * Math.PI); c.stroke();
     c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1;
     c.beginPath(); c.arc(0, hy + 20.5, 2.5, 0, TAU); c.fill(); c.stroke();
     c.fillStyle = '#8a5a00'; c.fillRect(-0.5, hy + 21, 1, 1.6);

@@ -1,8 +1,8 @@
 // Lets the game be installed and played offline.
 // Network first, so a new version shows up as soon as it is published;
 // the cached copy is only used without a connection.
-const CACHE = 'neko-odyssey-v1';
-const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
+const CACHE = 'neko-odyssey-v2';
+const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192-v2.png', 'icons/icon-512-v2.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
