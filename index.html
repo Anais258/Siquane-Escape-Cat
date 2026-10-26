@@ -2320,7 +2320,7 @@
       if (o.type === 'chimney' && cat.y < 145) return die('chimney');
       if (o.type === 'linge' && cat.y + h > 44 && cat.y < 150) return die('linge');
       if (o.type === 'clim' && cat.y < 66) return die('clim');
-      if (o.type === 'pot' && cat.y < 38) return die('pot');
+      if (o.type === 'pot' && cat.y < 33) return die('pot');
       if (o.type === 'trou' && cat.y < 3 && o.z < -10 && o.z + o.d > 10) return die('trou');
       if (o.type === 'lucarne') {
         const a = lucarneOpen(o);
@@ -2639,7 +2639,7 @@
     // A potted plant sliding toward the cat, rocking from side to side
     ctx.save();
     ctx.translate(g.x, g.y);
-    ctx.scale(s, s);
+    ctx.scale(s * 0.85, s * 0.85);
     ctx.rotate(o.roll ? Math.sin(time * 10 + o.seed) * 0.16 : 0);
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     // Stems and leaves
@@ -2927,6 +2927,20 @@
     c.closePath();
   }
 
+  // Tapered tail along a cubic curve P, with a light tip
+  function drawTail(c, sk, P) {
+    const at = u => { const v = 1 - u; return [0, 1].map(k => v * v * v * P[0][k] + 3 * v * v * u * P[1][k] + 3 * v * u * u * P[2][k] + u * u * u * P[3][k]); };
+    const pts = []; for (let i = 0; i <= 16; i++) pts.push(at(i / 16));
+    const pass = (extra, colorAt) => {
+      for (let i = 0; i < 16; i++) {
+        c.strokeStyle = colorAt(i / 16); c.lineWidth = 7.5 - 4 * (i / 16) + extra;
+        c.beginPath(); c.moveTo(pts[i][0], pts[i][1]); c.lineTo(pts[i + 1][0], pts[i + 1][1]); c.stroke();
+      }
+    };
+    pass(3.5, () => sk.outline);
+    pass(0, u => (u > 0.78 ? sk.tailTip || sk.tail || sk.fur : sk.tail || sk.fur));
+  }
+
   // o: { ph: run phase, air, still, t: time, wet, hat }
   function drawCatRun(c, sk, o) {
     const ph = o.ph, air = o.air;
@@ -2980,21 +2994,12 @@
     shadeShape(c, sk, body, by, 20);
     if (cos) drawCostume(c, cos, 'body', { by, hy: -50 - bob, bob, t: o.t, air });
 
-    // Tail: it leaves from the side of the hip, sweeps out and curls back
-    // like a question mark, getting thinner toward the tip
+    // Tail: it leaves from the middle of the lower back, sweeps out to the side
+    // and curls back like a question mark, getting thinner toward the tip
     const sway = Math.sin(o.t * 6) * 5;
-    const tipX = 25 + sway, tipY = (air ? -60 : -54) - bob;
-    const P = [[15, -12 - bob], [36, -10 - bob], [42 + sway * 0.5, -44 - bob], [tipX, tipY]];
-    const at = u => { const v = 1 - u; return [0, 1].map(k => v * v * v * P[0][k] + 3 * v * v * u * P[1][k] + 3 * v * u * u * P[2][k] + u * u * u * P[3][k]); };
-    const pts = []; for (let i = 0; i <= 16; i++) pts.push(at(i / 16));
-    const tailPass = (extra, colorAt) => {
-      for (let i = 0; i < 16; i++) {
-        c.strokeStyle = colorAt(i / 16); c.lineWidth = 7.5 - 4 * (i / 16) + extra;
-        c.beginPath(); c.moveTo(pts[i][0], pts[i][1]); c.lineTo(pts[i + 1][0], pts[i + 1][1]); c.stroke();
-      }
-    };
-    tailPass(3.5, () => sk.outline);
-    tailPass(0, u => (u > 0.78 ? sk.tailTip || sk.tail || sk.fur : sk.tail || sk.fur));
+    const tipX = 27 + sway, tipY = (air ? -60 : -54) - bob;
+    const P = [[0, -9 - bob], [26, -2 - bob], [44 + sway * 0.5, -36 - bob], [tipX, tipY]];
+    drawTail(c, sk, P);
     if (cos) drawCostume(c, cos, 'tail', { by, hy: -50 - bob, bob, t: o.t, air, tipX, tipY });
 
     const hy = -50 - bob;
@@ -3062,6 +3067,142 @@
         c.beginPath(); c.ellipse(dx, -30 + dy, 1.8, 3, 0, 0, TAU); c.fill();
       }
     }
+  }
+
+  // ---------- The cat seen from the front, for the menus ----------
+  // Same frame as drawCatRun: feet at y = 0, body around y = -23, head around y = -50.
+  const EYES = { noir: '#e8c23a', tuxedo: '#e8c23a', siamois: '#4a8ae0', blanc: '#4a8ae0', chartreux: '#e8902a', nuit: '#ffd34d', arcenciel: '#b06aff' };
+  function drawCatFront(c, sk, o) {
+    const t = o.t || 0;
+    c.lineJoin = 'round';
+    c.lineCap = 'round';
+    const cos = o.costume && o.costume !== 'none' ? o.costume : null;
+    const by = -23, hy = -50;
+    if (cos) drawCostume(c, cos, 'back', { by, hy, bob: 0, t, air: false, front: true });
+
+    // Tail behind the body, from the middle, curling up on the side
+    const sway = Math.sin(t * 2.4) * 4;
+    const tipX = 27 + sway, tipY = -58;
+    drawTail(c, sk, [[0, -16], [28, -6], [44 + sway * 0.5, -40], [tipX, tipY]]);
+    if (cos) drawCostume(c, cos, 'tail', { by, hy, bob: 0, t, air: false, front: true, tipX, tipY });
+
+    // Body with a light belly
+    const body = () => { c.beginPath(); c.ellipse(0, by, 20, 19, 0, 0, TAU); };
+    furShape(c, sk, body, sk.fur, sk.patches);
+    c.save(); body(); c.clip();
+    c.fillStyle = sk.paw; c.globalAlpha = 0.85;
+    c.beginPath(); c.ellipse(0, by + 6, 11, 14, 0, 0, TAU); c.fill();
+    c.globalAlpha = 1;
+    if (sk.stripe) {
+      c.lineWidth = 3.6;
+      [-32, -24, -16].forEach((y, i) => {
+        c.strokeStyle = stripeColor(sk, i);
+        for (const sd of [-1, 1]) { c.beginPath(); c.moveTo(sd * 21, y + 3); c.quadraticCurveTo(sd * 16, y - 1, sd * 12, y); c.stroke(); }
+      });
+    }
+    if (sk.shimmer) {
+      const sx = ((t * 45) % 90) - 45;
+      c.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      c.beginPath(); c.moveTo(sx - 2, -46); c.lineTo(sx + 6, -46); c.lineTo(sx - 6, -2); c.lineTo(sx - 14, -2); c.closePath(); c.fill();
+    }
+    if (sk.sparkles) {
+      [[-10, -29], [9, -18], [4, -35], [-5, -13], [12, -30]].forEach(([x, y], i) => {
+        c.globalAlpha = 0.35 + 0.65 * Math.max(0, Math.sin(t * 3 + i * 1.7));
+        drawStar(c, x, y, 2.6, '#fff6c8');
+      });
+      c.globalAlpha = 1;
+    }
+    c.restore();
+    shadeShape(c, sk, body, by, 20);
+
+    // Front paws with little toes
+    for (const sd of [-1, 1]) {
+      c.beginPath(); c.ellipse(sd * 8, -4, 6.5, 4.8, 0, 0, TAU); strokeFill(c, sk, sk.paw);
+      c.strokeStyle = sk.outline; c.lineWidth = 1;
+      for (const dx of [-2, 2]) { c.beginPath(); c.moveTo(sd * 8 + dx, -2); c.lineTo(sd * 8 + dx, -5); c.stroke(); }
+    }
+    if (cos) drawCostume(c, cos, 'body', { by, hy, bob: 0, t, air: false, front: true });
+
+    // Ears, pink inside
+    for (const sd of [-1, 1]) {
+      roundEar(c, sd, hy);
+      strokeFill(c, sk, sk.ear || sk.fur);
+      c.beginPath();
+      c.moveTo(sd * 14.5, hy - 10); c.quadraticCurveTo(sd * 16, hy - 23, sd * 12.5, hy - 24); c.quadraticCurveTo(sd * 8.5, hy - 21, sd * 6, hy - 14); c.closePath();
+      c.fillStyle = '#ffb3c6'; c.fill();
+    }
+
+    // Head
+    const head = () => { c.beginPath(); c.arc(0, hy, 18, 0, TAU); };
+    furShape(c, sk, head, sk.head || sk.fur, sk.headPatches && sk.headPatches.map(([x, y, rx, ry, col]) => [x, hy + y, rx, ry, col]));
+    c.save(); head(); c.clip();
+    if (sk.stripe) {
+      c.lineWidth = 3;
+      [-5.5, 0, 5.5].forEach((sx, i) => {
+        c.strokeStyle = stripeColor(sk, i + 2);
+        c.beginPath(); c.moveTo(sx, hy - 18 + Math.abs(sx) * 0.3); c.lineTo(sx * 0.8, hy - 11); c.stroke();
+      });
+    }
+    // Siamese cats have a dark mask
+    if (sk.id === 'siamois') { c.fillStyle = sk.ear; c.globalAlpha = 0.85; c.beginPath(); c.ellipse(0, hy + 7, 10, 8, 0, 0, TAU); c.fill(); c.globalAlpha = 1; }
+    // Light muzzle
+    c.fillStyle = sk.id === 'siamois' ? 'rgba(255, 255, 255, 0.12)' : sk.paw;
+    c.globalAlpha = 0.7;
+    c.beginPath(); c.ellipse(0, hy + 9, 7.5, 5, 0, 0, TAU); c.fill();
+    c.globalAlpha = 1;
+    c.restore();
+    shadeShape(c, sk, head, hy, 18);
+
+    // Big round eyes that blink now and then
+    const blink = t !== 0 && (t + 0.4) % 3.6 < 0.14;
+    const eye = EYES[sk.id] || '#6cc04a';
+    for (const sd of [-1, 1]) {
+      const ex = sd * 7, ey = hy + 1;
+      if (blink) {
+        c.strokeStyle = sk.outline; c.lineWidth = 1.8;
+        c.beginPath(); c.arc(ex, ey - 1, 4.2, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
+        continue;
+      }
+      c.beginPath(); c.ellipse(ex, ey, 4.8, 5.6, 0, 0, TAU);
+      c.fillStyle = eye; c.fill(); c.strokeStyle = sk.outline; c.lineWidth = 1.3; c.stroke();
+      c.fillStyle = '#1d1630';
+      c.beginPath(); c.ellipse(ex, ey + 0.4, 3.2, 4.3, 0, 0, TAU); c.fill();
+      c.fillStyle = '#ffffff';
+      c.beginPath(); c.arc(ex - 1.6, ey - 2, 1.7, 0, TAU); c.fill();
+      c.beginPath(); c.arc(ex + 1.5, ey + 2, 0.8, 0, TAU); c.fill();
+    }
+    // Pink cheeks, nose and a little "w" mouth
+    c.fillStyle = 'rgba(255, 120, 150, 0.35)';
+    for (const sd of [-1, 1]) { c.beginPath(); c.ellipse(sd * 11.5, hy + 8, 3.4, 2.2, 0, 0, TAU); c.fill(); }
+    c.fillStyle = '#ff8fa8'; c.strokeStyle = sk.outline; c.lineWidth = 0.9;
+    c.beginPath(); c.moveTo(-2.4, hy + 6); c.lineTo(2.4, hy + 6); c.lineTo(0, hy + 8.4); c.closePath(); c.fill(); c.stroke();
+    c.lineWidth = 1.2;
+    c.beginPath(); c.moveTo(0, hy + 8.4); c.lineTo(0, hy + 9.4); c.stroke();
+    for (const sd of [-1, 1]) { c.beginPath(); c.arc(sd * 1.8, hy + 9.4, 1.8, 0, Math.PI); c.stroke(); }
+
+    // Whiskers
+    c.strokeStyle = sk.outline; c.globalAlpha = 0.55; c.lineWidth = 1;
+    for (const sd of [-1, 1]) {
+      c.beginPath(); c.moveTo(sd * 13, hy + 6); c.lineTo(sd * 26, hy + 4); c.stroke();
+      c.beginPath(); c.moveTo(sd * 13, hy + 8.5); c.lineTo(sd * 25, hy + 11); c.stroke();
+    }
+    c.globalAlpha = 1;
+
+    // Collar with the bell in front
+    const col = sk.collar || '#e8445a';
+    c.strokeStyle = sk.outline; c.lineWidth = 4.6;
+    c.beginPath(); c.ellipse(0, hy + 14.5, 11.5, 4, 0, 0.12 * Math.PI, 0.88 * Math.PI); c.stroke();
+    c.strokeStyle = col; c.lineWidth = 2.6;
+    c.beginPath(); c.ellipse(0, hy + 14.5, 11.5, 4, 0, 0.12 * Math.PI, 0.88 * Math.PI); c.stroke();
+    c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1;
+    c.beginPath(); c.arc(0, hy + 20.5, 2.5, 0, TAU); c.fill(); c.stroke();
+    c.fillStyle = '#8a5a00'; c.fillRect(-0.5, hy + 21, 1, 1.6);
+
+    c.fillStyle = 'rgba(255, 255, 255, 0.32)';
+    c.beginPath(); c.ellipse(-8, hy - 9, 4, 2.2, -0.5, 0, TAU); c.fill();
+
+    if (cos) drawCostume(c, cos, 'head', { by, hy, bob: 0, t, air: false, front: true });
+    if (o.hat) { c.save(); c.translate(0, hy - 8); drawHat(c, o.hat, t); c.restore(); }
   }
 
   function drawCatBall(c, sk, o) {
@@ -3829,7 +3970,7 @@
       const owns = isFish ? (it.id === 'none' || gold.costumes.includes(it.id)) : SHOP[shopTab].owned().includes(it.id);
       const sk = isCat ? it : currentSkin();
       c.save(); c.setTransform(dpr, 0, 0, dpr, 0, 0); drawAura(c, 38, 44, 38, sk); c.restore();
-      drawCatRun(c, skinPaint(sk, time), { ph: owns ? time * 9 : 0, air: false, still: !owns, t: time, wet: false,
+      drawCatFront(c, skinPaint(sk, time), { still: !owns, t: owns ? time : 0,
         hat: isCat || isFish ? hatId : it.id, costume: isFish ? it.id : currentCostume() });
     }
   }
@@ -4727,7 +4868,7 @@
     ctx.translate(x, y);
     // Gentle breathing
     ctx.scale(k, k * (1 + Math.sin(time * 2.2) * 0.012));
-    drawCatRun(ctx, skinPaint(sk, time), { ph: 0, air: false, still: true, t: time, wet: false, hat: hatId, costume: currentCostume() });
+    drawCatFront(ctx, skinPaint(sk, time), { t: time, hat: hatId, costume: currentCostume() });
     ctx.restore();
     drawHomeAvatar();
   }
@@ -4743,7 +4884,7 @@
     c.clearRect(0, 0, cv.width, cv.height);
     c.translate(cv.width / 2, cv.height + 40);
     c.scale(1.9, 1.9);
-    drawCatRun(c, skinPaint(currentSkin(), time), { ph: 0, air: false, still: true, t: 0, wet: false, hat: hatId });
+    drawCatFront(c, skinPaint(currentSkin(), time), { t: 0, hat: hatId });
   }
 
   // ---------- Profile: cat name, player level, record per cat, story ----------
@@ -4901,11 +5042,11 @@
     c.clearRect(0, 0, 76, 76);
     if (kind === 'costume') {
       c.translate(38, 71); c.scale(0.62, 0.62);
-      drawCatRun(c, SKINS[0], { ph: 0, air: false, still: true, t: 0, wet: false, costume: it.id });
+      drawCatFront(c, SKINS[0], { t: 0, costume: it.id });
     } else if (kind === 'cat') {
       if (has) drawAura(c, 38, 44, 38, it);
       c.translate(38, 71); c.scale(0.7, 0.7);
-      drawCatRun(c, skinPaint(it, 0), { ph: 0, air: false, still: true, t: 0, wet: false });
+      drawCatFront(c, skinPaint(it, 0), { t: 0 });
     } else {
       c.translate(38, 54); c.scale(1.5, 1.5);
       drawHat(c, it.id, 0);
@@ -5198,7 +5339,7 @@
     c.beginPath(); c.ellipse(540, 1250, 120, 30, 0, 0, TAU); c.fill();
     drawAura(c, 540, 1100, 300, currentSkin());
     c.translate(540, 1250); c.scale(4.4, 4.4);
-    drawCatRun(c, skinPaint(currentSkin(), time), { ph: 0, air: false, still: true, t: time, wet: false, hat: hatId, costume: currentCostume() });
+    drawCatFront(c, skinPaint(currentSkin(), time), { t: 0, hat: hatId, costume: currentCostume() });
     c.restore();
     // Text panel
     c.fillStyle = 'rgba(10, 14, 40, 0.72)';
@@ -5546,7 +5687,7 @@
   }
   const COSTUME_DRAW = {
     vampire(c, layer, g) {
-      if (layer !== 'body') return;
+      if (layer !== (g.front ? 'back' : 'body')) return;
       const sw = Math.sin(g.t * 8) * 2;
       c.beginPath();
       c.moveTo(-12, g.hy + 15); c.quadraticCurveTo(-25, g.by - 6, -26, g.by + 18 + sw);
@@ -5559,7 +5700,7 @@
       }
     },
     superchat(c, layer, g) {
-      if (layer !== 'body') return;
+      if (layer !== (g.front ? 'back' : 'body')) return;
       const sw = Math.sin(g.t * 7) * 4;
       c.beginPath();
       c.moveTo(-12, g.hy + 15); c.quadraticCurveTo(-26, g.by, -24 + sw * 0.3, g.by + 22);
@@ -5749,10 +5890,12 @@
       c.fillStyle = '#2f5fd0';
       for (let y = -6; y < 22; y += 6) c.fillRect(-22, g.by + y, 44, 2.6);
       c.restore();
-      c.beginPath(); c.moveTo(-13, g.hy + 14); c.lineTo(13, g.hy + 14); c.lineTo(14, g.by + 1); c.lineTo(-14, g.by + 1); c.closePath();
-      cosShape(c, '#1f3f9a', '#0b1a4a');
-      c.strokeStyle = '#ffffff'; c.lineWidth = 1.2;
-      c.beginPath(); c.rect(-10.5, g.hy + 16, 21, g.by - g.hy - 18); c.stroke();
+      if (!g.front) {
+        c.beginPath(); c.moveTo(-13, g.hy + 14); c.lineTo(13, g.hy + 14); c.lineTo(14, g.by + 1); c.lineTo(-14, g.by + 1); c.closePath();
+        cosShape(c, '#1f3f9a', '#0b1a4a');
+        c.strokeStyle = '#ffffff'; c.lineWidth = 1.2;
+        c.beginPath(); c.rect(-10.5, g.hy + 16, 21, g.by - g.hy - 18); c.stroke();
+      }
       const sw = Math.sin(g.t * 6) * 1.5;
       for (const sd of [-1, 1]) {
         c.beginPath(); c.moveTo(sd * 2, g.hy + 15); c.lineTo(sd * 5 + sw, g.hy + 27); c.lineTo(sd * 8 + sw, g.hy + 25); c.closePath();
