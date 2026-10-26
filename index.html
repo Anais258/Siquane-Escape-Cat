@@ -202,7 +202,9 @@
   .bubble { position: relative; display: grid; gap: 1px; padding: var(--s2) var(--s3); border-radius: 14px; background: #fff; color: #222866; font-size: var(--fs-xs); font-weight: 700; max-width: 150px; box-shadow: 0 4px 0 rgba(10, 13, 38, 0.5); }
   .bubble b { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-md); color: #3a4290; }
   .bubble::before { content: ""; position: absolute; left: -7px; top: 50%; margin-top: -7px; border: 7px solid transparent; border-left: 0; border-right-color: #fff; }
-  .dot { position: absolute; top: -9px; right: -9px; min-width: 24px; height: 24px; padding: 0 5px; border-radius: var(--r-pill); background: var(--danger); border: 2px solid #fff; color: #fff; font-family: var(--font-display); font-size: var(--fs-sm); line-height: 20px; text-align: center; }
+  /* Round red badge with the number or "!" in the middle */
+  .dot { position: absolute; top: -9px; right: -9px; box-sizing: border-box; width: 26px; height: 26px; padding: 0; border-radius: 50%; background: var(--danger); border: 2px solid #fff; color: #fff; font-family: var(--font-display); font-size: var(--fs-sm); line-height: 1; display: grid; place-items: center; text-align: center; }
+  .dot[hidden] { display: none; }
   .home-event { width: 100%; box-sizing: border-box; min-width: 0; border-radius: 16px; background: linear-gradient(to bottom, #ffd34d, #f0a020); color: #3a1a04; border: 2px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 0 #8a5a00, 0 8px 18px rgba(0, 0, 0, 0.35); padding: 0 var(--s3); text-align: left; }
   .home-event summary { list-style: none; cursor: pointer; min-height: 58px; display: grid; align-content: center; font-family: var(--font-display); font-size: clamp(0.85rem, 4.2vw, 1.0625rem); line-height: 1.15; }
   .home-event summary small { font-family: var(--font-body); font-weight: 800; font-size: var(--fs-xs); opacity: 0.8; }
@@ -225,7 +227,7 @@
   @keyframes wiggle { 0%, 70%, 100% { transform: rotate(0); } 80% { transform: rotate(-10deg); } 90% { transform: rotate(10deg); } }
   @media (prefers-reduced-motion: reduce) { .tap-play, .home-gift .home-square svg { animation: none; } }
   .revive-btn { position: relative; font-size: var(--fs-lg); }
-  .revive-btn .dot { top: -11px; right: -8px; min-width: 30px; height: 30px; line-height: 26px; font-size: var(--fs-md); }
+  .revive-btn .dot { top: -11px; right: -8px; width: 32px; height: 32px; font-size: var(--fs-md); }
   .home-sheet .sum-extra { display: inline-flex; align-items: center; gap: var(--s1); color: var(--gold); font-weight: 800; }
   .home-sheet .sum-extra svg { width: 16px; height: 10px; }
   /* Short screens: tighter cards, the gift bubble goes away, the cat gets smaller */
