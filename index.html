@@ -132,8 +132,6 @@
   .btn.small { font-size: var(--fs-md); padding: var(--s2) var(--s4); }
   .btn.big { font-size: var(--fs-xl); padding: var(--s3) var(--s4); }
   a.btn { text-decoration: none; text-align: center; display: grid; place-items: center; }
-  .text-link { justify-self: center; margin-top: calc(-1 * var(--s1)); padding: var(--s1) var(--s3); min-height: 32px; background: none; border: 0; color: var(--muted); font-family: var(--font-body); font-weight: 800; font-size: var(--fs-sm); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-  .text-link:hover { color: var(--ink); }
   .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
   .btn-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   @media (max-width: 380px) { .btn-row.three { grid-template-columns: 1fr 1fr; } .btn-row.three > :last-child { grid-column: span 2; } }
@@ -691,7 +689,7 @@
         <div class="stat"><span>Record</span><strong id="finalBest">0</strong></div>
       </div>
       <button class="btn big" id="againBtn">Rejouer</button>
-      <button class="text-link" id="homeBtnOver">Retour à l'accueil</button>
+      <button class="btn ghost" id="homeBtnOver">Retour à l'accueil</button>
       <div class="btn-row three">
         <button class="btn ghost" id="shopBtnOver">Boutique</button>
         <button class="btn ghost" id="shareBtnOver">Partager</button>
