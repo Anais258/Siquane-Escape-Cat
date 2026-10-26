@@ -43,9 +43,10 @@
     /* Type: two families, seven sizes (+ one for the countdown) */
     --font-display: "Lilita One", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
     --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --fs-xs: 0.8125rem;
+    --fs-xs: 0.875rem;
     --fs-sm: 0.9375rem;
     --fs-md: 1.0625rem;
+    --fs-card: clamp(0.875rem, 4.2vw, 1.0625rem);
     --fs-lg: 1.3rem;
     --fs-xl: 1.7rem;
     --fs-2xl: 2.4rem;
@@ -55,6 +56,11 @@
     --r-sm: 8px;
     --r-md: 12px;
     --r-lg: 22px;
+    --r-btn: 16px;
+    /* Chunky navy buttons and cards */
+    --chunk-top: #3a4290;
+    --chunk-bottom: #222866;
+    --chunk-edge: #0a0d26;
     --r-pill: 999px;
     --s1: 4px;
     --s2: 8px;
@@ -115,7 +121,7 @@
     color: var(--accent-ink);
     background: linear-gradient(to bottom, #ffbe7a, var(--accent));
     border: 2px solid rgba(255, 255, 255, 0.35);
-    border-radius: 16px;
+    border-radius: var(--r-btn);
     padding: var(--s3) var(--s4);
     cursor: pointer;
     box-shadow: 0 4px 0 var(--accent-edge), 0 8px 16px rgba(0, 0, 0, 0.25);
@@ -123,10 +129,10 @@
   .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--accent-edge); }
   /* Secondary buttons: the same chunky shape, in navy like the home screen tiles */
   .btn.ghost, .toggle, .skin-btn, .quiz-choice {
-    background: linear-gradient(to bottom, #3a4290, #222866); color: var(--ink);
-    border: 2px solid rgba(255, 255, 255, 0.25); box-shadow: 0 4px 0 #0a0d26, 0 6px 14px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(to bottom, var(--chunk-top), var(--chunk-bottom)); color: var(--ink);
+    border: 2px solid rgba(255, 255, 255, 0.25); box-shadow: 0 4px 0 var(--chunk-edge), 0 6px 14px rgba(0, 0, 0, 0.25);
   }
-  .btn.ghost:active, .toggle:active, .skin-btn:active:not(:disabled), .quiz-choice:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #0a0d26; }
+  .btn.ghost:active, .toggle:active, .skin-btn:active:not(:disabled), .quiz-choice:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 var(--chunk-edge); }
   .btn.ghost { font-size: var(--fs-md); }
   .btn-row.three .btn { font-size: var(--fs-sm); padding-inline: var(--s1); }
   .btn.small { font-size: var(--fs-md); padding: var(--s2) var(--s4); }
@@ -151,7 +157,7 @@
   .icon-btn.off { color: var(--muted); }
   .icon-btn.off .slash { display: inline; }
   .icon-btn.off .waves { display: none; }
-  .toggle { min-height: var(--tap); font-family: var(--font-body); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border-radius: 16px; cursor: pointer; }
+  .toggle { min-height: var(--tap); font-family: var(--font-body); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border-radius: var(--r-btn); cursor: pointer; }
   .toggle .state { color: var(--accent); }
   .toggle.off .state { color: var(--muted); }
 
@@ -176,16 +182,16 @@
   /* Chunky tiles, like stickers on the rooftop */
   .home-card, .home-square, .nav-btn {
     position: relative; color: var(--ink); cursor: pointer; font-family: var(--font-body);
-    background: linear-gradient(to bottom, #3a4290, #222866);
-    border: 2px solid rgba(255, 255, 255, 0.28); border-radius: 16px;
-    box-shadow: 0 4px 0 #0a0d26, 0 8px 18px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(to bottom, var(--chunk-top), var(--chunk-bottom));
+    border: 2px solid rgba(255, 255, 255, 0.28); border-radius: var(--r-btn);
+    box-shadow: 0 4px 0 var(--chunk-edge), 0 8px 18px rgba(0, 0, 0, 0.35);
   }
-  .home-card:active, .home-square:active, .nav-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #0a0d26; }
+  .home-card:active, .home-square:active, .nav-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--chunk-edge); }
   .home-card { width: 100%; height: 62px; display: flex; align-items: center; gap: var(--s2); padding: 6px var(--s2) 6px 6px; text-align: left; }
-  .home-card .avatar, .home-card .hc-icon { flex: none; width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(to bottom, #ffb46a, #e0783a); border: 2px solid rgba(255, 255, 255, 0.5); display: grid; place-items: center; }
+  .home-card .avatar, .home-card .hc-icon { flex: none; width: 46px; height: 46px; border-radius: var(--r-md); background: linear-gradient(to bottom, #ffb46a, #e0783a); border: 2px solid rgba(255, 255, 255, 0.5); display: grid; place-items: center; }
   .home-card .hc-icon { background: rgba(5, 6, 20, 0.35); color: var(--accent); }
   .home-card .hc-icon svg { width: 28px; height: 28px; }
-  .hc-title { font-family: var(--font-display); font-size: clamp(0.85rem, 4.2vw, 1.0625rem); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hc-title { font-family: var(--font-display); font-size: var(--fs-card); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .hc-sub svg { width: 16px; height: 10px; vertical-align: -1px; }
   .hc-text { display: grid; gap: 3px; min-width: 0; flex: 1; }
   .hc-label { font-weight: 800; font-size: var(--fs-xs); color: var(--muted); }
@@ -199,27 +205,27 @@
   .home-square.labeled span { font-size: var(--fs-xs); font-weight: 800; }
   .home-gift { display: flex; align-items: center; gap: var(--s2); }
   .home-gift .home-square svg { width: 40px; height: 40px; animation: wiggle 1.6s ease-in-out infinite; }
-  .bubble { position: relative; display: grid; gap: 1px; padding: var(--s2) var(--s3); border-radius: 14px; background: #fff; color: #222866; font-size: var(--fs-xs); font-weight: 700; max-width: 150px; box-shadow: 0 4px 0 rgba(10, 13, 38, 0.5); }
-  .bubble b { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-md); color: #3a4290; }
+  .bubble { position: relative; display: grid; gap: 1px; padding: var(--s2) var(--s3); border-radius: var(--r-md); background: #fff; color: var(--chunk-bottom); font-size: var(--fs-xs); font-weight: 700; max-width: 150px; box-shadow: 0 4px 0 rgba(10, 13, 38, 0.5); }
+  .bubble b { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-md); color: var(--chunk-top); }
   .bubble::before { content: ""; position: absolute; left: -7px; top: 50%; margin-top: -7px; border: 7px solid transparent; border-left: 0; border-right-color: #fff; }
   /* Round red badge with the number or "!" in the middle */
   .dot { position: absolute; top: -9px; right: -9px; box-sizing: border-box; width: 26px; height: 26px; padding: 0; border-radius: 50%; background: var(--danger); border: 2px solid #fff; color: #fff; font-family: var(--font-display); font-size: var(--fs-sm); line-height: 1; display: grid; place-items: center; text-align: center; }
   .dot[hidden] { display: none; }
-  .home-event { width: 100%; box-sizing: border-box; min-width: 0; border-radius: 16px; background: linear-gradient(to bottom, #ffd34d, #f0a020); color: #3a1a04; border: 2px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 0 #8a5a00, 0 8px 18px rgba(0, 0, 0, 0.35); padding: 0 var(--s3); text-align: left; }
-  .home-event summary { list-style: none; cursor: pointer; min-height: 58px; display: grid; align-content: center; font-family: var(--font-display); font-size: clamp(0.85rem, 4.2vw, 1.0625rem); line-height: 1.15; }
-  .home-event summary small { font-family: var(--font-body); font-weight: 800; font-size: var(--fs-xs); opacity: 0.8; }
+  .home-event { width: 100%; box-sizing: border-box; min-width: 0; border-radius: var(--r-btn); background: linear-gradient(to bottom, #ffd34d, #f0a020); color: #3a1a04; border: 2px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 0 #8a5a00, 0 8px 18px rgba(0, 0, 0, 0.35); padding: 0 var(--s3); text-align: left; }
+  .home-event summary { list-style: none; cursor: pointer; min-height: 58px; display: grid; align-content: center; font-family: var(--font-display); font-size: var(--fs-card); line-height: 1.15; }
+  .home-event summary small { font-family: var(--font-body); font-weight: 800; font-size: var(--fs-xs); opacity: 0.8; white-space: nowrap; }
   .home-event summary::-webkit-details-marker { display: none; }
   .home-event p { margin: 0 0 var(--s2); font-size: var(--fs-xs); font-weight: 700; }
   .gift-card .hc-icon svg { width: 34px; height: 34px; animation: wiggle 1.6s ease-in-out infinite; }
   .home-title { text-align: center; font-size: clamp(2.6rem, 13vw, 4rem); line-height: 0.95; margin-top: var(--s1); filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); cursor: pointer; }
-  .home-title small { display: block; font-size: 1em; letter-spacing: 0.02em; text-transform: none; margin: 0; color: var(--ink); text-shadow: 0 3px 0 #3a4290, 0 6px 0 #1a1f4f; }
+  .home-title small { display: block; font-size: 1em; letter-spacing: 0.02em; text-transform: none; margin: 0; color: var(--ink); text-shadow: 0 3px 0 var(--chunk-top), 0 6px 0 #1a1f4f; }
   .home-stage { flex: 1; min-height: 120px; cursor: pointer; }
   .tap-play { align-self: flex-start; margin: 0 0 var(--s1) var(--s2); background: none; border: 0; padding: var(--s2); cursor: pointer; color: #fff; font-family: var(--font-display); font-size: clamp(1.6rem, 7vw, 2.1rem); line-height: 1; text-shadow: 0 3px 0 #1a1f4f, 0 0 18px rgba(0, 0, 0, 0.6); transform: rotate(-6deg); animation: pulse 1.2s ease-in-out infinite; max-width: 60%; text-align: left; }
   .overlay.home > .tap-play { width: auto; margin-left: max(var(--s2), calc(50% - 280px)); }
   .home-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s2); }
   .nav-btn { display: grid; justify-items: center; gap: 2px; padding: var(--s2) 2px 6px; min-width: 0; font-family: var(--font-display); font-size: clamp(0.7rem, 3.3vw, 0.875rem); letter-spacing: 0; text-transform: uppercase; white-space: nowrap; }
   .nav-btn svg { width: 34px; height: 34px; color: #fff; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35)); }
-  .home-sheet { position: absolute; inset: 0; z-index: 5; max-width: none !important; display: flex; padding: calc(env(safe-area-inset-top, 0px) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom, 0px) + var(--s4)); background: rgba(11, 16, 48, 0.94); overflow-y: auto; }
+  .home-sheet { position: absolute; inset: 0; z-index: 5; box-sizing: border-box; width: 100% !important; max-width: none !important; display: flex; padding: calc(env(safe-area-inset-top, 0px) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom, 0px) + var(--s4)); background: rgba(11, 16, 48, 0.94); overflow-y: auto; }
   .home-sheet[hidden] { display: none; }
   .tiles.two { grid-template-columns: 1fr 1fr; }
   .tiles.two .tile { grid-column: auto; }
@@ -315,9 +321,9 @@
   .gold-count { display: flex; align-items: center; gap: var(--s1); color: #ffd24a !important; font-family: var(--font-display); font-weight: 400; font-size: var(--fs-lg); }
   .gold-count svg, .skin-btn svg { width: 18px; height: 12px; }
   /* Small chunky pill to swap a mission for a golden fish */
-  .swap { order: 3; position: relative; min-height: 34px; display: inline-flex; align-items: center; gap: 5px; padding: 0 var(--s3) 0 var(--s2); border: 2px solid rgba(255, 255, 255, 0.25); border-radius: var(--r-pill); background: linear-gradient(to bottom, #3a4290, #222866); box-shadow: 0 3px 0 #0a0d26; color: var(--ink); cursor: pointer; font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: 0.02em; }
+  .swap { order: 3; position: relative; min-height: 34px; display: inline-flex; align-items: center; gap: 5px; padding: 0 var(--s3) 0 var(--s2); border: 2px solid rgba(255, 255, 255, 0.25); border-radius: var(--r-pill); background: linear-gradient(to bottom, var(--chunk-top), var(--chunk-bottom)); box-shadow: 0 3px 0 var(--chunk-edge); color: var(--ink); cursor: pointer; font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: 0.02em; }
   .swap::before { content: ""; position: absolute; inset: -6px -2px; }
-  .swap:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a0d26; }
+  .swap:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--chunk-edge); }
   .swap .swap-ico { width: 15px; height: 15px; color: var(--accent); }
   .swap svg:not(.swap-ico) { width: 18px; height: 12px; }
   .quiz-choice.struck { opacity: 0.35; text-decoration: line-through; }
@@ -402,12 +408,12 @@
   .album-item.missing .skin-name { color: var(--muted); }
   .album-sub { font-size: var(--fs-xs); color: var(--muted); font-weight: 700; text-align: center; }
   .album-count { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--gold); }
-  .skin-btn { width: 100%; min-height: 40px; margin-bottom: 4px; font-family: var(--font-display); font-size: var(--fs-md); letter-spacing: 0.02em; padding: var(--s1); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--s1); font-variant-numeric: tabular-nums; }
+  .skin-btn { width: 100%; min-height: 40px; margin-bottom: 4px; font-family: var(--font-display); font-size: var(--fs-md); letter-spacing: 0.02em; padding: var(--s1); border-radius: var(--r-md); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--s1); font-variant-numeric: tabular-nums; }
   .skin-btn svg { width: 18px; height: 12px; }
   .skin-btn.buy { background: linear-gradient(to bottom, #ffd27a, var(--gold)); color: var(--gold-ink); border-color: rgba(255, 255, 255, 0.45); box-shadow: 0 4px 0 #8a5a17, 0 6px 14px rgba(0, 0, 0, 0.25); }
   .skin-btn.buy:active { box-shadow: 0 2px 0 #8a5a17; }
   /* Too expensive for now: same shape, faded */
-  .skin-btn:disabled { cursor: default; color: var(--muted); opacity: 0.75; box-shadow: 0 4px 0 #0a0d26; }
+  .skin-btn:disabled { cursor: default; color: var(--muted); opacity: 0.75; box-shadow: 0 4px 0 var(--chunk-edge); }
   .skin.selected .skin-btn { background: none; border-color: transparent; box-shadow: none; color: var(--accent); }
   .limited { font-size: var(--fs-xs); font-weight: 800; color: var(--gold-ink); background: var(--event, var(--gold)); border-radius: var(--r-pill); padding: 1px var(--s2); }
 
@@ -422,7 +428,7 @@
   .quiz-subject { justify-self: start; font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-ink); background: var(--gold); border-radius: var(--r-pill); padding: 2px var(--s3); }
   .quiz-q { font-family: var(--font-body); font-size: var(--fs-lg); line-height: 1.35; font-weight: 800; }
   .quiz-choices { display: grid; gap: var(--s2); }
-  .quiz-choice { min-height: 56px; display: flex; align-items: center; gap: var(--s3); text-align: left; font-size: var(--fs-md); font-weight: 800; padding: var(--s3) var(--s4); border-radius: 16px; cursor: pointer; }
+  .quiz-choice { min-height: 56px; display: flex; align-items: center; gap: var(--s3); text-align: left; font-size: var(--fs-md); font-weight: 800; padding: var(--s3) var(--s4); border-radius: var(--r-btn); cursor: pointer; }
   .quiz-choice:hover:not(:disabled) { filter: brightness(1.12); }
   .quiz-choice.right { border-color: var(--success); background: linear-gradient(to bottom, #2f8a6a, #1d5a48); box-shadow: 0 4px 0 #0d3a2c; }
   .quiz-choice.wrong { border-color: var(--danger); background: linear-gradient(to bottom, #9a3a4a, #6a2232); box-shadow: 0 4px 0 #3a0e18; }
@@ -463,6 +469,22 @@
   .board-gap { text-align: center; color: var(--muted); line-height: 1; }
   .board-me { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); }
   @media (prefers-reduced-motion: reduce) { .toast.show, .countdown.pop { animation: none; } .bar i { transition: none; } }
+
+  /* Close cross in the corner of the home sheets */
+  .home-sheet .card { position: relative; }
+  .sheet-x { position: absolute; top: var(--s4); right: var(--s4); width: var(--tap); height: var(--tap); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2); background: rgba(5, 6, 20, 0.4); color: var(--ink); font-size: var(--fs-lg); cursor: pointer; display: grid; place-items: center; }
+  /* Sound toggles: icon, name, and whether it is on */
+  .toggle { display: flex; align-items: center; justify-content: center; gap: var(--s2); }
+  .toggle svg { width: 20px; height: 20px; flex: none; color: var(--accent); }
+  .toggle .slash { display: none; }
+  .toggle.off svg { color: var(--muted); }
+  .toggle.off .slash { display: inline; }
+  .toggle.off .waves { display: none; }
+  .toggle > span { display: grid; text-align: left; line-height: 1.15; }
+  .toggle .state { font-size: var(--fs-xs); }
+  /* Game over: kibbles and record on one quiet line */
+  .stat-line { display: flex; justify-content: center; gap: var(--s4); margin: 0; color: var(--muted); font-weight: 800; }
+  .stat-line strong { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-lg); color: var(--ink); }
 </style>
 </head>
 <body>
@@ -552,18 +574,20 @@
 
     <div class="home-sheet" id="missionsSheet" hidden>
       <div class="card">
+        <button class="sheet-x" data-close aria-label="Fermer">✕</button>
         <h2>Missions</h2>
         <p class="small-text">À gagner : <span class="sum-extra" id="missionsReward"></span></p>
         <div class="label">Défi du jour</div>
         <div id="dailyStart"></div>
         <div class="label">Missions</div>
         <div class="missions" id="missionsStart"></div>
-        <button class="btn" data-close>Retour</button>
+        <button class="btn ghost" data-close>Fermer</button>
       </div>
     </div>
 
     <div class="home-sheet" id="meSheet" hidden>
       <div class="card">
+        <button class="sheet-x" data-close aria-label="Fermer">✕</button>
         <h2>Moi</h2>
         <button class="name-btn" id="playerName" aria-label="Changer le nom du chat"><span id="playerNameText">Neko</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
         <p>Ton chat s'est perdu en ville. Aide-le à retrouver sa famille en courant sur les toits !</p>
@@ -659,7 +683,7 @@
         <div class="label">Quartiers et questions</div>
         <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Tu entres ensuite dans de nouveaux quartiers : le premier fait 1 km, puis chacun est un peu plus long. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
-        <button class="btn" data-close>Retour</button>
+        <button class="btn ghost" data-close>Fermer</button>
       </div>
     </div>
   </div>
@@ -671,8 +695,8 @@
       <button class="btn" id="resumeBtn">Reprendre</button>
       <button class="btn ghost" id="quitBtn">Retour à l'accueil</button>
       <div class="btn-row sound-row">
-        <button class="toggle" data-toggle="music" data-label="1" aria-pressed="true">Musique : <span class="state">oui</span></button>
-        <button class="toggle" data-toggle="sfx" data-label="1" aria-pressed="true">Bruitages : <span class="state">oui</span></button>
+        <button class="toggle" data-toggle="music" data-label="1" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="16.5" cy="16" r="2.5" fill="currentColor"/><path class="slash" d="M4 4l16 16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>Musique <span class="state">activée</span></span></button>
+        <button class="toggle" data-toggle="sfx" data-label="1" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path class="waves" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="slash" d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Sons <span class="state">activés</span></span></button>
       </div>
     </div>
   </div>
@@ -686,10 +710,7 @@
       <div class="stat hero"><span>Score</span><strong id="finalScore">0</strong></div>
       <div class="badge" id="newBest" hidden>Nouveau record !</div>
       <p class="near" id="nearBest" hidden></p>
-      <div class="stat-row">
-        <div class="stat"><span>Croquettes</span><strong id="finalKibbles">0</strong></div>
-        <div class="stat"><span>Record</span><strong id="finalBest">0</strong></div>
-      </div>
+      <p class="stat-line"><span><strong id="finalKibbles">0</strong> croquettes</span><span>Record <strong id="finalBest">0</strong></span></p>
       <button class="btn big" id="againBtn">Rejouer</button>
       <button class="btn ghost" id="homeBtnOver">Retour à l'accueil</button>
       <div class="btn-row three">
@@ -698,6 +719,7 @@
         <button class="btn ghost" id="boardBtnOver">Classement</button>
       </div>
       <p class="hint kbd-only">ou appuie sur Espace</p>
+      <div class="label">Ta progression</div>
       <div class="box">
         <div class="box-head"><b id="xpLevel">Neko · niveau 1</b><span id="xpGain">+0 XP</span></div>
         <div class="bar"><i id="xpBarOver"></i></div>
@@ -819,13 +841,13 @@
 
   <div class="overlay" id="quizScreen" hidden>
     <div class="card quiz">
-      <div class="quiz-head"><span class="quiz-level" id="quizLevel">Pause questions !</span><span class="quiz-count" id="quizCount">Question 1 sur 3</span></div>
+      <div class="quiz-head"><span class="quiz-level" id="quizLevel">Questions !</span><span class="quiz-count" id="quizCount">Question 1 sur 3</span></div>
       <div class="quiz-subject" id="quizSubject"></div>
       <h3 class="quiz-q" id="quizQ"></h3>
       <div class="quiz-choices" id="quizChoices"></div>
       <div class="quiz-feedback" id="quizFeedback" hidden></div>
       <button class="btn" id="quizNext" hidden>Question suivante</button>
-      <button class="btn ghost" id="quizResume">Passer les questions</button>
+      <button class="btn ghost" id="quizResume">Passer</button>
       <p class="hint kbd-only">Touches 1, 2, 3 pour répondre · Entrée pour continuer</p>
     </div>
   </div>
@@ -840,7 +862,7 @@
         <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
         <span id="bankShop">0</span> croquettes
       </div>
-      <p>Les croquettes ramassées pendant tes parties vont dans ta tirelire. Dépense-les pour débloquer de nouveaux chats et des chapeaux.</p>
+      <p>Dépense tes croquettes pour de nouveaux chats et chapeaux.</p>
       <div class="tabs" role="tablist">
         <button class="tab active" id="tab-cats" role="tab" aria-selected="true">Chats</button>
         <button class="tab" id="tab-hats" role="tab" aria-selected="false">Chapeaux</button>
@@ -2013,13 +2035,13 @@
     document.querySelectorAll('[data-toggle="music"]').forEach(b => {
       b.setAttribute('aria-pressed', String(musicOn));
       b.classList.toggle('off', !musicOn);
-      if (b.dataset.label) b.querySelector('.state').textContent = musicOn ? 'oui' : 'non';
+      if (b.dataset.label) b.querySelector('.state').textContent = musicOn ? 'activée' : 'coupée';
       else b.setAttribute('aria-label', musicOn ? 'Couper la musique' : 'Remettre la musique');
     });
     document.querySelectorAll('[data-toggle="sfx"]').forEach(b => {
       b.setAttribute('aria-pressed', String(sfxOn));
       b.classList.toggle('off', !sfxOn);
-      if (b.dataset.label) b.querySelector('.state').textContent = sfxOn ? 'oui' : 'non';
+      if (b.dataset.label) b.querySelector('.state').textContent = sfxOn ? 'activés' : 'coupés';
       else b.setAttribute('aria-label', sfxOn ? 'Couper les bruitages' : 'Remettre les bruitages');
     });
   }
@@ -3912,7 +3934,8 @@
   if (THEME_ID) {
     const end = ACTIVE.end ? ` · jusqu'au ${ACTIVE.end.getDate() === 1 ? '1er' : ACTIVE.end.getDate()} ${MONTHS[ACTIVE.end.getMonth()]}` : '';
     $('eventTitle').textContent = 'Spécial ' + TH.name;
-    if (end) { const d = document.createElement('small'); d.textContent = end.replace(' · ', ''); $('eventTitle').append(d); }
+    // Short date on the home card ("jusqu'au 2 nov.") so it fits on one line
+    if (ACTIVE.end) { const d = document.createElement('small'); d.textContent = `jusqu'au ${ACTIVE.end.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }).replace(/^1 /, '1er ')}`; $('eventTitle').append(d); }
     $('eventText').textContent = TH.text;
     document.documentElement.style.setProperty('--event', TH.accent);
     $('eventBanner').hidden = false;
@@ -3973,8 +3996,8 @@
       const btn = document.createElement('button');
       btn.className = 'skin-btn';
       btn.id = 'item-' + it.id;
-      if (isSel) { btn.textContent = 'Choisi'; btn.disabled = true; }
-      else if (isOwned) { btn.textContent = 'Choisir'; }
+      if (isSel) { btn.textContent = '✓ Porté'; btn.disabled = true; }
+      else if (isOwned) { btn.textContent = 'Mettre'; }
       else if (it.special) { btn.textContent = `Niveau ${it.special}`; btn.disabled = true; btn.setAttribute('aria-label', `${it.name} est offert au niveau ${it.special}`); }
       else if (shop === SHOP.cats && catLimitReached()) { btn.textContent = 'Demain'; btn.disabled = true; btn.setAttribute('aria-label', `${it.name} sera disponible demain`); }
       else {
@@ -4553,8 +4576,8 @@
     $('giftCard').hidden = !available;
     $('giftBtn').hidden = !available;
     $('giftTitle').textContent = available ? 'Cadeau' : 'Cadeau ouvert';
-    $('giftSub').textContent = available
-      ? `+${giftAmount(gift.days + 1)} croquettes`
+    $('giftSub').innerHTML = available
+      ? `+${giftAmount(gift.days + 1)} ${FISH_SVG}`
       : `Reviens demain pour ${giftAmount(gift.days + 1)} croquettes`;
   }
   function openGift() {
@@ -4806,7 +4829,7 @@
     objs = objs.filter(o => o.z > 900);
     kibs = kibs.filter(k => k.z > 900);
     quiz = { i: 0, subjects: shuffle(Object.keys(SUBJECTS)).slice(0, 3) };
-    $('quizLevel').textContent = 'Pause questions !';
+    $('quizLevel').textContent = 'Questions !';
     updateHudExtras();
     show('quizScreen');
     nextQuestion();
@@ -4842,7 +4865,7 @@
     }
     $('quizFeedback').hidden = true;
     $('quizNext').hidden = true;
-    $('quizResume').textContent = `Passer les questions (−${2 * (3 - quiz.i)} croquettes)`;
+    $('quizResume').textContent = `Passer (−${2 * (3 - quiz.i)} croquettes)`;
     $('quizResume').className = 'btn ghost';
     (box.querySelector('.quiz-choice:not(:disabled)') || box.firstChild).focus({ preventScroll: true });
   }
@@ -4878,7 +4901,7 @@
     store(QUIZ_KEY, quizState);
     const more = quiz.i < 2;
     $('quizNext').hidden = !more;
-    $('quizResume').textContent = more ? `Continuer la course (−${2 * (2 - quiz.i)} croquettes)` : 'Continuer la course';
+    $('quizResume').textContent = more ? `Continuer (−${2 * (2 - quiz.i)} croquettes)` : 'Continuer la course';
     $('quizResume').className = more ? 'btn ghost' : 'btn';
     (more ? $('quizNext') : $('quizResume')).focus({ preventScroll: true });
   }
@@ -6022,8 +6045,8 @@
       const btn = document.createElement('button');
       btn.className = 'skin-btn';
       btn.id = 'costume-' + cs.id;
-      if (sel) { btn.textContent = 'Choisi'; btn.disabled = true; }
-      else if (has) btn.textContent = 'Choisir';
+      if (sel) { btn.textContent = '✓ Porté'; btn.disabled = true; }
+      else if (has) btn.textContent = 'Mettre';
       else {
         btn.innerHTML = (gold.count >= COSTUME_PRICE ? 'Acheter ' : '') + GOLD_SVG + ' ' + COSTUME_PRICE;
         if (gold.count >= COSTUME_PRICE) btn.classList.add('buy'); else btn.disabled = true;
