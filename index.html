@@ -2985,11 +2985,16 @@
   // drawn before the head (so the head hides it), its near half after.
   function drawCollar(c, sk, hy, half) {
     const from = half === 'far' ? Math.PI : 0, to = half === 'far' ? TAU : Math.PI;
-    c.lineCap = 'round';
+    // Wide enough to reach the sides of the body, then clipped to it so the
+    // ends meet the cat's outline exactly
+    c.save();
+    c.beginPath(); c.ellipse(0, hy + 27, 20 - OUTLINE_W / 2, 19 - OUTLINE_W / 2, 0, 0, TAU); c.clip();
+    c.lineCap = 'butt';
     c.strokeStyle = sk.outline; c.lineWidth = 4.4;
-    c.beginPath(); c.ellipse(0, hy + 15, 12, 3.6, 0, from, to); c.stroke();
+    c.beginPath(); c.ellipse(0, hy + 15, 17, 3.8, 0, from, to); c.stroke();
     c.strokeStyle = sk.collar || '#e8445a'; c.lineWidth = 2.6;
-    c.beginPath(); c.ellipse(0, hy + 15, 12, 3.6, 0, from, to); c.stroke();
+    c.beginPath(); c.ellipse(0, hy + 15, 17, 3.8, 0, from, to); c.stroke();
+    c.restore();
   }
 
   // Tapered tail along a cubic curve P, with a light tip
