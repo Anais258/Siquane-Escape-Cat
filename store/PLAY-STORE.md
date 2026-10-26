@@ -23,6 +23,16 @@ Avec un compte développeur **entreprise**, Google affiche sur la fiche le nom e
 3. **Attendre le nouvel avis de situation INSEE** (sur <https://avis-situation-sirene.insee.fr>) avec la nouvelle adresse et le nom commercial. Comptez une à quelques semaines.
 4. **Demander le numéro D-U-N-S** une fois l'avis à jour, depuis le lien proposé par la Play Console à la création du compte (gratuit, quelques jours à 2 semaines). Le nom et l'adresse doivent être **exactement** ceux de l'avis INSEE.
 
+Où on en est : ✅ domiciliation prise. Prochaine étape : la modification au Guichet unique.
+
+Détail de la modification au Guichet unique :
+- *Modifier une entreprise* › choisir la micro-entreprise, cocher les trois changements dans la même demande.
+- **Transfert d'adresse** : adresse de domiciliation + nom et SIREN du domiciliataire (sur le contrat).
+- **Nom commercial** : `Siquane Lab`.
+- **Ajout d'activité** : « Conception et édition de jeux vidéo et d'applications mobiles » (l'INSEE attribue le code, normalement 58.21Z).
+- Joindre le contrat de domiciliation, signer, envoyer (gratuit).
+- Après validation : vérifier le nouvel avis de situation INSEE (adresse et nom commercial) **avant** de demander le D-U-N-S. Mettre à jour l'adresse auprès de la banque pro, de l'URSSAF et sur les factures.
+
 Points à vérifier :
 - Le **nom légal** d'une micro-entreprise reste ton nom : Google peut l'afficher dans les détails du développeur à côté du nom commercial. Seule une société (SASU, EURL…) permettrait de ne plus du tout l'afficher.
 - Ne jamais utiliser ton adresse personnelle dans la Play Console, le D-U-N-S ou le profil de paiement.
