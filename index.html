@@ -113,15 +113,22 @@
     font-size: var(--fs-lg);
     letter-spacing: 0.02em;
     color: var(--accent-ink);
-    background: var(--accent);
-    border: 0;
-    border-radius: var(--r-md);
+    background: linear-gradient(to bottom, #ffbe7a, var(--accent));
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-radius: 16px;
     padding: var(--s3) var(--s4);
     cursor: pointer;
-    box-shadow: 0 4px 0 var(--accent-edge);
+    box-shadow: 0 4px 0 var(--accent-edge), 0 8px 16px rgba(0, 0, 0, 0.25);
   }
   .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--accent-edge); }
-  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; font-size: var(--fs-md); }
+  /* Secondary buttons: the same chunky shape, in navy like the home screen tiles */
+  .btn.ghost, .toggle, .skin-btn, .quiz-choice {
+    background: linear-gradient(to bottom, #3a4290, #222866); color: var(--ink);
+    border: 2px solid rgba(255, 255, 255, 0.25); box-shadow: 0 4px 0 #0a0d26, 0 6px 14px rgba(0, 0, 0, 0.25);
+  }
+  .btn.ghost:active, .toggle:active, .skin-btn:active:not(:disabled), .quiz-choice:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #0a0d26; }
+  .btn.ghost { font-size: var(--fs-md); }
+  .btn-row.three .btn { font-size: var(--fs-sm); padding-inline: var(--s1); }
   .btn.small { font-size: var(--fs-md); padding: var(--s2) var(--s4); }
   .btn.big { font-size: var(--fs-xl); padding: var(--s3) var(--s4); }
   a.btn { text-decoration: none; text-align: center; display: grid; place-items: center; }
@@ -144,7 +151,7 @@
   .icon-btn.off { color: var(--muted); }
   .icon-btn.off .slash { display: inline; }
   .icon-btn.off .waves { display: none; }
-  .toggle { min-height: var(--tap); font-family: var(--font-body); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .toggle { min-height: var(--tap); font-family: var(--font-body); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border-radius: 16px; cursor: pointer; }
   .toggle .state { color: var(--accent); }
   .toggle.off .state { color: var(--muted); }
 
@@ -216,6 +223,8 @@
   @keyframes pulse { 0%, 100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(-6deg) scale(1.07); } }
   @keyframes wiggle { 0%, 70%, 100% { transform: rotate(0); } 80% { transform: rotate(-10deg); } 90% { transform: rotate(10deg); } }
   @media (prefers-reduced-motion: reduce) { .tap-play, .home-gift .home-square svg { animation: none; } }
+  .revive-btn { position: relative; font-size: var(--fs-lg); }
+  .revive-btn .dot { top: -11px; right: -8px; min-width: 30px; height: 30px; line-height: 26px; font-size: var(--fs-md); }
   .home-sheet .sum-extra { display: inline-flex; align-items: center; gap: var(--s1); color: var(--gold); font-weight: 800; }
   .home-sheet .sum-extra svg { width: 16px; height: 10px; }
   /* Short screens: tighter cards, the gift bubble goes away, the cat gets smaller */
@@ -377,7 +386,7 @@
   /* ---------- Shop, album, tabs ---------- */
   .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--s1); padding: var(--s1); border-radius: var(--r-md); background: var(--surface); }
   .tab { min-height: var(--tap); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border: 0; border-radius: var(--r-sm); background: transparent; color: var(--muted); cursor: pointer; }
-  .tab.active { background: var(--accent); color: var(--accent-ink); }
+  .tab.active { background: linear-gradient(to bottom, #ffbe7a, var(--accent)); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-edge); }
   .bank { justify-self: center; display: flex; align-items: center; gap: var(--s2); font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
   .bank svg { width: 26px; height: 17px; }
   .bank span { font-family: var(--font-display); font-weight: 400; font-size: var(--fs-xl); color: var(--ink); }
@@ -386,15 +395,17 @@
   .skin.selected { border-color: var(--accent); background: rgba(255, 162, 76, 0.12); }
   .skin canvas, .album-item canvas { width: 76px; height: 76px; }
   .skin.locked canvas { opacity: 0.55; }
-  .skin-name { font-weight: 800; font-size: var(--fs-sm); }
+  .skin-name { font-weight: 800; font-size: var(--fs-sm); text-align: center; overflow-wrap: anywhere; hyphens: auto; }
   .album-item.missing .skin-name { color: var(--muted); }
   .album-sub { font-size: var(--fs-xs); color: var(--muted); font-weight: 700; text-align: center; }
   .album-count { font-family: var(--font-display); font-size: var(--fs-lg); color: var(--gold); }
-  .skin-btn { width: 100%; min-height: var(--tap); font-weight: 800; font-size: var(--fs-sm); padding: var(--s1); border-radius: var(--r-sm); border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--s1); font-variant-numeric: tabular-nums; }
-  .skin-btn svg { width: 16px; height: 10px; }
-  .skin-btn.buy { background: var(--gold); color: var(--gold-ink); border-color: transparent; }
-  .skin-btn:disabled { cursor: default; color: var(--muted); }
-  .skin.selected .skin-btn { color: var(--accent); border-color: transparent; }
+  .skin-btn { width: 100%; min-height: 40px; margin-bottom: 4px; font-family: var(--font-display); font-size: var(--fs-md); letter-spacing: 0.02em; padding: var(--s1); border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--s1); font-variant-numeric: tabular-nums; }
+  .skin-btn svg { width: 18px; height: 12px; }
+  .skin-btn.buy { background: linear-gradient(to bottom, #ffd27a, var(--gold)); color: var(--gold-ink); border-color: rgba(255, 255, 255, 0.45); box-shadow: 0 4px 0 #8a5a17, 0 6px 14px rgba(0, 0, 0, 0.25); }
+  .skin-btn.buy:active { box-shadow: 0 2px 0 #8a5a17; }
+  /* Too expensive for now: same shape, faded */
+  .skin-btn:disabled { cursor: default; color: var(--muted); opacity: 0.75; box-shadow: 0 4px 0 #0a0d26; }
+  .skin.selected .skin-btn { background: none; border-color: transparent; box-shadow: none; color: var(--accent); }
   .limited { font-size: var(--fs-xs); font-weight: 800; color: var(--gold-ink); background: var(--event, var(--gold)); border-radius: var(--r-pill); padding: 1px var(--s2); }
 
   /* ---------- Class picker and quiz ---------- */
@@ -404,14 +415,14 @@
   .card.quiz { text-align: left; max-width: 520px; }
   .quiz-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); }
   .quiz-level { font-family: var(--font-display); font-size: var(--fs-xl); color: var(--accent); }
-  .quiz-count { color: var(--muted); font-weight: 800; font-size: var(--fs-sm); }
+  .quiz-count { color: var(--muted); font-weight: 800; font-size: var(--fs-sm); white-space: nowrap; }
   .quiz-subject { justify-self: start; font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-ink); background: var(--gold); border-radius: var(--r-pill); padding: 2px var(--s3); }
   .quiz-q { font-family: var(--font-body); font-size: var(--fs-lg); line-height: 1.35; font-weight: 800; }
   .quiz-choices { display: grid; gap: var(--s2); }
-  .quiz-choice { min-height: 56px; display: flex; align-items: center; gap: var(--s3); text-align: left; font-size: var(--fs-md); font-weight: 800; padding: var(--s3) var(--s4); border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-  .quiz-choice:hover:not(:disabled) { background: var(--surface-strong); }
-  .quiz-choice.right { border-color: var(--success); background: var(--success-soft); }
-  .quiz-choice.wrong { border-color: var(--danger); background: var(--danger-soft); }
+  .quiz-choice { min-height: 56px; display: flex; align-items: center; gap: var(--s3); text-align: left; font-size: var(--fs-md); font-weight: 800; padding: var(--s3) var(--s4); border-radius: 16px; cursor: pointer; }
+  .quiz-choice:hover:not(:disabled) { filter: brightness(1.12); }
+  .quiz-choice.right { border-color: var(--success); background: linear-gradient(to bottom, #2f8a6a, #1d5a48); box-shadow: 0 4px 0 #0d3a2c; }
+  .quiz-choice.wrong { border-color: var(--danger); background: linear-gradient(to bottom, #9a3a4a, #6a2232); box-shadow: 0 4px 0 #3a0e18; }
   .quiz-choice:disabled { cursor: default; }
   .quiz-feedback { padding: var(--s3); border-radius: var(--r-md); line-height: 1.45; }
   .quiz-feedback.ok { background: var(--success-soft); color: var(--success); }
@@ -746,7 +757,7 @@
       <h2>Encore une chance ?</h2>
       <p>Utilise 1 poisson d'or pour repartir d'ici. Tu en as <b class="good" id="reviveCount">1</b>.</p>
       <div class="bar gold"><i id="reviveBar" style="width:100%"></i></div>
-      <button class="btn big" id="reviveUse">Utiliser 1 poisson d'or (<span id="reviveTime">10</span>)</button>
+      <button class="btn revive-btn" id="reviveUse">Utiliser 1 poisson d'or<span class="dot" id="reviveTime">10</span></button>
       <button class="btn ghost small" id="reviveSkip">Passer</button>
     </div>
   </div>
