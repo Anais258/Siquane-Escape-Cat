@@ -3160,16 +3160,16 @@
       const ex = sd * 7, ey = hy + 1;
       if (blink) {
         c.strokeStyle = sk.outline; c.lineWidth = 1.8;
-        c.beginPath(); c.arc(ex, ey - 1, 4.2, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
+        c.beginPath(); c.arc(ex, ey - 1, 3.7, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
         continue;
       }
-      c.beginPath(); c.ellipse(ex, ey, 4.8, 5.6, 0, 0, TAU);
+      c.beginPath(); c.ellipse(ex, ey, 4.2, 4.9, 0, 0, TAU);
       c.fillStyle = eye; c.fill(); c.strokeStyle = sk.outline; c.lineWidth = 1.3; c.stroke();
       c.fillStyle = '#1d1630';
-      c.beginPath(); c.ellipse(ex, ey + 0.4, 3.2, 4.3, 0, 0, TAU); c.fill();
+      c.beginPath(); c.ellipse(ex, ey + 0.4, 2.8, 3.7, 0, 0, TAU); c.fill();
       c.fillStyle = '#ffffff';
-      c.beginPath(); c.arc(ex - 1.6, ey - 2, 1.7, 0, TAU); c.fill();
-      c.beginPath(); c.arc(ex + 1.5, ey + 2, 0.8, 0, TAU); c.fill();
+      c.beginPath(); c.arc(ex - 1.4, ey - 1.7, 1.5, 0, TAU); c.fill();
+      c.beginPath(); c.arc(ex + 1.3, ey + 1.7, 0.7, 0, TAU); c.fill();
     }
     // Pink cheeks, nose and a little "w" mouth
     c.fillStyle = 'rgba(255, 120, 150, 0.35)';
