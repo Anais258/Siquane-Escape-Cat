@@ -470,6 +470,10 @@
   .board-me { display: flex; justify-content: space-between; align-items: center; gap: var(--s2); }
   @media (prefers-reduced-motion: reduce) { .toast.show, .countdown.pop { animation: none; } .bar i { transition: none; } }
 
+  /* Small quiet links at the bottom of a card */
+  .fine-print { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s1) var(--s3); }
+  .link-quiet { background: none; border: 0; padding: var(--s1); color: var(--muted); font: 700 var(--fs-xs) var(--font-body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .link-quiet:hover { color: var(--ink); }
   /* Close cross in the corner of the home sheets */
   .home-sheet .card { position: relative; }
   .sheet-x { position: absolute; top: var(--s4); right: var(--s4); width: var(--tap); height: var(--tap); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2); background: rgba(5, 6, 20, 0.4); color: var(--ink); font-size: var(--fs-lg); cursor: pointer; display: grid; place-items: center; }
@@ -684,6 +688,7 @@
         <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Tu entres ensuite dans de nouveaux quartiers : le premier fait 1 km, puis chacun est un peu plus long. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
         <button class="btn ghost" data-close>Fermer</button>
+        <p class="fine-print"><a class="link-quiet" href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>
       </div>
     </div>
   </div>
@@ -808,6 +813,7 @@
       <p class="small-text" id="boardStatus" role="status"></p>
       <div class="board" id="boardList"></div>
       <button class="btn" id="boardBack">Retour</button>
+      <p class="fine-print"><button class="link-quiet" id="boardLeave" hidden>Supprimer mes données du classement</button> <a class="link-quiet" href="confidentialite.html" target="_blank" rel="noopener">Confidentialité</a></p>
     </div>
   </div>
 
@@ -5296,6 +5302,7 @@
     const joined = !!(online && online.pseudo);
     $('joinForm').hidden = joined || !boardReady();
     $('boardMe').hidden = !joined;
+    $('boardLeave').hidden = !joined;
     if (joined) $('boardPseudo').textContent = online.pseudo;
     document.querySelectorAll('#boardTabs .tab').forEach(t => {
       const on = t.dataset.board === boardKind;
@@ -5354,6 +5361,24 @@
     $('joinInput').value = online.pseudo;
     $('joinInput').focus();
     $('joinInput').select();
+  });
+  // Delete our entry and free our pseudo on the server, then forget them here
+  $('boardLeave').addEventListener('click', async () => {
+    if (!online || !online.pseudo) return;
+    if (!confirm(`Supprimer « ${online.pseudo} » et tes scores du classement en ligne ? Ta progression dans le jeu est gardée.`)) return;
+    $('boardStatus').textContent = 'Suppression…';
+    try {
+      const headers = await authed();
+      const gone = e => { if (e.status !== 404) throw e; };
+      await api(`${DOCS()}/players/${online.uid}`, { method: 'DELETE', headers }).catch(gone);
+      await api(`${DOCS()}/pseudos/${encodeURIComponent(pseudoKey(online.pseudo))}`, { method: 'DELETE', headers }).catch(gone);
+      online = null;
+      try { localStorage.removeItem(ONLINE_KEY); } catch (e) {}
+      toast('Tes données ont été supprimées du classement.');
+      renderBoard();
+    } catch (err) {
+      $('boardStatus').textContent = "La suppression n'a pas marché. Vérifie ta connexion et réessaie.";
+    }
   });
   $('boardBtn').addEventListener('click', () => openBoard('startScreen'));
   $('boardBtnOver').addEventListener('click', () => openBoard('overScreen'));

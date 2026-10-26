@@ -1,8 +1,9 @@
 {
   "name": "Neko Odyssey",
   "short_name": "Neko Odyssey",
-  "description": "Aide ton chat à retrouver sa famille en courant sur les toits de la ville.",
+  "description": "Aide ton chat à retrouver sa famille en courant sur les toits de la ville. Saute, roule, ramasse des croquettes, réponds à des questions et collectionne chats et chapeaux.",
   "lang": "fr",
+  "dir": "ltr",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -10,9 +11,17 @@
   "orientation": "portrait",
   "background_color": "#0b1030",
   "theme_color": "#0b1030",
+  "categories": ["games", "kids", "education"],
+  "prefer_related_applications": false,
   "icons": [
     { "src": "icons/icon-192-v2.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-512-v2.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-maskable-512-v2.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "store/capture-1-accueil.png", "sizes": "1080x2160", "type": "image/png", "form_factor": "narrow", "label": "L'accueil avec ton chat" },
+    { "src": "store/capture-2-course.png", "sizes": "1080x2160", "type": "image/png", "form_factor": "narrow", "label": "La course sur les toits" },
+    { "src": "store/capture-3-boutique.png", "sizes": "1080x2160", "type": "image/png", "form_factor": "narrow", "label": "La boutique de chats et de chapeaux" },
+    { "src": "store/capture-4-questions.png", "sizes": "1080x2160", "type": "image/png", "form_factor": "narrow", "label": "Les questions de culture générale" }
   ]
 }
