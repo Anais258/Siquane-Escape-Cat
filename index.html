@@ -2978,6 +2978,17 @@
     c.closePath();
   }
 
+  // Collar seen slightly from above: a thin ring around the neck. Its far half is
+  // drawn before the head (so the head hides it), its near half after.
+  function drawCollar(c, sk, hy, half) {
+    const from = half === 'far' ? Math.PI : 0, to = half === 'far' ? TAU : Math.PI;
+    c.lineCap = 'round';
+    c.strokeStyle = sk.outline; c.lineWidth = 4.4;
+    c.beginPath(); c.ellipse(0, hy + 15, 12, 3.6, 0, from, to); c.stroke();
+    c.strokeStyle = sk.collar || '#e8445a'; c.lineWidth = 2.6;
+    c.beginPath(); c.ellipse(0, hy + 15, 12, 3.6, 0, from, to); c.stroke();
+  }
+
   // Tapered tail along a cubic curve P, with a light tip
   function drawTail(c, sk, P) {
     const at = u => { const v = 1 - u; return [0, 1].map(k => v * v * v * P[0][k] + 3 * v * v * u * P[1][k] + 3 * v * u * u * P[2][k] + u * u * u * P[3][k]); };
@@ -3055,6 +3066,7 @@
 
     const hy = -50 - bob;
 
+    drawCollar(c, sk, hy, 'far');
     // Head
     const head = () => { c.beginPath(); c.arc(0, hy, 18, 0, TAU); };
     furShape(c, sk, head, sk.head || sk.fur, sk.headPatches && sk.headPatches.map(([x, y, rx, ry, col]) => [x, hy + y, rx, ry, col]));
@@ -3083,13 +3095,8 @@
       }
     }
 
-    // Collar around the neck (its bell is at the front, so not seen from behind)
-    const col = sk.collar || '#e8445a';
-    c.lineCap = 'round';
-    c.strokeStyle = sk.outline; c.lineWidth = 5.4;
-    c.beginPath(); c.arc(0, hy + 0.5, 18.2, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
-    c.strokeStyle = col; c.lineWidth = 3.4;
-    c.beginPath(); c.arc(0, hy + 0.5, 18.2, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
+    // Near half of the collar (its bell hangs at the front, so not seen from behind)
+    drawCollar(c, sk, hy, 'near');
 
     // Highlights
     c.fillStyle = 'rgba(255, 255, 255, 0.32)';
@@ -3181,6 +3188,7 @@
       c.fillStyle = '#ffb3c6'; c.fill();
     }
 
+    drawCollar(c, sk, hy, 'far');
     // Head
     const head = () => { c.beginPath(); c.arc(0, hy, 18, 0, TAU); };
     furShape(c, sk, head, sk.head || sk.fur, sk.headPatches && sk.headPatches.map(([x, y, rx, ry, col]) => [x, hy + y, rx, ry, col]));
@@ -3237,15 +3245,11 @@
     }
     c.globalAlpha = 1;
 
-    // Collar with the bell in front
-    const col = sk.collar || '#e8445a';
-    c.strokeStyle = sk.outline; c.lineWidth = 5.4;
-    c.beginPath(); c.arc(0, hy + 0.5, 18.2, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
-    c.strokeStyle = col; c.lineWidth = 3.4;
-    c.beginPath(); c.arc(0, hy + 0.5, 18.2, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
+    // Near half of the collar, with the bell in front
+    drawCollar(c, sk, hy, 'near');
     c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1;
-    c.beginPath(); c.arc(0, hy + 21.3, 2.5, 0, TAU); c.fill(); c.stroke();
-    c.fillStyle = '#8a5a00'; c.fillRect(-0.5, hy + 21.8, 1, 1.6);
+    c.beginPath(); c.arc(0, hy + 21, 2.4, 0, TAU); c.fill(); c.stroke();
+    c.fillStyle = '#8a5a00'; c.fillRect(-0.5, hy + 21.5, 1, 1.5);
 
     c.fillStyle = 'rgba(255, 255, 255, 0.32)';
     c.beginPath(); c.ellipse(-8, hy - 9, 4, 2.2, -0.5, 0, TAU); c.fill();
