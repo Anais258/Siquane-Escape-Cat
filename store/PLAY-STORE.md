@@ -62,7 +62,7 @@ Points à vérifier :
 > Cours sur les toits, saute les obstacles et ramène ton chat perdu chez lui !
 
 **Description complète**
-> Une nuit d'orage, Neko s'est endormi dans un camion de livraison… et s'est réveillé au cœur d'une ville inconnue. Pour retrouver sa famille, il n'y a qu'un chemin : courir de toit en toit !
+> Une nuit d'orage, Neko s'est endormi dans un camion de livraison… et s'est réveillé à Marseille, à l'autre bout de la France. Pour retrouver sa famille à Besançon, il n'y a qu'un chemin : courir de toit en toit !
 >
 > 🐾 **Une course pleine de surprises**
 > Change de couloir, saute par-dessus les flaques et les antennes, roule sous les cordes à linge, grimpe sur les panneaux solaires… Plus tu montes de niveau, plus les toits réservent de surprises.
@@ -73,8 +73,11 @@ Points à vérifier :
 > 🧠 **Apprends en jouant**
 > Toutes les 30 secondes, la course fait une pause pour 3 questions adaptées à ta classe, du CP au lycée : sciences, histoire, français, maths, arts, anglais… et les chats !
 >
-> 📖 **Une histoire en 21 chapitres**
-> Chaque niveau rapproche Neko de chez lui. Rencontre Gaston le pigeon, Filou le chat errant et bien d'autres, et gagne des chats spéciaux en chemin.
+> 🗺️ **Un voyage à travers la France**
+> De Marseille à Besançon, 35 villes à traverser : la Côte d'Azur, la Provence, le Pays basque, la Bretagne, le Mont-Saint-Michel, Paris, l'Alsace, les Alpes… Chaque ville a ses monuments, ses toits et une anecdote à découvrir sur la carte.
+>
+> 📖 **Une histoire en 35 chapitres**
+> Un chapitre par ville. Rencontre Gaston le pigeon, Filou le chat errant, le vieux Capitaine et bien d'autres, retrouve Plume ta petite sœur, et gagne des chats spéciaux en chemin.
 >
 > 🎃 **Des fêtes toute l'année**
 > Halloween, Noël, Nouvel An chinois, Pâques, l'été… le décor, la musique et les objets changent, avec des chapeaux et déguisements en édition limitée.

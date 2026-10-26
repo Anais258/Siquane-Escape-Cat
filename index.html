@@ -407,6 +407,7 @@
   .city-levels { font-size: var(--fs-xs); font-weight: 800; color: var(--muted); }
   .round-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-strong); color: var(--ink); font-size: 1.5rem; line-height: 1; cursor: pointer; }
   .round-btn:disabled { opacity: 0.3; cursor: default; }
+  .city-actions { display: grid; gap: var(--s2); }
   .city-fact { margin: 0; font-size: var(--fs-sm); line-height: 1.5; }
 
   /* ---------- City title at the start of a run ---------- */
@@ -800,7 +801,7 @@
   <div class="overlay" id="introScreen" hidden>
     <form class="card" id="introForm">
       <h1><small>Neko</small>Odyssey</h1>
-      <p class="story-text">Une nuit d'orage, un petit chat s'est abrité dans un camion de livraison. À son réveil, il était au cœur d'une ville inconnue, très loin de sa famille. Du haut d'un toit, il aperçoit au loin le clocher de son quartier. Pour rentrer, il n'y a qu'un chemin : courir de toit en toit !</p>
+      <p class="story-text">Une nuit d'orage, un petit chat de Besançon s'est abrité dans un camion de livraison. À son réveil, il était au port de Marseille, à l'autre bout de la France, très loin de sa famille. Pour rentrer, il n'y a qu'un chemin : traverser tout le pays en courant de toit en toit !</p>
       <label class="label" for="nameInput">Comment s'appelle ton chat ?</label>
       <input class="name-input" id="nameInput" maxlength="16" autocomplete="off" spellcheck="false">
       <button class="btn" type="submit" id="introGo">C'est parti !</button>
@@ -814,7 +815,7 @@
         <label class="label" for="renameInput">Nom de ton chat</label>
         <div class="rename-row"><input class="name-input" id="renameInput" maxlength="16" autocomplete="off" spellcheck="false"><button class="btn small" type="submit">Renommer</button></div>
       </form>
-      <p class="small-text">Chaque partie te donne de l'expérience. Tous les 5 niveaux, un nouveau chapitre se débloque, et tous les 20 niveaux, un chat spécial t'est offert. L'histoire se termine au niveau 100.</p>
+      <p class="small-text">Chaque partie te donne de l'expérience. À chaque nouvelle ville, un nouveau chapitre se débloque, et en chemin, cinq chats spéciaux te sont offerts. L'histoire se termine à Besançon, au niveau 171.</p>
       <div class="chapters" id="chapterList"></div>
       <button class="btn" id="storyBack">Retour</button>
     </div>
@@ -858,7 +859,7 @@
           <button class="round-btn" id="cityNext" aria-label="Ville suivante">›</button>
         </div>
         <p class="city-fact" id="cityFact"></p>
-        <button class="btn" id="cityPlay">Refaire le niveau</button>
+        <div class="city-actions"><button class="btn" id="cityPlay">Refaire le niveau</button><button class="btn ghost" id="cityStory">Lire le chapitre</button></div>
       </article>
       <button class="btn ghost" id="mapBack">Retour</button>
     </div>
@@ -1054,11 +1055,11 @@
     { id: 'dore', name: 'Doré', price: 11600, fur: '#f2c14e', paw: '#fff0b8', stripe: '#c8901c', outline: '#6b4706', shimmer: true, collar: '#c0392b' },
     { id: 'arcenciel', name: 'Arc-en-ciel', price: 15000, fur: '#ffffff', paw: '#ffffff', stripe: '#ff5e5e', outline: '#4a3a6a', rainbow: true, collar: '#ffffff' },
     // Special cats from the story, offered every 20 player levels
-    { id: 'filou', name: 'Filou', price: 0, fx: 'smoke', special: 20, fur: '#8a8d9c', paw: '#c9ccd8', stripe: '#5a5d6c', outline: '#25273a', earTip: '#5a5d6c', collar: '#3fbf6a' },
-    { id: 'comete', name: 'Comète', price: 0, fx: 'stars', special: 40, fur: '#f1edff', paw: '#ffffff', stripe: '#b9a6ff', outline: '#4a3f7a', sparkles: true, shimmer: true, tailTip: '#ffd34d', collar: '#ffd34d' },
-    { id: 'plume', name: 'Plume', price: 0, fx: 'feathers', special: 60, fur: '#f7e3c2', paw: '#fff6e6', stripe: '#e3bb88', outline: '#6b4a2a', earTip: '#e3bb88', collar: '#e8263a' },
-    { id: 'capitaine', name: 'Capitaine', price: 0, fx: 'bubbles', special: 80, fur: '#5b4636', paw: '#efe7dc', stripe: '#2e2219', outline: '#1e150f', tailTip: '#efe7dc', collar: '#2f4fb0' },
-    { id: 'legende', name: 'Légende', price: 0, fx: 'gold', special: 100, fur: '#ffe7a3', paw: '#fff6d6', stripe: '#f0a92a', outline: '#6b4706', shimmer: true, sparkles: true, tailTip: '#ffffff', collar: '#c0392b' },
+    { id: 'filou', name: 'Filou', price: 0, fx: 'smoke', special: 16, fur: '#8a8d9c', paw: '#c9ccd8', stripe: '#5a5d6c', outline: '#25273a', earTip: '#5a5d6c', collar: '#3fbf6a' },
+    { id: 'comete', name: 'Comète', price: 0, fx: 'stars', special: 41, fur: '#f1edff', paw: '#ffffff', stripe: '#b9a6ff', outline: '#4a3f7a', sparkles: true, shimmer: true, tailTip: '#ffd34d', collar: '#ffd34d' },
+    { id: 'plume', name: 'Plume', price: 0, fx: 'feathers', special: 61, fur: '#f7e3c2', paw: '#fff6e6', stripe: '#e3bb88', outline: '#6b4a2a', earTip: '#e3bb88', collar: '#e8263a' },
+    { id: 'capitaine', name: 'Capitaine', price: 0, fx: 'bubbles', special: 81, fur: '#5b4636', paw: '#efe7dc', stripe: '#2e2219', outline: '#1e150f', tailTip: '#efe7dc', collar: '#2f4fb0' },
+    { id: 'legende', name: 'Légende', price: 0, fx: 'gold', special: 171, fur: '#ffe7a3', paw: '#fff6d6', stripe: '#f0a92a', outline: '#6b4706', shimmer: true, sparkles: true, tailTip: '#ffffff', collar: '#c0392b' },
   ];
 
   // Special cats glow and leave a trail while running.
@@ -5740,30 +5741,44 @@
   const xpNeed = L => 200 + 20 * (L - 1);
   const saveProfile = () => store(PROFILE_KEY, profile);
 
-  // One chapter unlocks at each of these player levels.
+  // One chapter for each city of the trip: it unlocks when the player reaches that city.
   const CHAPTERS = [
-    [1, 'La nuit de l’orage', "Une nuit d'orage, {name} s'est abrité dans un camion de livraison. À son réveil, le camion était arrivé au cœur d'une ville inconnue, très loin de chez lui et de sa famille. Du haut d'un toit, {name} aperçoit au loin le clocher de son quartier. Pour rentrer, il n'y a qu'un chemin : courir de toit en toit !"],
-    [5, 'Gaston le pigeon', "Sur une antenne, un vieux pigeon nommé Gaston lisse ses plumes. « Une chatte rousse avec trois chatons ? Je les ai vus passer près de la rivière, vers le nord. » {name} remercie Gaston et repart, le cœur plus léger."],
-    [10, 'Filou, le chat errant', "Un chat gris et maigre se met à courir à côté de {name}. C'est Filou, un chat errant qui connaît tous les raccourcis de la ville. « Suis les croquettes, lui dit-il. Elles mènent toujours chez quelqu'un de gentil. »"],
-    [15, 'Le pont des gouttières', "Pour traverser la rivière, il faut passer sur une longue rangée de gouttières qui relient deux immeubles. Le vent souffle fort. {name} avance pas à pas, sans regarder en bas, et arrive de l'autre côté sous les applaudissements de Gaston."],
-    [20, 'Filou fait équipe', "Filou n'a jamais eu de famille. « Je viens avec toi, dit-il. À deux, on ira plus vite. » Désormais, tu peux aussi courir avec Filou : il t'attend dans la boutique !"],
-    [25, 'Le ruban rouge', "Au bord de la rivière, {name} trouve un petit ruban rouge accroché à une gouttière. C'est celui du collier de Plume, sa petite sœur ! Elle est passée par ici. {name} court plus vite que jamais."],
-    [30, 'Le marché de nuit', "Les toits du marché sentent bon le poisson grillé. Une marchande raconte qu'une famille de chats vient chaque soir chercher des restes… mais cette nuit, elle est partie vers la colline aux cheminées."],
-    [35, 'La chouette du musée', "Sur le dôme du musée vit une chouette très savante. Elle connaît la ville par cœur, mais elle ne donne son aide qu'à ceux qui répondent à ses questions. {name} réfléchit bien… et obtient le chemin de la colline."],
-    [40, 'L’étoile filante', "Une étoile filante dorée traverse le ciel. {name} ferme les yeux et fait un vœu : retrouver sa famille avant l'hiver. Le lendemain, un chat aux reflets d'étoile, Comète, apparaît sur un toit. Il veut bien courir avec toi : il t'attend dans la boutique !"],
-    [45, 'Les chats du port', "Près du port, une bande de chats marins fait la sieste sur les toits des entrepôts. Leur chef, le vieux Capitaine, a vu passer une chatte rousse et ses chatons. « Vers la colline, matelot ! » dit-il en clignant de l'œil."],
-    [50, 'La tempête', "Une grosse tempête éclate. Les toits deviennent glissants et les flaques se multiplient. {name}, Filou et Comète s'abritent dans une serre sur un toit, au milieu des tomates, en attendant que l'orage passe."],
-    [55, 'La colline aux cheminées', "Sur la colline, les cheminées fument et les toits sont serrés les uns contre les autres. Soudain, {name} entend un miaulement qu'il reconnaîtrait entre mille, très loin devant lui."],
-    [60, 'Plume', "Contre une cheminée tiède, {name} découvre une petite boule de poils blottie : c'est Plume ! En cherchant son grand frère, elle s'était perdue elle aussi. Les deux chats se frottent le museau. Plume veut courir avec toi : elle t'attend dans la boutique !"],
-    [65, 'Le jardin sur le toit', "Plume est fatiguée. Ils font une pause dans un jardin installé sur un toit. Plume raconte que Maman Chat a cherché ses chatons toute la semaine, et qu'elle les attend à la maison."],
-    [70, 'Le clocher', "Le clocher du quartier est maintenant bien visible. Plume reconnaît l'odeur des croissants de la boulangerie d'en bas. Mais entre eux et le clocher, il reste tout un quartier à traverser…"],
-    [75, 'Le chantier', "Un grand chantier bloque le chemin : des grues, des échafaudages et des bâches qui claquent au vent. Les chats doivent trouver un autre passage, et ils tournent en rond toute la nuit."],
-    [80, 'Le vieux capitaine', "Le Capitaine du port arrive en renfort. Il connaît un passage secret par les toits de la vieille ville. « Suivez-moi, moussaillons ! » Le Capitaine veut bien courir avec toi : il t'attend dans la boutique !"],
-    [85, 'La fête du quartier', "Des lampions brillent dans les rues : c'est la fête du quartier ! Plume reconnaît les voisins, la fontaine, et même le vieux banc où Maman Chat aimait faire la sieste."],
-    [90, 'La boulangerie', "Le boulanger, qui commence à travailler avant l'aube, reconnaît {name} et Plume. Il pose pour eux une gamelle d'eau fraîche sur le rebord de sa fenêtre. Plus que quelques toits !"],
-    [95, 'Le dernier toit', "C'est le dernier toit, le plus glissant de tous, plein de flaques. {name} prend Plume par le cou, recule, prend son élan… et saute de toutes ses forces."],
-    [100, 'La maison', "Sur le rebord d'une fenêtre bien connue, Maman Chat et les deux autres chatons attendent. Toute la famille se blottit sous la couverture. {name} est enfin rentré à la maison. Pour fêter ça, Légende, le chat le plus rare de la ville, t'attend dans la boutique. Et la nuit, sur les toits, l'aventure continue…"],
-  ];
+    ['La nuit de l’orage', "Une nuit d'orage, {name} s'est abrité dans un camion de livraison, devant chez lui, à Besançon. À son réveil, le camion était arrivé au port de Marseille, tout au sud de la France, très loin de sa famille. Du haut d'un toit, {name} regarde la Bonne Mère briller sur sa colline. Pour rentrer, il n'y a qu'un chemin : courir de toit en toit !"],
+    ['Gaston le pigeon', "Sur une antenne, au-dessus du port, un vieux pigeon nommé Gaston lisse ses plumes. « Une petite chatte crème avec un collier rouge ? Je l'ai vue sortir du même camion que toi, et elle est partie vers l'ouest. » {name} frissonne : est-ce que ça pourrait être… ? Il remercie Gaston et repart, le cœur battant."],
+    ['Filou, le chat errant', "Sur les toits de Nice, un chat gris et maigre se met à courir à côté de {name}. C'est Filou, un chat errant qui connaît tous les raccourcis de la Côte d'Azur. « Suis les croquettes, lui dit-il. Elles mènent toujours chez quelqu'un de gentil. »"],
+    ['Filou fait équipe', "Au milieu des champs de lavande, Filou s'arrête. Il n'a jamais eu de famille. « Je viens avec toi, dit-il. À deux, on ira plus vite. » Désormais, tu peux aussi courir avec Filou : il t'attend dans la boutique !"],
+    ['Le pont d’Avignon', "Le célèbre pont d'Avignon s'arrête au milieu du Rhône : il lui manque des arches ! Pour traverser, il faut passer sur une longue rangée de gouttières qui relient deux toits. Le vent souffle fort. {name} avance pas à pas, sans regarder en bas, et arrive de l'autre côté sous les applaudissements de Gaston."],
+    ['Le ruban rouge', "Près des arènes d'Arles, {name} trouve un petit ruban rouge accroché à une gouttière. C'est celui du collier de Plume, sa petite sœur ! Elle était bien dans le camion, et elle est passée par ici. {name} court plus vite que jamais."],
+    ['Le marché de nuit', "À Nîmes, les toits du marché sentent bon le poisson grillé. Une marchande raconte qu'une petite chatte crème est venue chercher des restes… et qu'elle a demandé le chemin de la « ville rose »."],
+    ['Le cousin de Gaston', "Sur la grande place de Montpellier, un pigeon qui ressemble beaucoup à Gaston fait des ronds dans l'eau d'une fontaine. C'est son cousin ! « La petite chatte crème ? Elle a pris la route des châteaux. Suivez les tours et les remparts ! »"],
+    ['L’étoile filante', "Sur les remparts de Carcassonne, une étoile filante dorée traverse le ciel. {name} ferme les yeux et fait un vœu : retrouver sa famille avant l'hiver. Le lendemain, un chat aux reflets d'étoile, Comète, apparaît sur une tour. Il veut bien courir avec toi : il t'attend dans la boutique !"],
+    ['La chouette du Capitole', "Sur les toits roses de Toulouse vit une chouette très savante. Elle connaît la France par cœur, mais elle n'aide que ceux qui répondent à ses questions. {name} réfléchit bien… « Ta sœur est partie voir l'océan, dit la chouette. Mais attention aux montagnes ! »"],
+    ['La tempête', "Au pied des Pyrénées, une grosse tempête éclate. Les toits deviennent glissants et les flaques se multiplient. {name}, Filou et Comète s'abritent dans une serre sur un toit, au milieu des tomates, en attendant que l'orage passe."],
+    ['Le phare', "À Biarritz, les vagues sont si grandes que des surfeurs glissent dessus, même la nuit ! Le chat du gardien de phare a vu passer une petite chatte crème. « Elle suivait la côte vers le nord, vers la grande ville du vin. »"],
+    ['Plume', "Sur les toits de Bordeaux, contre une cheminée tiède, {name} découvre une petite boule de poils blottie : c'est Plume ! En cherchant son grand frère, elle s'était perdue elle aussi. Les deux chats se frottent le museau. Plume veut courir avec toi : elle t'attend dans la boutique !"],
+    ['Les chats du port', "Entre les deux tours du port de La Rochelle, une bande de chats marins fait la sieste sur les toits des entrepôts. Leur chef, le vieux Capitaine, connaît la route : « Pour l'est, passez par le nord et par Paris, moussaillons. Les pigeons de Paris connaissent tous les chemins ! »"],
+    ['Le grand éléphant', "À Nantes, un éléphant géant en bois et en métal se promène tranquillement dans la rue ! Plume n'en croit pas ses yeux. Les deux chats sautent sur son dos et voyagent quelques rues sans se fatiguer, en regardant la ville de haut."],
+    ['Les pierres de Carnac', "Plume est fatiguée. Ils font une pause au milieu des milliers de menhirs de Carnac. Plume raconte que Maman Chat a dû chercher ses chatons partout, et qu'elle les attend sûrement à la maison avec les deux autres petits."],
+    ['Le vieux capitaine', "Le Capitaine du port arrive à Quimper en renfort. Il ne veut pas laisser les petits voyager seuls. « Je vous accompagne jusqu'à Paris, moussaillons ! » Le Capitaine veut bien courir avec toi : il t'attend dans la boutique !"],
+    ['Les remparts', "Saint-Malo est entourée de grands remparts face à la mer. Autrefois, des corsaires partaient d'ici sur leurs bateaux. Le Capitaine raconte leurs aventures pendant que la petite bande court sur le haut des murs, dans les embruns."],
+    ['La marée', "Le Mont-Saint-Michel est parfois une île, parfois non : tout dépend de la marée ! Les chats arrivent juste à temps, avant que la mer ne remonte très vite autour de l'abbaye. Ouf !"],
+    ['Les falaises', "À Étretat, les falaises blanches forment une grande arche au-dessus de la mer. Du haut des toits, {name} et Plume regardent le soleil se lever sur l'eau. Ils n'ont jamais vu quelque chose d'aussi beau."],
+    ['La flèche de la cathédrale', "La cathédrale de Rouen a une flèche si haute qu'elle semble toucher les nuages. Au pied de la cathédrale coule la Seine. Un marinier accepte que les chats montent sur sa péniche : elle remonte le fleuve jusqu'à Paris."],
+    ['La tour Eiffel', "Paris ! La tour Eiffel scintille de mille lumières. Les pigeons de Paris donnent leur conseil : « Pour aller à l'est, prenez le train ! » Le Capitaine doit retourner à son port. Il serre les petits contre lui et leur souhaite bonne route."],
+    ['Le mauvais train', "Le train roule toute la nuit… mais vers le nord ! Les chats descendent à Amiens, près d'une cathédrale immense, la plus grande de France. Plume rit : « Ce n'est pas grave, on rentrera par un autre chemin. »"],
+    ['Le beffroi', "À Lille, le haut beffroi sonne les heures au-dessus des toits en brique. Un vieux chat flamand leur montre la route : « Pour Besançon, allez vers le soleil qui se lève. »"],
+    ['L’ange au sourire', "Sur la cathédrale de Reims, une statue d'ange sourit depuis 800 ans. Plume lui sourit aussi. « C'est un porte-bonheur », dit-elle. Ce soir-là, les chats ne tombent pas une seule fois."],
+    ['La grande flèche', "À Strasbourg, la cathédrale de pierre rose domine toute la ville. Les toits pointus sont décorés de petites lumières. {name} sent que la maison n'est plus très loin."],
+    ['Les cigognes', "Sur les toits colorés de Colmar, une cigogne fait son nid sur une cheminée. Elle a beaucoup voyagé, elle aussi. « Besançon ? C'est tout près ! Continuez vers le sud-ouest, vous y serez bientôt. »"],
+    ['Une drôle de nouvelle', "À Vesoul, tout près de chez eux, Gaston les attend sur un clocher. Il a une nouvelle : Maman Chat est partie vers le sud avec les deux autres chatons pour chercher {name} et Plume ! Il faut la rattraper."],
+    ['Le chantier', "À Dijon, un grand chantier bloque le chemin : des grues, des échafaudages et des bâches qui claquent au vent. Les chats doivent trouver un autre passage, et ils tournent en rond toute la nuit sur les toits vernissés."],
+    ['Les volcans', "Le détour les mène en Auvergne, au pays des volcans endormis. Ils dorment depuis des milliers d'années, rassure Comète. Un chat du pays a vu Maman Chat : « Elle est partie vers Lyon, la ville des lumières. »"],
+    ['La fête des lumières', "À Lyon, des milliers de bougies brillent aux fenêtres : c'est la fête des Lumières ! Sur un rebord, {name} trouve une touffe de poils roux. Maman Chat est passée par ici, vers les montagnes."],
+    ['Les bulles', "À Grenoble, de drôles de bulles transparentes montent vers la montagne au bout d'un câble. Plume saute dans une bulle, {name} la suit. De là-haut, ils aperçoivent les sommets enneigés des Alpes."],
+    ['Le lac', "Au bord du lac d'Annecy, l'eau est si claire qu'on voit les poissons. Une maman cane a vu une chatte rousse et deux chatons : « Ils montaient vers le plus haut sommet, là-bas, tout blanc. »"],
+    ['Maman Chat', "Au pied du mont Blanc, sur le toit d'un chalet, une chatte rousse regarde la montagne. Elle se retourne… c'est Maman Chat ! Les deux petits chatons courent vers {name} et Plume. Toute la famille est enfin réunie. Il ne reste plus qu'à rentrer ensemble."],
+    ['La maison', "Les toits de Besançon, la citadelle, la boucle du Doubs… Sur le rebord d'une fenêtre bien connue, toute la famille se blottit sous la couverture. {name} est enfin rentré à la maison. Pour fêter ça, Légende, le chat le plus rare de France, t'attend dans la boutique. Et la nuit, sur les toits, l'aventure continue…"],
+  ].map(([title, text], i) => [i * LEVELS_PER_CITY + 1, title, text]);
   const fillName = t => t.replace(/\{name\}/g, catName());
   const unlockedChapters = () => CHAPTERS.filter(c => c[0] <= profile.level).length;
 
@@ -5807,9 +5822,9 @@
       el.className = 'chapter' + (open ? '' : ' locked');
       el.id = 'chapter-' + (i + 1);
       const h = document.createElement('h3');
-      h.textContent = open ? `Chapitre ${i + 1} · ${title}` : `Chapitre ${i + 1}`;
+      h.textContent = open ? `Chapitre ${i + 1} · ${title}` : `Chapitre ${i + 1} · ${CITIES[i].name}`;
       const p = document.createElement('p');
-      p.textContent = open ? fillName(text) : `Se débloque au niveau ${lvl} du joueur.`;
+      p.textContent = open ? fillName(text) : `Se débloque en arrivant à ${CITIES[i].name}, au niveau ${lvl}.`;
       el.append(h, p);
       list.append(el);
     });
@@ -6207,6 +6222,8 @@
     $('cityLevels').textContent = i === CITIES.length - 1 ? `À partir du niveau ${from}` : `Niveaux ${from} à ${from + LEVELS_PER_CITY - 1}`;
     $('cityFact').textContent = open ? c.fact : `Atteins le niveau ${from} pour découvrir cette ville.`;
     $('cityPlay').hidden = !open;
+    $('cityStory').hidden = !open;
+    $('cityStory').textContent = `Chapitre ${i + 1} · ${CHAPTERS[i][1]}`;
     $('cityPlay').textContent = i === reached ? 'Jouer ici' : 'Refaire le niveau';
     $('cityPrev').disabled = i === 0;
     $('cityNext').disabled = i === CITIES.length - 1;
@@ -6233,6 +6250,7 @@
     playCity = mapSel === cityIndexFor(profile.level) ? null : mapSel;
     startGame(1);
   });
+  $('cityStory').addEventListener('click', () => openStory('mapScreen', mapSel + 1));
   $('mapBtn').addEventListener('click', () => openMap('startScreen'));
   $('mapBack').addEventListener('click', () => show(mapReturn));
   $('boardBtnOver').addEventListener('click', () => openBoard('overScreen'));

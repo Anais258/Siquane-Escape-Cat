@@ -46,11 +46,9 @@ La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreu
 
 Une nuit d'orage, un petit chat s'abrite dans un camion de livraison et se réveille au cœur d'une ville inconnue, loin de sa famille. Pour rentrer, il court de toit en toit. Au premier lancement, le joueur donne un nom à son chat (« Neko » par défaut). Pour le changer ensuite, il suffit de toucher le nom sur l'écran d'accueil.
 
-L'histoire dure **100 niveaux** et compte 21 chapitres, un tous les 5 niveaux : Gaston le pigeon, Filou le chat errant, la chouette du musée, les chats du port, Plume la petite sœur… jusqu'au retour à la maison au niveau 100.
+L'histoire suit le voyage à travers la France et compte **35 chapitres, un par ville** : une nuit d'orage, Neko s'endort dans un camion à Besançon et se réveille au port de Marseille. Il suit la piste de Plume, sa petite sœur, le long de la Méditerranée et jusqu'à Bordeaux, remonte la côte atlantique et la Bretagne avec le Capitaine, passe par Paris, le Nord et l'Alsace, puis rattrape Maman Chat dans les Alpes avant de rentrer à Besançon au niveau 171. En chemin : Gaston le pigeon, Filou le chat errant, la chouette du Capitole, l'éléphant de Nantes, les cigognes de Colmar… Chaque chapitre se lit aussi depuis la fiche de sa ville sur la carte.
 
-**Tous les 20 niveaux, un chat spécial de l'histoire est offert** : Filou (niveau 20), Comète (40), Plume (60), Capitaine (80) et Légende (100). Chacun a une aura et laisse une traînée pendant la course : fumée pour Filou, étoiles pour Comète, plumes pour Plume, bulles pour Capitaine et paillettes dorées pour Légende.
-
-Le chat est dessiné dans un style « kawaii » : grosse tête ronde, oreilles et pattes arrondies, joues duveteuses, léger relief et reflets de lumière.
+**Cinq chats spéciaux de l'histoire sont offerts en chemin** : Filou (niveau 16, Gordes), Comète (41, Carcassonne), Plume (61, Bordeaux), Capitaine (81, Quimper) et Légende (171, Besançon). Chacun a une aura et laisse une traînée pendant la course : fumée pour Filou, étoiles pour Comète, plumes pour Plume, bulles pour Capitaine et paillettes dorées pour Légende.
 
 ## Niveau du joueur
 

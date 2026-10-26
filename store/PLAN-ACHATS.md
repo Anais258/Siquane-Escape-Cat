@@ -29,7 +29,7 @@ Les montants nets sont approximatifs : Google encaisse le prix TTC, reverse la T
 
 ## Ce qui reste gratuit, pour toujours
 
-Les 22 chats et 30 chapeaux actuels, les déguisements de fête pendant leur fête, les 21 chapitres de l'histoire, toutes les questions, les missions, le cadeau du jour, le classement, les poissons d'or trouvés en jouant.
+Les 22 chats et 30 chapeaux actuels, les déguisements de fête pendant leur fête, les 35 chapitres de l'histoire et les 35 villes, toutes les questions, les missions, le cadeau du jour, le classement, les poissons d'or trouvés en jouant.
 
 ## Dans le jeu
 
