@@ -3076,6 +3076,8 @@
   // ---------- The cat seen from the front, for the menus ----------
   // Same frame as drawCatRun: feet at y = 0, body around y = -23, head around y = -50.
   const EYES = { noir: '#e8c23a', tuxedo: '#e8c23a', siamois: '#4a8ae0', blanc: '#4a8ae0', chartreux: '#e8902a', nuit: '#ffd34d', arcenciel: '#b06aff' };
+  // How high each hat sits on the head in the front view (default 13); the crown fits as it is
+  const HAT_FRONT_LIFT = { couronne: 8 };
   function drawCatFront(c, sk, o) {
     const t = o.t || 0;
     c.lineJoin = 'round';
@@ -3206,7 +3208,8 @@
     c.beginPath(); c.ellipse(-8, hy - 9, 4, 2.2, -0.5, 0, TAU); c.fill();
 
     if (cos) drawCostume(c, cos, 'head', { by, hy, bob: 0, t, air: false, front: true });
-    if (o.hat) { c.save(); c.translate(0, hy - 8); drawHat(c, o.hat, t); c.restore(); }
+    // Hats sit a bit higher than from behind so their brims stay clear of the eyes
+    if (o.hat) { c.save(); c.translate(0, hy - (HAT_FRONT_LIFT[o.hat] ?? 13)); drawHat(c, o.hat, t); c.restore(); }
   }
 
   function drawCatBall(c, sk, o) {
