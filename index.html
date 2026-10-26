@@ -3086,10 +3086,10 @@
     // Collar around the neck (its bell is at the front, so not seen from behind)
     const col = sk.collar || '#e8445a';
     c.lineCap = 'round';
-    c.strokeStyle = sk.outline; c.lineWidth = 4.6;
-    c.beginPath(); c.ellipse(0, hy + 14.5, 15, 4.6, 0, 0.06 * Math.PI, 0.94 * Math.PI); c.stroke();
-    c.strokeStyle = col; c.lineWidth = 2.6;
-    c.beginPath(); c.ellipse(0, hy + 14.5, 15, 4.6, 0, 0.06 * Math.PI, 0.94 * Math.PI); c.stroke();
+    c.strokeStyle = sk.outline; c.lineWidth = 5.4;
+    c.beginPath(); c.arc(0, hy + 0.5, 18.2, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
+    c.strokeStyle = col; c.lineWidth = 3.4;
+    c.beginPath(); c.arc(0, hy + 0.5, 18.2, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
 
     // Highlights
     c.fillStyle = 'rgba(255, 255, 255, 0.32)';
@@ -3239,13 +3239,13 @@
 
     // Collar with the bell in front
     const col = sk.collar || '#e8445a';
-    c.strokeStyle = sk.outline; c.lineWidth = 4.6;
-    c.beginPath(); c.ellipse(0, hy + 14.5, 15, 4.6, 0, 0.06 * Math.PI, 0.94 * Math.PI); c.stroke();
-    c.strokeStyle = col; c.lineWidth = 2.6;
-    c.beginPath(); c.ellipse(0, hy + 14.5, 15, 4.6, 0, 0.06 * Math.PI, 0.94 * Math.PI); c.stroke();
+    c.strokeStyle = sk.outline; c.lineWidth = 5.4;
+    c.beginPath(); c.arc(0, hy + 0.5, 18.2, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
+    c.strokeStyle = col; c.lineWidth = 3.4;
+    c.beginPath(); c.arc(0, hy + 0.5, 18.2, 0.2 * Math.PI, 0.8 * Math.PI); c.stroke();
     c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1;
-    c.beginPath(); c.arc(0, hy + 20.5, 2.5, 0, TAU); c.fill(); c.stroke();
-    c.fillStyle = '#8a5a00'; c.fillRect(-0.5, hy + 21, 1, 1.6);
+    c.beginPath(); c.arc(0, hy + 21.3, 2.5, 0, TAU); c.fill(); c.stroke();
+    c.fillStyle = '#8a5a00'; c.fillRect(-0.5, hy + 21.8, 1, 1.6);
 
     c.fillStyle = 'rgba(255, 255, 255, 0.32)';
     c.beginPath(); c.ellipse(-8, hy - 9, 4, 2.2, -0.5, 0, TAU); c.fill();
