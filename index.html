@@ -2045,7 +2045,7 @@
     const w = [['puddle', 3], ['antLow', 2], ['antHigh', 1 + diff * 1.5], ['chimney', 1.2 + diff]];
     if (roadHas('linge')) w.push(['linge', 0.9 + diff * 0.6]);
     if (roadHas('clim')) w.push(['clim', 0.8 + diff * 0.6]);
-    if (roadHas('pot')) w.push(['pot', 0.5 + diff * 0.5]);
+    if (roadHas('pot')) w.push(['pot', 0.35 + diff * 0.35]);
     if (roadHas('solar')) w.push(['solar', 0.45]);
     if (roadHas('lucarne')) w.push(['lucarne', 0.8 + diff * 0.5]);
     let total = w.reduce((a, b) => a + b[1], 0), r = Math.random() * total;
@@ -2320,7 +2320,7 @@
       if (o.type === 'chimney' && cat.y < 145) return die('chimney');
       if (o.type === 'linge' && cat.y + h > 44 && cat.y < 150) return die('linge');
       if (o.type === 'clim' && cat.y < 66) return die('clim');
-      if (o.type === 'pot' && cat.y < 32) return die('pot');
+      if (o.type === 'pot' && cat.y < 38) return die('pot');
       if (o.type === 'trou' && cat.y < 3 && o.z < -10 && o.z + o.d > 10) return die('trou');
       if (o.type === 'lucarne') {
         const a = lucarneOpen(o);
@@ -2633,32 +2633,37 @@
   function drawPot(o) {
     const z = o.z + o.d / 2, x = o.x;
     ctx.globalAlpha = fade(o.z);
-    const g = proj(x, 0, z);
+    const g = proj(x, 0, z), s = g.s;
     ctx.fillStyle = 'rgba(5, 6, 20, 0.4)';
-    ctx.beginPath(); ctx.ellipse(g.x, g.y, 26 * g.s, 6 * g.s, 0, 0, TAU); ctx.fill();
-    // A terracotta pot lying on its side, rolling toward the camera
-    const wob = o.roll ? Math.sin(time * 14 + o.seed) * 2 : 0;
-    const tl = proj(x - 22 + wob, 30, z), br = proj(x + 18 + wob, 0, z), s = tl.s;
-    ctx.fillStyle = '#c8643a';
-    ctx.beginPath(); ctx.roundRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y, 6 * s); ctx.fill();
-    ctx.strokeStyle = '#5a2412'; ctx.lineWidth = Math.max(1, 1.8 * s); ctx.stroke();
-    // Bands scrolling down to show the roll
+    ctx.beginPath(); ctx.ellipse(g.x, g.y, 26 * s, 6 * s, 0, 0, TAU); ctx.fill();
+    // A potted plant sliding toward the cat, rocking from side to side
     ctx.save();
-    ctx.beginPath(); ctx.roundRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y, 6 * s); ctx.clip();
-    ctx.fillStyle = 'rgba(90, 36, 18, 0.35)';
-    const ph = o.roll ? (time * 60) % 15 : 0;
-    for (let y = -15 + ph; y < 30; y += 15) { const a = proj(x - 22 + wob, 30 - y, z); ctx.fillRect(tl.x, a.y, br.x - tl.x, 4 * s); }
-    ctx.restore();
-    // Rim and plant at the open end
-    const rim = proj(x + 20 + wob, 15, z);
-    ctx.fillStyle = '#a84e2a';
-    ctx.beginPath(); ctx.ellipse(rim.x, rim.y, 7 * s, 18 * s, 0, 0, TAU); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#5a3a1a';
-    ctx.beginPath(); ctx.ellipse(rim.x, rim.y, 4.5 * s, 14 * s, 0, 0, TAU); ctx.fill();
-    for (const [dx, dy, col] of [[10, -8, '#3fbf6a'], [14, 4, '#2f9e4a'], [9, 10, '#ff6b9a']]) {
-      ctx.fillStyle = col;
-      ctx.beginPath(); ctx.ellipse(rim.x + dx * s, rim.y + dy * s, 6 * s, 3.5 * s, dy * 0.05, 0, TAU); ctx.fill();
+    ctx.translate(g.x, g.y);
+    ctx.scale(s, s);
+    ctx.rotate(o.roll ? Math.sin(time * 10 + o.seed) * 0.16 : 0);
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    // Stems and leaves
+    ctx.strokeStyle = '#2f7a3a'; ctx.lineWidth = 2.5;
+    for (const [fx, fy] of [[-10, -54], [0, -62], [10, -53]]) { ctx.beginPath(); ctx.moveTo(fx * 0.3, -34); ctx.quadraticCurveTo(fx * 0.5, -46, fx, fy); ctx.stroke(); }
+    for (const [lx, ly, r] of [[-9, -42, -0.7], [8, -43, 0.7], [-3, -48, -0.3]]) {
+      ctx.beginPath(); ctx.ellipse(lx, ly, 7, 3.2, r, 0, TAU); ctx.fillStyle = '#4fbf5a'; ctx.fill(); ctx.strokeStyle = '#1f5a28'; ctx.lineWidth = 1.2; ctx.stroke();
     }
+    // Flowers
+    [[-10, -54, '#ff6b9a'], [0, -62, '#ff4a4a'], [10, -53, '#ffd34d']].forEach(([fx, fy, col]) => {
+      for (let k = 0; k < 5; k++) {
+        const a = k / 5 * TAU + o.seed;
+        ctx.beginPath(); ctx.ellipse(fx + Math.cos(a) * 4, fy + Math.sin(a) * 4, 3.6, 3.6, 0, 0, TAU);
+        ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = 'rgba(60, 20, 30, 0.6)'; ctx.lineWidth = 1; ctx.stroke();
+      }
+      ctx.beginPath(); ctx.arc(fx, fy, 2.6, 0, TAU); ctx.fillStyle = '#fff3b0'; ctx.fill();
+    });
+    // Terracotta pot: body, rim and soil
+    ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(14, 0); ctx.lineTo(18, -28); ctx.lineTo(-18, -28); ctx.closePath();
+    ctx.fillStyle = '#c8643a'; ctx.fill(); ctx.strokeStyle = '#5a2412'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.18)'; ctx.fillRect(-12, -24, 4, 20);
+    ctx.beginPath(); ctx.roundRect(-21, -35, 42, 8, 3); ctx.fillStyle = '#d97a4a'; ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0, -35, 18, 3.5, 0, Math.PI, TAU); ctx.fillStyle = '#5a3a1a'; ctx.fill();
+    ctx.restore();
     ctx.globalAlpha = 1;
   }
 
@@ -2975,17 +2980,21 @@
     shadeShape(c, sk, body, by, 20);
     if (cos) drawCostume(c, cos, 'body', { by, hy: -50 - bob, bob, t: o.t, air });
 
-    // Tail: seen from behind, it starts low on the back, toward the camera,
-    // so it is drawn over the body, then curls up beside it with a light tip
-    const sway = Math.sin(o.t * 6) * 6;
-    const tipX = 27 + sway, tipY = (air ? -58 : -50) - bob;
-    c.beginPath();
-    c.moveTo(0, -8 - bob);
-    c.bezierCurveTo(10, -2 - bob, 30 + sway * 0.4, -10 - bob, tipX, tipY);
-    c.strokeStyle = sk.outline; c.lineWidth = 10.5; c.stroke();
-    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 7; c.stroke();
-    c.fillStyle = sk.tailTip || sk.paw;
-    c.beginPath(); c.arc(tipX, tipY, 3.6, 0, TAU); c.fill();
+    // Tail: it leaves from the side of the hip, sweeps out and curls back
+    // like a question mark, getting thinner toward the tip
+    const sway = Math.sin(o.t * 6) * 5;
+    const tipX = 25 + sway, tipY = (air ? -60 : -54) - bob;
+    const P = [[15, -12 - bob], [36, -10 - bob], [42 + sway * 0.5, -44 - bob], [tipX, tipY]];
+    const at = u => { const v = 1 - u; return [0, 1].map(k => v * v * v * P[0][k] + 3 * v * v * u * P[1][k] + 3 * v * u * u * P[2][k] + u * u * u * P[3][k]); };
+    const pts = []; for (let i = 0; i <= 16; i++) pts.push(at(i / 16));
+    const tailPass = (extra, colorAt) => {
+      for (let i = 0; i < 16; i++) {
+        c.strokeStyle = colorAt(i / 16); c.lineWidth = 7.5 - 4 * (i / 16) + extra;
+        c.beginPath(); c.moveTo(pts[i][0], pts[i][1]); c.lineTo(pts[i + 1][0], pts[i + 1][1]); c.stroke();
+      }
+    };
+    tailPass(3.5, () => sk.outline);
+    tailPass(0, u => (u > 0.78 ? sk.tailTip || sk.tail || sk.fur : sk.tail || sk.fur));
     if (cos) drawCostume(c, cos, 'tail', { by, hy: -50 - bob, bob, t: o.t, air, tipX, tipY });
 
     const hy = -50 - bob;
