@@ -215,7 +215,7 @@
   .tap-play { align-self: flex-start; margin: 0 0 var(--s1) var(--s2); background: none; border: 0; padding: var(--s2); cursor: pointer; color: #fff; font-family: var(--font-display); font-size: clamp(1.6rem, 7vw, 2.1rem); line-height: 1; text-shadow: 0 3px 0 #1a1f4f, 0 0 18px rgba(0, 0, 0, 0.6); transform: rotate(-6deg); animation: pulse 1.2s ease-in-out infinite; max-width: 60%; text-align: left; }
   .overlay.home > .tap-play { width: auto; margin-left: max(var(--s2), calc(50% - 280px)); }
   .home-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s2); }
-  .nav-btn { display: grid; justify-items: center; gap: 2px; padding: var(--s2) 2px 6px; font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: 0.02em; text-transform: uppercase; }
+  .nav-btn { display: grid; justify-items: center; gap: 2px; padding: var(--s2) 2px 6px; min-width: 0; font-family: var(--font-display); font-size: clamp(0.7rem, 3.3vw, 0.875rem); letter-spacing: 0; text-transform: uppercase; white-space: nowrap; }
   .nav-btn svg { width: 34px; height: 34px; color: #fff; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35)); }
   .home-sheet { position: absolute; inset: 0; z-index: 5; max-width: none !important; display: flex; padding: calc(env(safe-area-inset-top, 0px) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom, 0px) + var(--s4)); background: rgba(11, 16, 48, 0.94); overflow-y: auto; }
   .home-sheet[hidden] { display: none; }
