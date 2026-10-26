@@ -209,7 +209,7 @@
   .home-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s2); }
   .nav-btn { display: grid; justify-items: center; gap: 2px; padding: var(--s2) 2px 6px; font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: 0.02em; text-transform: uppercase; }
   .nav-btn svg { width: 34px; height: 34px; color: #fff; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35)); }
-  .home-sheet { position: absolute; inset: 0; z-index: 5; max-width: none !important; display: flex; padding: calc(env(safe-area-inset-top, 0px) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom, 0px) + var(--s4)); background: var(--scrim); overflow-y: auto; }
+  .home-sheet { position: absolute; inset: 0; z-index: 5; max-width: none !important; display: flex; padding: calc(env(safe-area-inset-top, 0px) + var(--s4)) var(--s4) calc(env(safe-area-inset-bottom, 0px) + var(--s4)); background: rgba(11, 16, 48, 0.94); overflow-y: auto; }
   .home-sheet[hidden] { display: none; }
   .tiles.two { grid-template-columns: 1fr 1fr; }
   .tiles.two .tile { grid-column: auto; }
@@ -302,8 +302,12 @@
   .power .skin-btn { width: auto; padding: var(--s1) var(--s3); }
   .gold-count { display: flex; align-items: center; gap: var(--s1); color: #ffd24a !important; font-family: var(--font-display); font-weight: 400; font-size: var(--fs-lg); }
   .gold-count svg, .skin-btn svg { width: 18px; height: 12px; }
-  .swap { min-width: var(--tap); min-height: var(--tap); margin: calc(-1 * var(--s2)) 0; display: inline-flex; align-items: center; justify-content: center; gap: var(--s1); border: 1px solid var(--line); border-radius: var(--r-sm); background: transparent; color: var(--ink); cursor: pointer; font-weight: 800; font-size: var(--fs-xs); }
-  .swap svg { width: 16px; height: 10px; }
+  /* Small chunky pill to swap a mission for a golden fish */
+  .swap { order: 3; position: relative; min-height: 34px; display: inline-flex; align-items: center; gap: 5px; padding: 0 var(--s3) 0 var(--s2); border: 2px solid rgba(255, 255, 255, 0.25); border-radius: var(--r-pill); background: linear-gradient(to bottom, #3a4290, #222866); box-shadow: 0 3px 0 #0a0d26; color: var(--ink); cursor: pointer; font-family: var(--font-display); font-size: var(--fs-sm); letter-spacing: 0.02em; }
+  .swap::before { content: ""; position: absolute; inset: -6px -2px; }
+  .swap:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a0d26; }
+  .swap .swap-ico { width: 15px; height: 15px; color: var(--accent); }
+  .swap svg:not(.swap-ico) { width: 18px; height: 12px; }
   .quiz-choice.struck { opacity: 0.35; text-decoration: line-through; }
   .stat { display: grid; gap: 2px; padding: var(--s2); border-radius: var(--r-md); background: var(--surface); }
   .stat span { font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
@@ -340,7 +344,8 @@
   .m-bar { height: 6px; border-radius: var(--r-pill); background: var(--surface-strong); overflow: hidden; }
   .m-bar i { display: block; height: 100%; background: var(--gold); }
   .mission.done .m-bar i { background: var(--success); }
-  .m-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: var(--fs-xs); font-weight: 800; font-variant-numeric: tabular-nums; }
+  .m-meta { display: flex; align-items: center; gap: var(--s3); margin-top: 2px; color: var(--muted); font-size: var(--fs-xs); font-weight: 800; font-variant-numeric: tabular-nums; }
+  .m-meta > span:first-child { flex: 1; }
   .m-reward { display: flex; align-items: center; gap: var(--s1); color: var(--gold); }
   .m-reward svg { width: 16px; height: 10px; }
 
@@ -4292,7 +4297,7 @@
     return `<div class="mission${done ? ' done' : ''}">
       <div class="m-text">${label ? `<b>${label}</b> ` : ''}${t.text(m.target)}</div>
       <div class="m-bar"><i style="width:${pct}%"></i></div>
-      <div class="m-meta"><span>${done ? 'Réussi !' : prog}</span>${idx != null && gold.count > 0 ? `<button class="swap" data-swap="${idx}" aria-label="Changer cette mission pour 1 poisson d'or">Changer · ${GOLD_SVG} 1</button>` : ''}<span class="m-reward">+${m.reward} ${FISH_SVG}</span></div>
+      <div class="m-meta"><span>${done ? 'Réussi !' : prog}</span>${idx != null && gold.count > 0 ? `<button class="swap" data-swap="${idx}" aria-label="Changer cette mission pour 1 poisson d'or"><svg class="swap-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 6.5A5.2 5.2 0 0 0 3.6 4.4M3 9.5a5.2 5.2 0 0 0 9.4 2.1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M13.6 2.2v4.6H9M2.4 13.8V9.2H7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Changer ${GOLD_SVG}1</button>` : ''}<span class="m-reward">+${m.reward} ${FISH_SVG}</span></div>
     </div>`;
   }
   function renderPanels() {
