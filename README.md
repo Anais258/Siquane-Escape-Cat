@@ -169,16 +169,16 @@ Pour que la collection dure, on peut avoir **au maximum 5 chats le premier jour 
 | Blanc | 1 200 |
 | Tigré brun | 1 600 |
 | Tigré argenté | 2 000 |
-| Tuxedo | 2 500 |
-| Chartreux | 3 000 |
-| Siamois | 3 500 |
-| Calico | 4 500 |
-| Écaille de tortue | 5 000 |
-| Rose | 5 500 |
-| Bengal (tacheté) | 6 000 |
-| Bleu nuit (avec des étoiles) | 6 500 |
-| Doré (qui brille) | 8 000 |
-| Arc-en-ciel (qui change de couleur) | 10 000 |
+| Tuxedo | 2 800 |
+| Chartreux | 3 400 |
+| Siamois | 4 200 |
+| Calico | 5 600 |
+| Écaille de tortue | 6 400 |
+| Rose | 7 300 |
+| Bengal (tacheté) | 8 200 |
+| Bleu nuit (avec des étoiles) | 9 200 |
+| Doré (qui brille) | 11 600 |
+| Arc-en-ciel (qui change de couleur) | 15 000 |
 
 ## Les chapeaux
 

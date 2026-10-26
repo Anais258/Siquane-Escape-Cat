@@ -132,6 +132,8 @@
   .btn.small { font-size: var(--fs-md); padding: var(--s2) var(--s4); }
   .btn.big { font-size: var(--fs-xl); padding: var(--s3) var(--s4); }
   a.btn { text-decoration: none; text-align: center; display: grid; place-items: center; }
+  .text-link { justify-self: center; margin-top: calc(-1 * var(--s1)); padding: var(--s1) var(--s3); min-height: 32px; background: none; border: 0; color: var(--muted); font-family: var(--font-body); font-weight: 800; font-size: var(--fs-sm); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .text-link:hover { color: var(--ink); }
   .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
   .btn-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   @media (max-width: 380px) { .btn-row.three { grid-template-columns: 1fr 1fr; } .btn-row.three > :last-child { grid-column: span 2; } }
@@ -689,6 +691,7 @@
         <div class="stat"><span>Record</span><strong id="finalBest">0</strong></div>
       </div>
       <button class="btn big" id="againBtn">Rejouer</button>
+      <button class="text-link" id="homeBtnOver">Retour à l'accueil</button>
       <div class="btn-row three">
         <button class="btn ghost" id="shopBtnOver">Boutique</button>
         <button class="btn ghost" id="shareBtnOver">Partager</button>
@@ -923,22 +926,22 @@
     { id: 'blanc', name: 'Blanc', price: 1200, fur: '#f6f4f0', paw: '#ffffff', stripe: null, outline: '#6b6872', earTip: '#f2b8c6' },
     { id: 'brun', name: 'Tigré brun', price: 1600, fur: '#a8774a', paw: '#d9b48c', stripe: '#5e3b1f', outline: '#3a220f' },
     { id: 'argente', name: 'Tigré argenté', price: 2000, fur: '#c9ced8', paw: '#eef0f5', stripe: '#5d6372', outline: '#2a2e3a', collar: '#e8445a' },
-    { id: 'tuxedo', name: 'Tuxedo', price: 2500, fur: '#25252f', paw: '#ffffff', stripe: null, outline: '#0d0d12', tailTip: '#ffffff', earTip: '#5a4458', collar: '#3d7bff' },
-    { id: 'chartreux', name: 'Chartreux', price: 3000, fur: '#7f8da3', paw: '#a9b5c8', stripe: null, outline: '#2c3444', earTip: '#5f6b80', collar: '#ffb43a' },
-    { id: 'siamois', name: 'Siamois', price: 3500, fur: '#f1e3c8', paw: '#5b3a2a', stripe: null, outline: '#5b3a2a', ear: '#6e4a36', tail: '#6e4a36', earTip: '#4a2c1e', collar: '#2fb7a5' },
-    { id: 'calico', name: 'Calico', price: 4500, fur: '#fbf7f0', paw: '#ffffff', stripe: null, outline: '#5a4a40', tailTip: '#2e2a2f', earTip: '#f08a3c',
+    { id: 'tuxedo', name: 'Tuxedo', price: 2800, fur: '#25252f', paw: '#ffffff', stripe: null, outline: '#0d0d12', tailTip: '#ffffff', earTip: '#5a4458', collar: '#3d7bff' },
+    { id: 'chartreux', name: 'Chartreux', price: 3400, fur: '#7f8da3', paw: '#a9b5c8', stripe: null, outline: '#2c3444', earTip: '#5f6b80', collar: '#ffb43a' },
+    { id: 'siamois', name: 'Siamois', price: 4200, fur: '#f1e3c8', paw: '#5b3a2a', stripe: null, outline: '#5b3a2a', ear: '#6e4a36', tail: '#6e4a36', earTip: '#4a2c1e', collar: '#2fb7a5' },
+    { id: 'calico', name: 'Calico', price: 5600, fur: '#fbf7f0', paw: '#ffffff', stripe: null, outline: '#5a4a40', tailTip: '#2e2a2f', earTip: '#f08a3c',
       patches: [[-11, -31, 11, 9, '#f08a3c'], [10, -17, 10, 8, '#2e2a2f'], [8, -38, 7, 5, '#f08a3c']],
       headPatches: [[-8, -6, 9, 8, '#f08a3c'], [9, -9, 7, 6, '#2e2a2f']] },
-    { id: 'ecaille', name: 'Écaille de tortue', price: 5000, fur: '#3a2a26', paw: '#5a4038', stripe: null, outline: '#140c0a', earTip: '#e0782c', collar: '#9ad5ff',
+    { id: 'ecaille', name: 'Écaille de tortue', price: 6400, fur: '#3a2a26', paw: '#5a4038', stripe: null, outline: '#140c0a', earTip: '#e0782c', collar: '#9ad5ff',
       patches: [[-11, -31, 10, 8, '#e0782c'], [10, -19, 9, 7, '#b8551e'], [5, -39, 6, 4, '#f0a050']],
       headPatches: [[-8, -6, 8, 7, '#e0782c'], [8, -10, 5, 4, '#b8551e']] },
-    { id: 'rose', name: 'Rose', price: 5500, fur: '#ff9ccf', paw: '#ffd6ec', stripe: '#e8569f', outline: '#7a1f4f', collar: '#ffffff' },
-    { id: 'bengal', name: 'Bengal', price: 6000, fur: '#e8a85a', paw: '#f8dcae', stripe: null, outline: '#4a2a10', collar: '#2fb7a5',
+    { id: 'rose', name: 'Rose', price: 7300, fur: '#ff9ccf', paw: '#ffd6ec', stripe: '#e8569f', outline: '#7a1f4f', collar: '#ffffff' },
+    { id: 'bengal', name: 'Bengal', price: 8200, fur: '#e8a85a', paw: '#f8dcae', stripe: null, outline: '#4a2a10', collar: '#2fb7a5',
       patches: [[-12, -32, 4, 3, '#5a3418'], [-2, -37, 3.5, 2.6, '#5a3418'], [9, -31, 4, 3, '#5a3418'], [-7, -22, 3.5, 2.6, '#5a3418'], [6, -17, 4, 3, '#5a3418'], [14, -40, 3, 2.4, '#5a3418'], [-15, -14, 3, 2.4, '#5a3418']],
       headPatches: [[-7, -8, 2.4, 2, '#5a3418'], [6, -10, 2.4, 2, '#5a3418'], [0, -14, 2, 1.6, '#5a3418']] },
-    { id: 'nuit', name: 'Bleu nuit', price: 6500, fur: '#2f4fb0', paw: '#7d9cff', stripe: '#1b2c6e', outline: '#0b1440', sparkles: true, collar: '#ffd34d' },
-    { id: 'dore', name: 'Doré', price: 8000, fur: '#f2c14e', paw: '#fff0b8', stripe: '#c8901c', outline: '#6b4706', shimmer: true, collar: '#c0392b' },
-    { id: 'arcenciel', name: 'Arc-en-ciel', price: 10000, fur: '#ffffff', paw: '#ffffff', stripe: '#ff5e5e', outline: '#4a3a6a', rainbow: true, collar: '#ffffff' },
+    { id: 'nuit', name: 'Bleu nuit', price: 9200, fur: '#2f4fb0', paw: '#7d9cff', stripe: '#1b2c6e', outline: '#0b1440', sparkles: true, collar: '#ffd34d' },
+    { id: 'dore', name: 'Doré', price: 11600, fur: '#f2c14e', paw: '#fff0b8', stripe: '#c8901c', outline: '#6b4706', shimmer: true, collar: '#c0392b' },
+    { id: 'arcenciel', name: 'Arc-en-ciel', price: 15000, fur: '#ffffff', paw: '#ffffff', stripe: '#ff5e5e', outline: '#4a3a6a', rainbow: true, collar: '#ffffff' },
     // Special cats from the story, offered every 20 player levels
     { id: 'filou', name: 'Filou', price: 0, fx: 'smoke', special: 20, fur: '#8a8d9c', paw: '#c9ccd8', stripe: '#5a5d6c', outline: '#25273a', earTip: '#5a5d6c', collar: '#3fbf6a' },
     { id: 'comete', name: 'Comète', price: 0, fx: 'stars', special: 40, fur: '#f1edff', paw: '#ffffff', stripe: '#b9a6ff', outline: '#4a3f7a', sparkles: true, shimmer: true, tailTip: '#ffd34d', collar: '#ffd34d' },
@@ -3887,6 +3890,7 @@
   $('choiceBack').addEventListener('click', closeChoice);
   $('resumeBtn').addEventListener('click', resume);
   $('quitBtn').addEventListener('click', toMenu);
+  $('homeBtnOver').addEventListener('click', toMenu);
   $('pauseBtn').addEventListener('click', e => { e.currentTarget.blur(); pause(); });
   document.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', e => {
     initAudio();
