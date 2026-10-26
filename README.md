@@ -64,6 +64,10 @@ Marseille, Saint-Tropez, Nice, Gordes, Avignon, Arles, Nîmes, Montpellier, Carc
 
 Chaque ville a son décor : ses monuments à l'horizon (la Bonne Mère, la tour Eiffel, le Mont-Saint-Michel, le mont Blanc…), la mer, un lac, une rivière, des montagnes ou des champs de lavande, la forme de ses toits (toits provençaux, haussmanniens, pignons flamands, maisons alsaciennes, chalets…) et la couleur des toits sur lesquels court le chat (tuiles, ardoise, zinc, briques…). Le nom de la ville s'affiche au-dessus du quartier pendant la course, et l'écran de fin annonce chaque nouvelle ville. Pendant les fêtes, le décor de la fête garde ses couleurs et ses objets, et la ville garde ses monuments et ses toits.
 
+Au départ de chaque course, le nom de la ville et sa région s'affichent en grand.
+
+**La carte** (bouton *Carte* sur l'accueil) montre la France, le trajet de Neko et un point par ville : orange pour les villes traversées, le point qui pulse pour la ville actuelle, gris pour les villes à venir. Touche un point (ou les flèches) pour ouvrir la fiche de la ville : une illustration de nuit avec son monument, sa région, ses niveaux et une anecdote. Le bouton **Refaire le niveau** relance une ville déjà traversée, avec les obstacles de ses niveaux ; le niveau du joueur ne baisse jamais et l'expérience gagnée compte toujours. « Rejouer » reste dans cette ville, le retour à l'accueil ramène à la ville actuelle. Les villes à venir restent cachées jusqu'à leur niveau.
+
 ### Ce qui change sur les toits avec le niveau
 
 Plus le joueur monte de niveau, plus les toits sont chargés : un peu plus d'obstacles, des enchaînements plus serrés et une vitesse de départ un peu plus élevée, jusqu'au niveau 60. De nouvelles choses apparaissent aussi :

@@ -377,6 +377,38 @@
   .near { color: var(--accent); font-weight: 800; }
   .hint { font-size: var(--fs-xs); }
 
+  /* ---------- Map of the trip ---------- */
+  .map-progress { display: grid; gap: var(--s1); font-weight: 800; font-size: var(--fs-sm); color: var(--muted); }
+  .map-progress .bar i { background: var(--accent); }
+  .france-map { width: 100%; max-width: 420px; margin: 0 auto; display: block; overflow: visible; }
+  .france-map .land { fill: #1f2860; stroke: #4a58a8; stroke-width: 0.5; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(120, 140, 255, 0.35)); }
+  .france-map .route { fill: none; stroke: var(--muted); stroke-width: 0.5; stroke-dasharray: 1.2 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.6; }
+  .france-map .route.done { stroke: var(--accent); stroke-width: 0.9; stroke-dasharray: none; opacity: 1; }
+  .map-city { cursor: pointer; }
+  .map-city .hit { fill: transparent; }
+  .map-city .dot { fill: #12163a; stroke: var(--muted); stroke-width: 0.5; }
+  .map-city.done .dot { fill: var(--accent); stroke: #fff3e0; }
+  .map-city.here .dot { fill: #fff3e0; stroke: var(--accent); stroke-width: 0.9; }
+  .map-city.sel .dot { stroke: #fff; stroke-width: 0.9; }
+  .map-city.locked.sel .dot { fill: var(--muted); }
+  .map-city .pulse { fill: none; stroke: var(--accent); stroke-width: 0.6; transform-box: fill-box; transform-origin: center; animation: map-pulse 1.6s ease-out infinite; }
+  @keyframes map-pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(2.6); opacity: 0; } }
+  .map-label { font: 800 3.4px system-ui, sans-serif; fill: #fff; paint-order: stroke; stroke: #0b1030; stroke-width: 1px; pointer-events: none; }
+  .city-card { display: grid; gap: var(--s3); padding: var(--s3); border-radius: var(--r-md); background: var(--surface); text-align: left; }
+  .city-pic { position: relative; border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--line); }
+  .city-pic canvas { display: block; width: 100%; aspect-ratio: 16 / 9; }
+  .city-pic.locked canvas { filter: brightness(0.35) saturate(0.4); }
+  .city-lock { display: none; position: absolute; inset: 0; place-items: center; color: var(--muted); }
+  .city-lock svg { width: 34px; height: 34px; }
+  .city-pic.locked .city-lock { display: grid; }
+  .city-head { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--s2); text-align: center; }
+  .city-head small { font-weight: 800; font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  .city-head h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: var(--fs-xl); line-height: 1.1; }
+  .city-levels { font-size: var(--fs-xs); font-weight: 800; color: var(--muted); }
+  .round-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-strong); color: var(--ink); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+  .round-btn:disabled { opacity: 0.3; cursor: default; }
+  .city-fact { margin: 0; font-size: var(--fs-sm); line-height: 1.5; }
+
   /* ---------- City title at the start of a run ---------- */
   .city-intro {
     position: absolute; left: 0; right: 0; top: 20%; display: grid; justify-items: center; gap: 2px;
@@ -579,6 +611,7 @@
           <span class="hc-text"><span class="hc-title">Défi du jour</span><span class="bar"><i id="dailyBar"></i></span><span class="hc-sub" id="dailyMini"></span></span>
         </button>
         <button class="home-card" id="boardBtn"><span class="hc-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 27V17h7v10M12.5 27V9h7v18M21 27V13h7v14M3 27h26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M16 3l1.3 2.6 2.7.4-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.4z" fill="currentColor"/></svg></span><span class="hc-text"><span class="hc-title">Classement</span></span></button>
+        <button class="home-card" id="mapBtn"><span class="hc-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 8l7-3 10 3 7-3v19l-7 3-10-3-7 3z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M11 5v19M21 8v19" stroke="currentColor" stroke-width="2.4"/></svg></span><span class="hc-text"><span class="hc-title">Carte</span><span class="hc-sub" id="mapSub">Marseille</span></span></button>
       </div>
     </div>
 
@@ -809,6 +842,25 @@
       <a class="btn ghost" id="shareSave" href="#" download="neko-odyssey.png">Enregistrer l'image</a>
       <p class="small-text center">Sur téléphone, tu peux aussi faire un appui long sur l'image pour l'enregistrer ou la partager.</p>
       <button class="btn ghost" id="shareBack">Retour</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="mapScreen" hidden>
+    <div class="card wide map-card">
+      <h2>Le voyage de Neko</h2>
+      <div class="map-progress"><span id="mapProgress"></span><span class="bar"><i id="mapProgressBar"></i></span></div>
+      <svg class="france-map" id="franceMap" viewBox="0 0 102 102" role="group" aria-label="Carte du voyage à travers la France"></svg>
+      <article class="city-card">
+        <div class="city-pic" id="cityPicWrap"><canvas id="cityPic"></canvas><span class="city-lock" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></span></div>
+        <div class="city-head">
+          <button class="round-btn" id="cityPrev" aria-label="Ville précédente">‹</button>
+          <div><small id="cityRegion"></small><h3 id="cityName"></h3><span class="city-levels" id="cityLevels"></span></div>
+          <button class="round-btn" id="cityNext" aria-label="Ville suivante">›</button>
+        </div>
+        <p class="city-fact" id="cityFact"></p>
+        <button class="btn" id="cityPlay">Refaire le niveau</button>
+      </article>
+      <button class="btn ghost" id="mapBack">Retour</button>
     </div>
   </div>
 
@@ -2780,6 +2832,7 @@
     { level: 45, id: 'lucarne', name: 'les lucarnes qui s’ouvrent', text: 'passe quand elles sont fermées, ou saute' },
   ];
   let runLevel = 1;
+  let playCity = null; // a city already crossed, replayed from the map
   const roadHas = id => ROAD_UNLOCKS.some(u => u.id === id && runLevel >= u.level);
   // Higher player levels make the roofs busier, up to level 60
   const playerDiff = () => Math.min(1, (runLevel - 1) / 60);
@@ -4463,7 +4516,7 @@
   }
 
   function show(id) {
-    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen', 'reviveScreen', 'choiceScreen', 'boardScreen']) $(s).hidden = s !== id;
+    for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen', 'reviveScreen', 'choiceScreen', 'boardScreen', 'mapScreen']) $(s).hidden = s !== id;
   }
 
   // Highest quarter ever reached: runs can restart from there.
@@ -4473,6 +4526,7 @@
   }
   let choiceFrom = 'start', choiceAt = 0;
   function requestStart() {
+    if (playCity != null) { startGame(1); return; }
     const q = bestQuarter();
     if (q < 2) { startGame(1); return; }
     choiceFrom = state;
@@ -4493,6 +4547,9 @@
     closeSheets();
     resetWorld();
     runLevel = profile.level;
+    const ci = playCity ?? cityIndexFor(profile.level);
+    if (ci !== cityIdx) applyCity(ci);
+    if (playCity != null) runLevel = Math.min(profile.level, ci * LEVELS_PER_CITY + 1);
     if (fromQ > 1) {
       level = fromQ;
       dist = startDist = levelAt(fromQ - 1) * 10;
@@ -4582,6 +4639,8 @@
     last = performance.now();
   }
   function toMenu() {
+    playCity = null;
+    if (cityIdx !== cityIndexFor(profile.level)) applyCity(cityIndexFor(profile.level));
     resetWorld();
     state = 'start';
     hud.hidden = true;
@@ -5712,6 +5771,7 @@
     $('playerNameText').textContent = catName();
     $('playerLevel').textContent = `Niveau ${profile.level}`;
     $('xpBar').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
+    $('mapSub').textContent = CITIES[cityIndexFor(profile.level)].name;
     const fresh = unlockedChapters() > (profile.read || 0);
     $('storyBadge').hidden = !fresh;
   }
@@ -6048,6 +6108,133 @@
     }
   });
   $('boardBtn').addEventListener('click', () => openBoard('startScreen'));
+
+  // ---------- Map of France: the trip city by city ----------
+  // Simplified outline of mainland France and Corsica, as [longitude, latitude]
+  const FRANCE = [[2.37, 51.05], [2.6, 50.82], [3.1, 50.78], [3.3, 50.52], [3.7, 50.35], [4.2, 50.27], [4.15, 49.98], [4.8, 50.15], [4.85, 49.8], [5.4, 49.62], [5.9, 49.5], [6.4, 49.47], [7.0, 49.15], [7.6, 49.05], [8.2, 48.97], [7.8, 48.6], [7.55, 48.1], [7.6, 47.6], [7.0, 47.45], [6.9, 47.35], [6.45, 46.95], [6.1, 46.6], [6.15, 46.25], [6.8, 46.4], [7.0, 46.0], [6.8, 45.8], [7.1, 45.25], [6.65, 45.1], [7.0, 44.8], [6.9, 44.4], [7.6, 44.15], [7.5, 43.8], [7.0, 43.55], [6.6, 43.15], [6.0, 43.1], [5.4, 43.2], [4.85, 43.35], [4.2, 43.45], [3.5, 43.27], [3.0, 42.95], [3.15, 42.45], [2.5, 42.35], [1.7, 42.5], [0.7, 42.85], [0.0, 42.7], [-0.7, 42.85], [-1.4, 43.05], [-1.78, 43.36], [-1.45, 43.6], [-1.2, 44.4], [-1.25, 45.0], [-1.05, 45.6], [-1.2, 46.15], [-1.8, 46.5], [-2.15, 46.85], [-2.55, 47.3], [-3.1, 47.5], [-4.1, 47.8], [-4.4, 47.97], [-4.75, 48.1], [-4.5, 48.35], [-4.75, 48.5], [-4.6, 48.65], [-3.9, 48.7], [-3.2, 48.85], [-2.6, 48.55], [-2.0, 48.65], [-1.55, 48.65], [-1.6, 49.2], [-1.85, 49.7], [-1.3, 49.7], [-1.1, 49.4], [-0.2, 49.3], [0.15, 49.45], [0.25, 49.7], [1.2, 49.95], [1.6, 50.2], [1.6, 50.9]];
+  const CORSICA = [[9.4, 43.0], [9.55, 42.6], [9.4, 42.0], [9.2, 41.4], [8.8, 41.6], [8.6, 42.0], [8.6, 42.4], [9.0, 42.7], [9.3, 42.7]];
+  const mapXY = (lon, lat) => [((lon + 5.4) * 0.69 * 10).toFixed(1), ((51.6 - lat) * 10).toFixed(1)];
+  const mapPath = pts => 'M' + pts.map(p => mapXY(p[0], p[1]).join(' ')).join('L') + 'Z';
+  let mapSel = 0, mapReturn = 'startScreen';
+
+  // Night illustration of a city for its card in the map: sky, landmarks, roofs and a little cat
+  function drawCityScene(cv, i) {
+    const w = 320, h = 180;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    const b = cv.getContext('2d');
+    b.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const saved = [W, H, horizon, cityIdx];
+    W = w; H = h; horizon = h * 0.74; cityIdx = i;
+    try {
+      const c = CITIES[i], ex = c.extras, u = 0.5, mu = h / 150;
+      const sky = b.createLinearGradient(0, 0, 0, horizon);
+      sky.addColorStop(0, P.sky[0]); sky.addColorStop(0.6, P.sky[1]); sky.addColorStop(1, P.sky[2]);
+      b.fillStyle = sky; b.fillRect(0, 0, w, h);
+      for (let k = 0; k < 40; k++) { b.globalAlpha = 0.3 + 0.7 * hash(k * 3.1 + i); b.fillStyle = P.star; b.fillRect(hash(k + i * 7) * w, hash(k * 1.7 + 9) * horizon * 0.8, 1.3, 1.3); }
+      b.globalAlpha = 1;
+      const glow = b.createRadialGradient(w * 0.86, h * 0.2, 4, w * 0.86, h * 0.2, 46);
+      glow.addColorStop(0, 'rgba(255, 244, 214, 0.35)'); glow.addColorStop(1, 'rgba(255, 244, 214, 0)');
+      b.fillStyle = glow; b.fillRect(0, 0, w, h);
+      b.fillStyle = P.moon; b.beginPath(); b.arc(w * 0.86, h * 0.2, 11, 0, TAU); b.fill();
+      drawCityExtras(b, horizon, u, 'back');
+      b.fillStyle = P.far;
+      for (let x = -10, k = 0; x < w; k++) { const bw = 16 + hash(k * 4.3 + i) * 26, bh = 8 + hash(k * 2.1 + i) * 26; b.fillRect(x, horizon - bh, bw, bh + 2); x += bw + 1; }
+      const waterTop = horizon - (ex.includes('sea') ? h * 0.025 : ex.includes('lake') || ex.includes('river') ? h * 0.012 : 0);
+      const markCol = mixColor(P.far, '#c8ccf0', 0.3), rimCol = mixColor(P.moon, markCol, 0.35);
+      c.marks.forEach((m, k) => {
+        const lx = w * (c.marks.length > 1 ? [0.3, 0.68][k] : 0.48);
+        const halo = b.createRadialGradient(lx, waterTop - 40 * mu, 0, lx, waterTop - 40 * mu, 90 * mu);
+        halo.addColorStop(0, `rgba(${P.haze}, 0.4)`); halo.addColorStop(1, `rgba(${P.haze}, 0)`);
+        b.fillStyle = halo; b.fillRect(0, 0, w, h);
+        LANDMARKS[m](b, lx + 1.2, waterTop - 1, mu, rimCol, rimCol);
+        LANDMARKS[m](b, lx, waterTop, mu, markCol, P.windows[0]);
+      });
+      drawCityExtras(b, horizon, u, 'water');
+      drawCityExtras(b, horizon, u, 'fields');
+      // Two rooftops in front, and the cat sitting on the right one
+      const roofs = [[-6, 0.84, 62], [w - 70, 0.8, 76]];
+      for (const [x, ty, rw] of roofs) {
+        const top = h * ty;
+        drawRoofProfile(b, c.style, x, top, rw, P.near, 1);
+        b.fillStyle = P.near; b.fillRect(x, top, rw, h - top);
+        b.fillStyle = P.nearTop; b.fillRect(x, top, rw, 2);
+        for (let k = 0; k < 3; k++) { b.fillStyle = hash(x + k) < 0.5 ? P.windows[0] : P.winDark; b.fillRect(x + 10 + k * 18, top + 10, 6, 8); }
+      }
+      const cx = w - 34, cy = h * 0.8;
+      b.fillStyle = '#0a0b1c';
+      b.beginPath(); b.ellipse(cx, cy - 9, 7, 9, 0, 0, TAU); b.fill();
+      b.beginPath(); b.arc(cx, cy - 21, 5.5, 0, TAU); b.fill();
+      shape(b, [[cx - 5, cy - 24], [cx - 4, cy - 31], [cx - 1, cy - 25]], '#0a0b1c');
+      shape(b, [[cx + 5, cy - 24], [cx + 4, cy - 31], [cx + 1, cy - 25]], '#0a0b1c');
+      b.strokeStyle = '#0a0b1c'; b.lineWidth = 2.6; b.lineCap = 'round';
+      b.beginPath(); b.moveTo(cx + 5, cy - 2); b.quadraticCurveTo(cx + 16, cy - 2, cx + 13, cy - 14); b.stroke();
+    } finally {
+      [W, H, horizon, cityIdx] = saved;
+    }
+  }
+
+  function renderMap() {
+    const reached = cityIndexFor(profile.level);
+    const pts = CITIES.map(c => mapXY(c.lon, c.lat));
+    const line = list => list.map(p => p.join(',')).join(' ');
+    const dots = CITIES.map((c, i) => {
+      const [x, y] = pts[i];
+      const cls = i === reached ? 'here' : i < reached ? 'done' : 'locked';
+      return `<g class="map-city ${cls}${i === mapSel ? ' sel' : ''}" data-city="${i}" role="button" tabindex="-1" aria-label="${c.name}">`
+        + `<circle class="hit" cx="${x}" cy="${y}" r="4"/>`
+        + (i === reached ? `<circle class="pulse" cx="${x}" cy="${y}" r="2.6"/>` : '')
+        + `<circle class="dot" cx="${x}" cy="${y}" r="${i === reached ? 2.2 : 1.5}"/></g>`;
+    }).join('');
+    const [sx, sy] = pts[mapSel];
+    const left = +sx > 70;
+    $('franceMap').innerHTML = `<path class="land" d="${mapPath(FRANCE)} ${mapPath(CORSICA)}"/>`
+      + `<polyline class="route" points="${line(pts)}"/>`
+      + `<polyline class="route done" points="${line(pts.slice(0, reached + 1))}"/>`
+      + dots
+      + `<text class="map-label" x="${+sx + (left ? -4 : 4)}" y="${+sy + 1.3}" text-anchor="${left ? 'end' : 'start'}">${CITIES[mapSel].name}</text>`;
+    $('mapProgress').textContent = `Ville ${reached + 1} sur ${CITIES.length} · ${CITIES[reached].name}`;
+    $('mapProgressBar').style.width = (100 * (reached + 1) / CITIES.length) + '%';
+    renderCityCard();
+  }
+
+  function renderCityCard() {
+    const i = mapSel, c = CITIES[i], reached = cityIndexFor(profile.level), open = i <= reached;
+    const from = i * LEVELS_PER_CITY + 1;
+    drawCityScene($('cityPic'), i);
+    $('cityPicWrap').classList.toggle('locked', !open);
+    $('cityRegion').textContent = c.region;
+    $('cityName').textContent = c.name;
+    $('cityLevels').textContent = i === CITIES.length - 1 ? `À partir du niveau ${from}` : `Niveaux ${from} à ${from + LEVELS_PER_CITY - 1}`;
+    $('cityFact').textContent = open ? c.fact : `Atteins le niveau ${from} pour découvrir cette ville.`;
+    $('cityPlay').hidden = !open;
+    $('cityPlay').textContent = i === reached ? 'Jouer ici' : 'Refaire le niveau';
+    $('cityPrev').disabled = i === 0;
+    $('cityNext').disabled = i === CITIES.length - 1;
+  }
+
+  function openMap(ret) {
+    mapReturn = ret || 'startScreen';
+    mapSel = cityIndexFor(profile.level);
+    show('mapScreen');
+    renderMap();
+    $('mapScreen').scrollTop = 0;
+    $('mapBack').focus({ preventScroll: true });
+  }
+  const selectCity = i => { mapSel = Math.max(0, Math.min(CITIES.length - 1, i)); renderMap(); };
+  $('franceMap').addEventListener('click', e => {
+    const g = e.target.closest('[data-city]');
+    if (g) { selectCity(+g.dataset.city); sfx.lane(); }
+  });
+  $('cityPrev').addEventListener('click', () => selectCity(mapSel - 1));
+  $('cityNext').addEventListener('click', () => selectCity(mapSel + 1));
+  $('cityPlay').addEventListener('click', () => {
+    // A city already crossed is replayed with the obstacles of its own levels; the player's level never goes down
+    if (mapSel > cityIndexFor(profile.level)) return;
+    playCity = mapSel === cityIndexFor(profile.level) ? null : mapSel;
+    startGame(1);
+  });
+  $('mapBtn').addEventListener('click', () => openMap('startScreen'));
+  $('mapBack').addEventListener('click', () => show(mapReturn));
   $('boardBtnOver').addEventListener('click', () => openBoard('overScreen'));
   $('boardBack').addEventListener('click', () => show(boardReturn));
 
@@ -6094,7 +6281,7 @@
       + (newCity ? ` · Nouvelle ville : ${CITIES[cityNow].name} !` : '')
       + gifts.map(g => ` · Nouveau chat offert : ${g.name} !`).join('')
       + news.map(u => ` · Nouveau sur les toits : ${u.name} (${u.text})`).join('');
-    if (newCity) applyCity(cityNow);
+    if (newCity) { playCity = null; applyCity(cityNow); }
     if (reward) { sfx.fanfare(); }
     $('chapterBox').hidden = !newChapter;
     if (newChapter) {
@@ -6966,7 +7153,7 @@
     if (e.target && e.target.tagName === 'INPUT') return;
     const k = e.key.toLowerCase();
     const code = e.code;
-    for (const [scr, back] of [['storyScreen', () => show(storyReturn)], ['albumScreen', () => show(albumReturn)], ['shareScreen', () => show('overScreen')], ['boardScreen', () => show(boardReturn)], ['introScreen', null]]) {
+    for (const [scr, back] of [['storyScreen', () => show(storyReturn)], ['albumScreen', () => show(albumReturn)], ['shareScreen', () => show('overScreen')], ['boardScreen', () => show(boardReturn)], ['mapScreen', () => show(mapReturn)], ['introScreen', null]]) {
       if (!$(scr).hidden) { if (code === 'Escape' && back) back(); return; }
     }
     const isJump = code === 'ArrowUp' || code === 'Space' || k === 'z' || k === 'w';
