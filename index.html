@@ -2419,7 +2419,9 @@
     ctx.lineWidth = Math.max(1, width * (a.s + b.s) / 2);
     ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
   }
-  const fade = z => Math.max(0, Math.min(1, (FAR - z) / 500));
+  // Fade in far away, and fade out once well behind the cat, before the
+  // perspective near the camera stretches things into tall bands
+  const fade = z => Math.max(0, Math.min(1, (FAR - z) / 500, (z + 170) / 110));
 
   function drawSky() {
     ctx.drawImage(bg, 0, 0, W, H);
@@ -2478,10 +2480,15 @@
   }
 
   function drawPuddle(o) {
-    const zc = o.z + o.d / 2;
-    const f = proj(o.x, 0, o.z), bk = proj(o.x, 0, o.z + o.d), m = proj(o.x, 0, zc);
+    // Clip the part already behind the camera, otherwise the perspective
+    // stretches it into a tall band at the bottom of the screen
+    const zn = Math.max(o.z, -CAM_D * 0.35);
+    if (o.z + o.d <= zn) return;
+    const zc = (zn + o.z + o.d) / 2;
+    const f = proj(o.x, 0, zn), bk = proj(o.x, 0, o.z + o.d), m = proj(o.x, 0, zc);
     const cx = m.x, cy = (f.y + bk.y) / 2;
-    const rx = o.hw * m.s, ry = Math.max(2, (f.y - bk.y) / 2);
+    // Keep puddles flat on the roof even right under the camera
+    const rx = o.hw * m.s, ry = Math.max(2, Math.min((f.y - bk.y) / 2, rx * 0.45));
     ctx.globalAlpha = fade(o.z);
     // Dark rim, water, a second lobe for an irregular shape
     ctx.fillStyle = PUD.rim;
@@ -2716,7 +2723,7 @@
     const hAt = z => solarHeight(o, z - o.z);
     const zs = [o.z, o.z + SOLAR_RAMP, o.z + o.d].map(z => Math.max(z, zn)).filter((z, i, a) => i === 0 || z > a[i - 1]);
     if (zs.length < 2) return;
-    ctx.globalAlpha = fade(o.z);
+    ctx.globalAlpha = fade(Math.max(o.z, o.z + o.d - 100));
     ctx.lineCap = 'round';
     // Legs under the flat part
     for (let z = o.z + SOLAR_RAMP; z < o.z + o.d; z += 120) {
@@ -2754,7 +2761,7 @@
   function drawTrou(o) {
     const z0 = Math.max(o.z, -CAM_D * 0.6), z1 = o.z + o.d, W = ROOF_HALF + 30;
     if (z1 <= z0) return;
-    ctx.globalAlpha = fade(o.z);
+    ctx.globalAlpha = fade(o.z + o.d - 60);
     const gap = () => { const a = proj(-W, 0, z0), b = proj(W, 0, z0), c = proj(W, 0, z1), d = proj(-W, 0, z1); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.lineTo(c.x, c.y); ctx.lineTo(d.x, d.y); ctx.closePath(); };
     gap(); ctx.fillStyle = '#05060f'; ctx.fill();
     ctx.save(); gap(); ctx.clip();
