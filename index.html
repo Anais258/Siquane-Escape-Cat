@@ -2917,17 +2917,6 @@
     const cos = o.costume && o.costume !== 'none' ? o.costume : null;
     if (cos) drawCostume(c, cos, 'back', { by: -23 - bob, hy: -50 - bob, bob, t: o.t, air });
 
-    // Tail, with a light tip
-    const sway = Math.sin(o.t * 6) * 10;
-    const tipX = 12 + sway, tipY = (air ? -78 : -68) - bob;
-    c.beginPath();
-    c.moveTo(4, -12 - bob);
-    c.bezierCurveTo(22 + sway * 0.3, -18, 26 + sway, -48, tipX, tipY);
-    c.strokeStyle = sk.outline; c.lineWidth = 10.5; c.stroke();
-    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 7; c.stroke();
-    c.fillStyle = sk.tailTip || sk.paw;
-    c.beginPath(); c.arc(tipX, tipY, 3.6, 0, TAU); c.fill();
-
     // Round back paws
     for (const [px, lift] of [[-10, legA], [10, legB]]) {
       c.beginPath(); c.arc(px, -5 - lift, 6.5, 0, TAU); strokeFill(c, sk, sk.paw);
@@ -2968,7 +2957,20 @@
     }
     c.restore();
     shadeShape(c, sk, body, by, 20);
-    if (cos) drawCostume(c, cos, 'body', { by, hy: -50 - bob, bob, t: o.t, air, tipX, tipY });
+    if (cos) drawCostume(c, cos, 'body', { by, hy: -50 - bob, bob, t: o.t, air });
+
+    // Tail: seen from behind, it starts low on the back, toward the camera,
+    // so it is drawn over the body, then curls up beside it with a light tip
+    const sway = Math.sin(o.t * 6) * 6;
+    const tipX = 27 + sway, tipY = (air ? -58 : -50) - bob;
+    c.beginPath();
+    c.moveTo(0, -8 - bob);
+    c.bezierCurveTo(10, -2 - bob, 30 + sway * 0.4, -10 - bob, tipX, tipY);
+    c.strokeStyle = sk.outline; c.lineWidth = 10.5; c.stroke();
+    c.strokeStyle = sk.tail || sk.fur; c.lineWidth = 7; c.stroke();
+    c.fillStyle = sk.tailTip || sk.paw;
+    c.beginPath(); c.arc(tipX, tipY, 3.6, 0, TAU); c.fill();
+    if (cos) drawCostume(c, cos, 'tail', { by, hy: -50 - bob, bob, t: o.t, air, tipX, tipY });
 
     const hy = -50 - bob;
 
@@ -5733,14 +5735,18 @@
       }
     },
     sardine(c, layer, g) {
+      if (layer === 'tail') {
+        // Tail fin at the tip of the cat's tail
+        c.beginPath(); c.moveTo(g.tipX, g.tipY + 2); c.lineTo(g.tipX - 9, g.tipY - 9); c.quadraticCurveTo(g.tipX, g.tipY - 4, g.tipX + 9, g.tipY - 9); c.closePath();
+        cosShape(c, '#7ad0ff', '#1f5a8a', 1.3);
+        return;
+      }
       if (layer !== 'body') return;
       scales(c, g.by, '#4aa8e0', '#1f5a8a');
       c.beginPath(); c.ellipse(0, g.by, 20, 19, 0, 0, TAU); c.strokeStyle = '#123a5a'; c.lineWidth = 1.9; c.stroke();
       c.beginPath(); c.moveTo(0, g.by - 18);
       for (let k = 0; k < 4; k++) { c.lineTo(5, g.by - 13 + k * 8); c.lineTo(0, g.by - 9 + k * 8); }
       c.closePath(); cosShape(c, '#7ad0ff', '#1f5a8a', 1.3);
-      c.beginPath(); c.moveTo(g.tipX, g.tipY + 2); c.lineTo(g.tipX - 9, g.tipY - 9); c.quadraticCurveTo(g.tipX, g.tipY - 4, g.tipX + 9, g.tipY - 9); c.closePath();
-      cosShape(c, '#7ad0ff', '#1f5a8a', 1.3);
     },
   };
   function drawCostume(c, id, layer, g) {
