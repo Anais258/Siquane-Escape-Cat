@@ -4695,11 +4695,12 @@
     const p = proj(k.x, k.y + bob, k.z), gnd = proj(k.x, 0, k.z), s = p.s;
     ctx.globalAlpha = fade(k.z);
     ctx.fillStyle = 'rgba(5, 6, 20, 0.3)';
-    ctx.beginPath(); ctx.ellipse(gnd.x, gnd.y, 12 * s, 4 * s, 0, 0, TAU); ctx.fill();
-    glow(ctx, p.x, p.y, 34 * s, hexRgb(BONUSES[k.bonus].color), 0.55);
+    ctx.beginPath(); ctx.ellipse(gnd.x, gnd.y, 14 * s, 4.6 * s, 0, 0, TAU); ctx.fill();
+    glow(ctx, p.x, p.y, 40 * s, hexRgb(BONUSES[k.bonus].color), 0.55);
     ctx.save();
     ctx.translate(p.x, p.y);
-    ctx.scale(s, s);
+    // A little bigger than the kibbles so bonuses stand out
+    ctx.scale(s * 1.18, s * 1.18);
     ctx.beginPath(); ctx.arc(0, 0, 18, 0, TAU);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.18)'; ctx.fill();
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)'; ctx.lineWidth = 2; ctx.stroke();
