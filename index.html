@@ -5857,9 +5857,10 @@
   grantSpecials();
   applyCity(cityIndexFor(profile.level));
   const catName = () => profile.name || 'Neko';
-  // About 3 to 5 runs per level; one new city every 5 levels, Besançon at level 171.
+  // A few runs per level; one new city every 5 levels. Reaching Besançon (level 171)
+  // takes about one and a half times as long as level 100 used to.
   const MAX_LEVEL = CITIES.length * LEVELS_PER_CITY;
-  const xpNeed = L => 200 + 20 * (L - 1);
+  const xpNeed = L => 200 + 10 * (L - 1);
   const xpPercent = () => (profile.level >= MAX_LEVEL ? 100 : Math.min(100, 100 * profile.xp / xpNeed(profile.level)));
   const saveProfile = () => store(PROFILE_KEY, profile);
 

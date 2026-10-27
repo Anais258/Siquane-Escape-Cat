@@ -52,7 +52,7 @@ L'histoire suit le voyage à travers la France et compte **35 chapitres, un par 
 
 ## Niveau du joueur
 
-Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut environ 3 à 5 parties par niveau. Le niveau maximum est 175. Chaque nouveau niveau rapporte des croquettes (50 + 5 par niveau, au maximum 250).
+Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut quelques parties par niveau. Arriver à Besançon (niveau 171) demande environ une fois et demie le temps qu'il fallait pour l'ancien niveau 100. Le niveau maximum est 175. Chaque nouveau niveau rapporte des croquettes (50 + 5 par niveau, au maximum 250).
 
 ### Le voyage à travers la France
 
