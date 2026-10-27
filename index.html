@@ -4252,15 +4252,15 @@
       // Little fish dangling from the brim
       const sw = Math.sin(t * 4) * 3;
       c.strokeStyle = '#d8d8e8'; c.lineWidth = 1;
-      c.beginPath(); c.moveTo(17, 1); c.lineTo(18 + sw, 13); c.stroke();
-      c.save(); c.translate(18 + sw, 16); c.rotate(Math.PI / 2 + sw * 0.05);
+      c.beginPath(); c.moveTo(20, 1); c.lineTo(21 + sw, 13); c.stroke();
+      c.save(); c.translate(21 + sw, 16); c.rotate(Math.PI / 2 + sw * 0.05);
       c.beginPath(); c.moveTo(-5, 0); c.quadraticCurveTo(0, -4, 4, 0); c.lineTo(7, -3); c.lineTo(7, 3); c.lineTo(4, 0); c.quadraticCurveTo(0, 4, -5, 0);
       hatPath(c, '#ff9f43', '#7a3b0c');
       c.restore();
-      c.beginPath(); c.moveTo(-12, 0); c.lineTo(-10, -12); c.quadraticCurveTo(0, -15, 10, -12); c.lineTo(12, 0); c.quadraticCurveTo(0, 8, -12, 0); c.closePath();
-      hatPath(c, '#7fa66a');
-      c.fillStyle = '#4a6b3c'; c.fillRect(-11.5, -4, 23, 3.5);
-      brim(c, 20, 5, 1, '#6d8f5a');
+      const crown = () => { c.beginPath(); c.moveTo(-15, 0); c.lineTo(-12, -12); c.quadraticCurveTo(0, -16, 12, -12); c.lineTo(15, 0); c.quadraticCurveTo(0, 8, -15, 0); c.closePath(); };
+      crown(); hatPath(c, '#7fa66a');
+      c.save(); crown(); c.clip(); c.fillStyle = '#4a6b3c'; c.fillRect(-16, -4, 32, 3.5); c.restore();
+      brim(c, 22, 5, 1, '#6d8f5a');
     },
     toque(c) {
       for (const [x, y, r] of [[-8, -15, 8], [8, -15, 8], [0, -21, 10]]) ell(c, x, y, r, r, '#fbfbff', '#5c5a70');
@@ -4295,11 +4295,11 @@
       c.fillStyle = '#5b3418'; c.fillRect(-11.5, -6, 23, 3.5);
     },
     hautdeforme(c) {
-      c.beginPath(); c.moveTo(-11, -26); c.lineTo(11, -26); c.lineTo(11, 0); c.quadraticCurveTo(0, 8, -11, 0); c.closePath();
+      c.beginPath(); c.moveTo(-14, -26); c.lineTo(14, -26); c.lineTo(14, 0); c.quadraticCurveTo(0, 8, -14, 0); c.closePath();
       hatPath(c, '#1c1c26', '#000');
-      c.fillStyle = '#c0392b'; c.fillRect(-11, -8, 22, 5);
-      ell(c, 0, -26, 11, 3, '#2c2c3a', '#000');
-      brim(c, 17, 4.5, 0, '#1c1c26', '#000');
+      c.fillStyle = '#c0392b'; c.fillRect(-14, -8, 28, 5);
+      ell(c, 0, -26, 14, 3.5, '#2c2c3a', '#000');
+      brim(c, 20, 4.5, 0, '#1c1c26', '#000');
     },
     couronne(c, t) {
       c.beginPath();
@@ -4366,11 +4366,11 @@
       }
     },
     sorciere(c) {
-      c.beginPath(); c.moveTo(-12, -1); c.lineTo(-3, -28); c.quadraticCurveTo(2, -36, 11, -33); c.quadraticCurveTo(3, -29, 3, -24); c.lineTo(12, -1); c.quadraticCurveTo(0, 7, -12, -1); c.closePath();
-      hatPath(c, '#4a2a75', '#140726');
-      c.fillStyle = '#ff9f1c'; c.fillRect(-11.5, -6, 23, 4);
+      const crown = () => { c.beginPath(); c.moveTo(-15, -1); c.lineTo(-3, -28); c.quadraticCurveTo(2, -36, 11, -33); c.quadraticCurveTo(3, -29, 3, -24); c.lineTo(15, -1); c.quadraticCurveTo(0, 7, -15, -1); c.closePath(); };
+      crown(); hatPath(c, '#4a2a75', '#140726');
+      c.save(); crown(); c.clip(); c.fillStyle = '#ff9f1c'; c.fillRect(-16, -6, 32, 4); c.restore();
       c.beginPath(); c.rect(-3, -7, 6, 6); hatPath(c, '#ffd34d', '#8a5a00');
-      brim(c, 22, 5, 0, '#3a1f5c', '#140726');
+      brim(c, 24, 5, 0, '#3a1f5c', '#140726');
     },
     viking(c) {
       for (const sd of [-1, 1]) {
@@ -4545,15 +4545,17 @@
     },
     paille(c) {
       const strawBrim = () => {
-        brim(c, 23, 6, 0, '#e9c46a', '#8a6a1a');
+        brim(c, 25, 6, 0, '#e9c46a', '#8a6a1a');
         c.save(); c.clip();
         c.strokeStyle = 'rgba(138, 106, 26, 0.5)'; c.lineWidth = 1;
-        for (const r of [14, 18]) { c.beginPath(); c.ellipse(0, 0, r, r * 0.26, 0, 0, TAU); c.stroke(); }
+        for (const r of [16, 20]) { c.beginPath(); c.ellipse(0, 0, r, r * 0.26, 0, 0, TAU); c.stroke(); }
         c.restore();
       };
-      c.beginPath(); c.moveTo(-12, 0); c.lineTo(-11, -13); c.quadraticCurveTo(0, -17, 11, -13); c.lineTo(12, 0); c.quadraticCurveTo(0, 8, -12, 0); c.closePath();
-      hatPath(c, '#f2d27a', '#8a6a1a');
-      ['#3d6bff', '#ffffff', '#ff4a4a'].forEach((col, k) => { c.fillStyle = col; c.fillRect(-12 + k * 8, -5, 8, 4); });
+      const crown = () => { c.beginPath(); c.moveTo(-15, 0); c.lineTo(-13, -13); c.quadraticCurveTo(0, -17, 13, -13); c.lineTo(15, 0); c.quadraticCurveTo(0, 8, -15, 0); c.closePath(); };
+      crown(); hatPath(c, '#f2d27a', '#8a6a1a');
+      c.save(); crown(); c.clip();
+      ['#3d6bff', '#ffffff', '#ff4a4a'].forEach((col, k) => { c.fillStyle = col; c.fillRect(-15 + k * 10, -5, 10, 4); });
+      c.restore();
       strawBrim();
     },
     casque(c, t) {
