@@ -4224,6 +4224,14 @@
     c.quadraticCurveTo(x0 - r, top + r, x0, top);
     c.closePath();
   }
+  // Brim of a hat. Seen from the front, only its front half shows, curving
+  // around the head (it is drawn after the crown); from behind, the whole ellipse.
+  function brim(c, rx, ry, y, fill, outline, front) {
+    c.beginPath();
+    if (front) { c.ellipse(0, y, rx, ry, 0, 0, Math.PI); c.quadraticCurveTo(0, y + 2 * HAT_SAG, rx, y); c.closePath(); }
+    else c.ellipse(0, y, rx, ry, 0, 0, TAU);
+    hatPath(c, fill, outline);
+  }
   // Thin headband that follows the round of the head, with an outline
   function headband(c, fill, line) {
     c.lineCap = 'round';
@@ -4241,7 +4249,7 @@
       bandPath(c, -15, 15, -3, 7); hatPath(c, '#fff1e6');
       ell(c, 0, -21, 5.5, 5.5, '#fff1e6');
     },
-    bob(c, t) {
+    bob(c, t, front) {
       // Little fish dangling from the brim
       const sw = Math.sin(t * 4) * 3;
       c.strokeStyle = '#d8d8e8'; c.lineWidth = 1;
@@ -4250,10 +4258,11 @@
       c.beginPath(); c.moveTo(-5, 0); c.quadraticCurveTo(0, -4, 4, 0); c.lineTo(7, -3); c.lineTo(7, 3); c.lineTo(4, 0); c.quadraticCurveTo(0, 4, -5, 0);
       hatPath(c, '#ff9f43', '#7a3b0c');
       c.restore();
-      ell(c, 0, 1, 20, 5, '#6d8f5a');
-      c.beginPath(); c.moveTo(-12, 0); c.lineTo(-10, -12); c.quadraticCurveTo(0, -15, 10, -12); c.lineTo(12, 0); c.closePath();
+      if (!front) brim(c, 20, 5, 1, '#6d8f5a');
+      c.beginPath(); c.moveTo(-12, 0); c.lineTo(-10, -12); c.quadraticCurveTo(0, -15, 10, -12); c.lineTo(12, 0); c.quadraticCurveTo(0, 8, -12, 0); c.closePath();
       hatPath(c, '#7fa66a');
       c.fillStyle = '#4a6b3c'; c.fillRect(-11.5, -4, 23, 3.5);
+      if (front) brim(c, 20, 5, 1, '#6d8f5a', null, true);
     },
     toque(c) {
       for (const [x, y, r] of [[-8, -15, 8], [8, -15, 8], [0, -21, 10]]) ell(c, x, y, r, r, '#fbfbff', '#5c5a70');
@@ -4287,11 +4296,13 @@
       hatPath(c, '#b9784a', '#4a2a10');
       c.fillStyle = '#5b3418'; c.fillRect(-11.5, -6, 23, 3.5);
     },
-    hautdeforme(c) {
-      ell(c, 0, 0, 17, 4.5, '#1c1c26', '#000');
-      c.beginPath(); c.rect(-11, -26, 22, 26); hatPath(c, '#1c1c26', '#000');
+    hautdeforme(c, t, front) {
+      if (!front) brim(c, 17, 4.5, 0, '#1c1c26', '#000');
+      c.beginPath(); c.moveTo(-11, -26); c.lineTo(11, -26); c.lineTo(11, 0); c.quadraticCurveTo(0, 8, -11, 0); c.closePath();
+      hatPath(c, '#1c1c26', '#000');
       c.fillStyle = '#c0392b'; c.fillRect(-11, -8, 22, 5);
       ell(c, 0, -26, 11, 3, '#2c2c3a', '#000');
+      if (front) brim(c, 17, 4.5, 0, '#1c1c26', '#000', true);
     },
     couronne(c, t) {
       c.beginPath();
@@ -4342,8 +4353,8 @@
         c.fillStyle = beam;
         c.beginPath(); c.moveTo(-4, -10); c.lineTo(-22, -70); c.lineTo(22, -70); c.lineTo(4, -10); c.closePath(); c.fill();
       }
-      ell(c, 0, 0, 18, 4, '#2a2a33', '#000');
-      c.beginPath(); c.moveTo(-14, 0); c.quadraticCurveTo(-14, -19, 0, -19); c.quadraticCurveTo(14, -19, 14, 0); c.closePath();
+      if (!front) brim(c, 18, 4, 0, '#2a2a33', '#000');
+      c.beginPath(); c.moveTo(-14, 0); c.quadraticCurveTo(-14, -19, 0, -19); c.quadraticCurveTo(14, -19, 14, 0); c.quadraticCurveTo(0, 7, -14, 0); c.closePath();
       hatPath(c, '#2a2a33', '#000');
       c.strokeStyle = '#4a4a58'; c.lineWidth = 2;
       c.beginPath(); c.moveTo(0, -19); c.lineTo(0, -1); c.stroke();
@@ -4351,18 +4362,20 @@
       c.fillStyle = 'rgba(0, 0, 0, 0.35)';
       c.beginPath(); c.ellipse(-7, -6, 3, 2, 0.4, 0, TAU); c.fill();
       if (front) {
+        brim(c, 18, 4, 0, '#2a2a33', '#000', true);
         const glow = c.createRadialGradient(0, -14, 2, 0, -14, 13);
         glow.addColorStop(0, 'rgba(255, 240, 170, 0.6)');
         glow.addColorStop(1, 'rgba(255, 240, 170, 0)');
         c.fillStyle = glow; c.beginPath(); c.arc(0, -14, 13, 0, TAU); c.fill();
       }
     },
-    sorciere(c) {
-      ell(c, 0, 0, 22, 5, '#3a1f5c', '#140726');
-      c.beginPath(); c.moveTo(-12, -1); c.lineTo(-3, -28); c.quadraticCurveTo(2, -36, 11, -33); c.quadraticCurveTo(3, -29, 3, -24); c.lineTo(12, -1); c.closePath();
+    sorciere(c, t, front) {
+      if (!front) brim(c, 22, 5, 0, '#3a1f5c', '#140726');
+      c.beginPath(); c.moveTo(-12, -1); c.lineTo(-3, -28); c.quadraticCurveTo(2, -36, 11, -33); c.quadraticCurveTo(3, -29, 3, -24); c.lineTo(12, -1); c.quadraticCurveTo(0, 7, -12, -1); c.closePath();
       hatPath(c, '#4a2a75', '#140726');
       c.fillStyle = '#ff9f1c'; c.fillRect(-11.5, -6, 23, 4);
       c.beginPath(); c.rect(-3, -7, 6, 6); hatPath(c, '#ffd34d', '#8a5a00');
+      if (front) brim(c, 22, 5, 0, '#3a1f5c', '#140726', true);
     },
     viking(c) {
       for (const sd of [-1, 1]) {
@@ -4425,16 +4438,17 @@
         c.restore();
       });
     },
-    pompier(c) {
+    pompier(c, t, front) {
       // Long back brim, red dome and a golden crest
-      ell(c, 0, 2, 20, 5.5, '#b81c1c', '#4a0808');
-      const dome = () => { c.beginPath(); c.moveTo(-15, 2); c.quadraticCurveTo(-15, -19, 0, -19); c.quadraticCurveTo(15, -19, 15, 2); c.closePath(); };
+      if (!front) brim(c, 20, 5.5, 2, '#b81c1c', '#4a0808');
+      const dome = () => { c.beginPath(); c.moveTo(-15, 2); c.quadraticCurveTo(-15, -19, 0, -19); c.quadraticCurveTo(15, -19, 15, 2); c.quadraticCurveTo(0, 10, -15, 2); c.closePath(); };
       dome(); hatPath(c, '#e02a2a', '#5a0a0a');
       c.save(); dome(); c.clip();
       c.fillStyle = '#ffe066'; c.fillRect(-16, -6, 32, 3);
       c.fillStyle = 'rgba(255, 255, 255, 0.3)'; c.beginPath(); c.ellipse(-7, -12, 3.5, 2, -0.6, 0, TAU); c.fill();
       c.restore();
       c.beginPath(); c.roundRect(-2.5, -23, 5, 22, 2.5); hatPath(c, '#ffcc33', '#8a5a00');
+      if (front) brim(c, 20, 5.5, 2, '#b81c1c', '#4a0808', true);
     },
     pirate(c, t) {
       const sway = Math.sin(t * 3) * 1.5;
@@ -4535,13 +4549,19 @@
       ell(c, 6, -8, 2.6, 2.6, '#ffcf4a', '#8a5a00');
       bandPath(c, -15, 15, -3, 5); hatPath(c, '#ffcf4a', '#8a5a00');
     },
-    paille(c) {
-      ell(c, 0, 0, 23, 6, '#e9c46a', '#8a6a1a');
-      c.strokeStyle = 'rgba(138, 106, 26, 0.5)'; c.lineWidth = 1;
-      for (const r of [14, 18]) { c.beginPath(); c.ellipse(0, 0, r, r * 0.26, 0, 0, TAU); c.stroke(); }
-      c.beginPath(); c.moveTo(-12, 0); c.lineTo(-11, -13); c.quadraticCurveTo(0, -17, 11, -13); c.lineTo(12, 0); c.closePath();
+    paille(c, t, front) {
+      const strawBrim = () => {
+        brim(c, 23, 6, 0, '#e9c46a', '#8a6a1a', front);
+        c.save(); c.clip();
+        c.strokeStyle = 'rgba(138, 106, 26, 0.5)'; c.lineWidth = 1;
+        for (const r of [14, 18]) { c.beginPath(); c.ellipse(0, 0, r, r * 0.26, 0, 0, TAU); c.stroke(); }
+        c.restore();
+      };
+      if (!front) strawBrim();
+      c.beginPath(); c.moveTo(-12, 0); c.lineTo(-11, -13); c.quadraticCurveTo(0, -17, 11, -13); c.lineTo(12, 0); c.quadraticCurveTo(0, 8, -12, 0); c.closePath();
       hatPath(c, '#f2d27a', '#8a6a1a');
       ['#3d6bff', '#ffffff', '#ff4a4a'].forEach((col, k) => { c.fillStyle = col; c.fillRect(-12 + k * 8, -5, 8, 4); });
+      if (front) strawBrim();
     },
     casque(c, t) {
       c.strokeStyle = '#2a2a36'; c.lineWidth = 4;
