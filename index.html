@@ -256,6 +256,30 @@
     .nav-btn svg { width: 28px; height: 28px; }
   }
 
+  /* Phone lying down: cards on the left and right, title, cat and "play" in the middle */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .overlay.home {
+      display: grid; gap: var(--s1) var(--s3);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr);
+      grid-template-rows: auto auto 1fr auto auto;
+    }
+    .overlay.home > * { max-width: none; }
+    .home-top { grid-column: 1 / -1; }
+    .home-cols { display: contents; }
+    .home-col { grid-row: 2 / 5; grid-column: 1; align-self: start; }
+    .home-col.right { grid-column: 3; }
+    .home-title { grid-column: 2; grid-row: 2; font-size: 2rem; margin: 0; }
+    .home-stage { grid-column: 2; grid-row: 3; min-height: 60px; }
+    .overlay.home > .tap-play { grid-column: 2; grid-row: 4; justify-self: center; align-self: end; margin: 0; max-width: none; font-size: 1.4rem; }
+    .home-nav { grid-column: 1 / -1; grid-row: 5; max-width: 560px; margin-inline: auto; width: 100%; }
+    .home-card { height: 44px; padding: 3px var(--s2) 3px 3px; }
+    .home-card .avatar, .home-card .hc-icon { width: 34px; height: 34px; }
+    .home-card .hc-icon svg { width: 22px; height: 22px; }
+    .home-event summary { min-height: 42px; }
+    .nav-btn { display: flex; justify-content: center; align-items: center; gap: var(--s1); padding: 6px; }
+    .nav-btn svg { width: 22px; height: 22px; }
+  }
+
   /* ---------- Overlays and cards ---------- */
   .overlay {
     position: absolute; inset: 0;
@@ -654,7 +678,7 @@
         <button class="sheet-x" data-close aria-label="Fermer">✕</button>
         <h2>Moi</h2>
         <button class="name-btn" id="playerName" aria-label="Changer le nom du chat"><span id="playerNameText">Neko</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>
-        <p>Ton chat s'est perdu en ville. Aide-le à retrouver sa famille en courant sur les toits !</p>
+        <p>Ton chat s'est réveillé à Marseille, loin de chez lui. Aide-le à traverser la France de toit en toit pour retrouver sa famille à Besançon !</p>
         <div class="tiles two">
           <button class="tile" id="gradeBtn">
           <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 12l13-6 13 6-13 6z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M9 15v6c4 3 10 3 14 0v-6M27 13v7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
@@ -1413,7 +1437,10 @@
     chamonix: ['La place Balmat', 'La rue du Docteur-Paccard', "Les bords de l'Arve", 'Le Montenvers', 'La mer de Glace', "L'aiguille du Midi", 'Le Brévent', 'La vue sur le mont Blanc'],
     besancon: ['La Citadelle', 'La boucle du Doubs', 'La Grande Rue', 'La place du Huit-Septembre', "L'horloge astronomique", 'Le quai Vauban', 'Le square Castan', 'La porte Noire'],
   };
-  const streetName = (n, i = cityIdx) => { const s = STREETS[CITIES[i].id]; return s[(n - 1) % s.length]; };
+  const streetName = (n, i = cityIdx) => {
+    const s = STREETS[CITIES[i].id], lap = Math.floor((n - 1) / s.length) + 1;
+    return s[(n - 1) % s.length] + (lap > 1 ? ` · ${lap}e tour` : '');
+  };
   const nth = n => (n === 1 ? '1re' : `${n}e`);
   // Night-time roof colors for each kind of roof: [top, middle, bottom], tile lines, parapet side and top
   const ROOFS = {
@@ -4954,7 +4981,7 @@
     ['sci', 3, 'Quelle est la plus grande planète du système solaire ?', ['Jupiter', 'Saturne', 'La Terre'], 'Jupiter est si grande que plus de 1 000 Terres pourraient tenir à l’intérieur.'],
     ['sci', 3, 'Que rejettent les plantes grâce à la photosynthèse ?', ['Du dioxygène', 'Du sel', 'Du fer'], 'Avec la lumière, les plantes fabriquent leur nourriture et rejettent du dioxygène, que nous respirons.'],
     ['sci', 3, 'Le chat est un animal…', ['Carnivore', 'Herbivore', 'Granivore'], 'Le chat a besoin de viande ou de poisson pour vivre : c’est un carnivore.'],
-    ['sci', 3, 'Combien de dents a un chat adulte ?', ['30', '12', '50'], 'Un chat adulte a 30 dents. Un humain adulte en a 32.'],
+    ['sci', 3, 'Quel est le plus grand organe du corps humain ?', ['La peau', 'Le foie', 'Le cerveau'], 'La peau recouvre tout le corps : chez un adulte, elle pèse plusieurs kilos. C\'est le plus grand organe.'],
     ['sci', 3, 'Combien y a-t-il de planètes dans le système solaire ?', ['8', '9', '7'], 'Il y a 8 planètes. Depuis 2006, Pluton est classée « planète naine ».'],
     ['sci', 3, 'La Lune produit-elle sa propre lumière ?', ['Non, elle renvoie celle du Soleil', 'Oui, comme une lampe', 'Seulement quand elle est pleine'], 'La Lune ne brille pas toute seule : elle est éclairée par le Soleil, comme un miroir.'],
     ['sci', 3, 'Lequel de ces animaux est un reptile ?', ['La tortue', 'La grenouille', 'Le dauphin'], 'La tortue est un reptile. La grenouille est un amphibien et le dauphin un mammifère.'],
@@ -5833,6 +5860,7 @@
   // About 3 to 5 runs per level; one new city every 5 levels, Besançon at level 171.
   const MAX_LEVEL = CITIES.length * LEVELS_PER_CITY;
   const xpNeed = L => 200 + 20 * (L - 1);
+  const xpPercent = () => (profile.level >= MAX_LEVEL ? 100 : Math.min(100, 100 * profile.xp / xpNeed(profile.level)));
   const saveProfile = () => store(PROFILE_KEY, profile);
 
   // One chapter for each city of the trip: it unlocks when the player reaches that city.
@@ -5878,8 +5906,8 @@
 
   function renderPlayer() {
     $('playerNameText').textContent = catName();
-    $('playerLevel').textContent = `Niveau ${profile.level}`;
-    $('xpBar').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
+    $('playerLevel').textContent = profile.level >= MAX_LEVEL ? 'Niveau max' : `Niveau ${profile.level}`;
+    $('xpBar').style.width = xpPercent() + '%';
     $('mapSub').textContent = CITIES[cityIndexFor(profile.level)].name;
     const fresh = unlockedChapters() > (profile.read || 0);
     $('storyBadge').hidden = !fresh;
@@ -6163,7 +6191,7 @@
       status.textContent = rows.length ? '' : 'Personne encore. Sois le premier ou la première !';
     } catch (e) {
       if (seq !== boardSeq) return;
-      status.textContent = 'Impossible de joindre le classement. Vérifie ta connexion. (Il ne marche pas dans la version Claude du jeu.)';
+      status.textContent = 'Impossible de joindre le classement. Vérifie ta connexion.';
     }
   }
   function openBoard(ret) {
@@ -6400,8 +6428,8 @@
     saveProfile();
     syncBoard();
     $('xpGain').textContent = `+${gain} XP`;
-    $('xpLevel').textContent = `${catName()} · niveau ${profile.level}`;
-    $('xpBarOver').style.width = Math.min(100, 100 * profile.xp / xpNeed(profile.level)) + '%';
+    $('xpLevel').textContent = `${catName()} · niveau ${profile.level}${profile.level >= MAX_LEVEL ? ' (max)' : ''}`;
+    $('xpBarOver').style.width = xpPercent() + '%';
     $('levelUp').hidden = !reward;
     const news = ROAD_UNLOCKS.filter(u => u.level > levelBefore && u.level <= profile.level);
     const cityNow = cityIndexFor(profile.level), newCity = cityNow !== cityIndexFor(levelBefore);
