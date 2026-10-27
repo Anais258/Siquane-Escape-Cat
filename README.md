@@ -60,11 +60,13 @@ Neko traverse la France de toit en toit : **35 villes, une nouvelle tous les 5 n
 
 Marseille, Saint-Tropez, Nice, Gordes, Avignon, Arles, Nîmes, Montpellier, Carcassonne, Toulouse, Lourdes, Biarritz, Bordeaux, La Rochelle, Nantes, Carnac, Quimper, Saint-Malo, le Mont-Saint-Michel, Étretat, Rouen, Paris, Amiens, Lille, Reims, Strasbourg, Colmar, Vesoul, Dijon, Clermont-Ferrand, Lyon, Grenoble, Annecy, Chamonix, Besançon.
 
-Chaque ville a son décor : ses monuments à l'horizon (la Bonne Mère, la tour Eiffel, le Mont-Saint-Michel, le mont Blanc…), la mer, un lac, une rivière, des montagnes ou des champs de lavande, la forme de ses toits (toits provençaux, haussmanniens, pignons flamands, maisons alsaciennes, chalets…) et la couleur des toits sur lesquels court le chat (tuiles, ardoise, zinc, briques…). Le nom de la ville s'affiche au-dessus du quartier pendant la course, et l'écran de fin annonce chaque nouvelle ville. Pendant les fêtes, le décor de la fête garde ses couleurs et ses objets, et la ville garde ses monuments et ses toits.
+Chaque ville a son décor : ses monuments à l'horizon (la Bonne Mère, la tour Eiffel, le Mont-Saint-Michel, le mont Blanc…), la mer, un lac, une rivière, des montagnes ou des champs de lavande, la forme de ses toits (toits provençaux, haussmanniens, pignons flamands, maisons alsaciennes, chalets…) et la couleur des toits sur lesquels court le chat (tuiles, ardoise, zinc, briques…). Pendant la course, le compteur affiche la ville et la rue où court le chat. Les rues sont de vrais lieux connus de chaque ville, 8 par ville (la Canebière, la promenade des Anglais, les Champs-Élysées, la Petite France…), et une bulle annonce chaque nouvelle rue. L'écran de fin rappelle la ville et la rue atteintes, et annonce chaque nouvelle ville avec un bouton « Voir la carte ». Pendant les fêtes, le décor de la fête garde ses couleurs et ses objets, et la ville garde ses monuments et ses toits.
 
 Au départ de chaque course, le nom de la ville et sa région s'affichent en grand.
 
-**La carte** (bouton *Carte* sur l'accueil) montre la France, le trajet de Neko et un point par ville : orange pour les villes traversées, le point qui pulse pour la ville actuelle, gris pour les villes à venir. Touche un point (ou les flèches) pour ouvrir la fiche de la ville : une illustration de nuit avec son monument, sa région, ses niveaux et une anecdote. Le bouton **Refaire le niveau** relance une ville déjà traversée, avec les obstacles de ses niveaux ; le niveau du joueur ne baisse jamais et l'expérience gagnée compte toujours. « Rejouer » reste dans cette ville, le retour à l'accueil ramène à la ville actuelle. Les villes à venir restent cachées jusqu'à leur niveau.
+**La carte** (bouton *Carte* sur l'accueil) montre la France, le trajet de Neko et un point par ville : orange pour les villes traversées, le point qui pulse pour la ville actuelle, gris pour les villes à venir. Touche la carte près d'une ville (ou utilise les flèches, aussi au clavier) pour ouvrir sa fiche : une illustration de nuit avec son monument, sa région, ses niveaux et une anecdote. Le bouton **Rejouer à …** relance une ville déjà traversée, avec les obstacles de ses niveaux ; le niveau du joueur ne baisse jamais et l'expérience gagnée compte toujours. « Rejouer » reste dans cette ville, le retour à l'accueil ramène à la ville actuelle. Les villes à venir restent cachées : leur fiche indique combien de niveaux il reste avant d'y arriver. Le bouton **Lire le chapitre** ouvre le chapitre de l'histoire de la ville.
+
+En haut de l'écran de fin, le chat apparaît de face : triste après une chute, tout content avec des étoiles quand il bat son record.
 
 ### Ce qui change sur les toits avec le niveau
 
@@ -103,7 +105,7 @@ L'album montre tous les chats et tous les chapeaux, avec des silhouettes pour ce
 
 ## Poissons d'or
 
-Les poissons d'or sont des objets très rares : il y a **1 chance sur 15** qu'un poisson d'or se cache dans chaque quartier. Il brille et flotte au-dessus du toit, et rapporte aussi 100 points. On les garde d'une partie à l'autre.
+Les poissons d'or sont des objets très rares : il y a **1 chance sur 15** qu'un poisson d'or se cache dans chaque rue. Il brille et flotte au-dessus du toit, et rapporte aussi 100 points. On les garde d'une partie à l'autre.
 
 - **Seconde chance** : quand le chat perd, une fenêtre propose pendant 10 secondes d'utiliser 1 poisson d'or pour repartir au même endroit (l'obstacle disparaît, un bouclier protège 2 secondes, puis compte à rebours 3-2-1). C'est possible **une seule fois par partie**. Un bouton « Passer » permet de refuser.
 - **Déguisements de fête** (6 poissons d'or) : un ou deux par fête, en vente seulement pendant sa fête, gardé ensuite toute l'année. Ils se portent avec n'importe quel chat et n'importe quel chapeau.
@@ -121,17 +123,17 @@ Les poissons d'or sont des objets très rares : il y a **1 chance sur 15** qu'un
 | Poisson d'avril | Sardine (écailles et nageoires) |
 | Journée du chat | Super-chat (cape) |
 
-- **Pouvoirs pour la prochaine partie** : bonus deux fois plus longs (3 poissons), départ rapide un quartier plus loin avec un bouclier de 5 secondes (3), indice qui élimine une mauvaise réponse à chaque question (2), aimant de départ de 30 secondes (2).
+- **Pouvoirs pour la prochaine partie** : bonus deux fois plus longs (3 poissons), départ rapide une rue plus loin avec un bouclier de 5 secondes (3), indice qui élimine une mauvaise réponse à chaque question (2), aimant de départ de 30 secondes (2).
 - **Changer une mission** : 1 poisson d'or, avec le bouton « Changer » sous chaque mission.
 - **Échange** : 1 poisson d'or contre 500 croquettes.
 
 Tout se trouve dans l'onglet **Poissons d'or** de la boutique. L'album montre aussi les déguisements obtenus.
 
-## Quartiers et questions de culture générale
+## Rues et questions de culture générale
 
-Toutes les 30 secondes, la course fait une pause et propose jusqu'à 3 questions, tirées parmi 6 sujets (sciences et nature, histoire et géographie, français et maths, arts et culture, **les chats** et **anglais**). Chaque bonne réponse rapporte 1 croquette. Chaque question passée retire 2 croquettes du compteur de la partie (jamais en dessous de 0). En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course. Le chat entre ensuite dans de nouveaux quartiers (sans pause) : le quartier 1 fait 1 km, puis chaque quartier fait 500 m de plus que le précédent (1,5 km, 2 km, 2,5 km…).
+Toutes les 30 secondes, la course fait une pause et propose jusqu'à 3 questions, tirées parmi 6 sujets (sciences et nature, histoire et géographie, français et maths, arts et culture, **les chats** et **anglais**). Chaque bonne réponse rapporte 1 croquette. Chaque question passée retire 2 croquettes du compteur de la partie (jamais en dessous de 0). En cas d'erreur, le jeu donne la bonne réponse et une explication. Ensuite, un compte à rebours 3-2-1 relance la course. Le chat passe ensuite de rue en rue (sans pause) : la 1re rue fait 1 km, puis chaque rue fait 500 m de plus que la précédente (1,5 km, 2 km, 2,5 km…).
 
-**Reprendre au quartier atteint** : le jeu retient le quartier le plus loin que tu as atteint. Dès que tu as atteint le quartier 2, « Jouer » et « Rejouer » te proposent de « Reprendre au quartier N » ou de « Repartir du quartier 1 ». Quand tu reprends plus loin, tu as 3 secondes de bouclier, et les points ne comptent que pour la distance que tu cours vraiment. Le record reste donc juste.
+**Reprendre à la rue atteinte** : le jeu retient la rue la plus loin que tu as atteinte. Dès que tu as atteint la 2e rue, « Jouer » et « Rejouer » te proposent de « Reprendre à la Ne rue » ou de « Repartir de la 1re rue ». Quand tu reprends plus loin, tu as 3 secondes de bouclier, et les points ne comptent que pour la distance que tu cours vraiment. Le record reste donc juste.
 
 ## Classement entre amis
 

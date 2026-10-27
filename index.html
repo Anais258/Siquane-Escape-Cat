@@ -21,6 +21,8 @@
   :root {
     /* Colors */
     --night: #0b1030;
+    --map-land: #1f2860;
+    --map-edge: #4a58a8;
     --panel: rgba(13, 17, 46, 0.9);
     --surface: rgba(255, 255, 255, 0.05);
     --surface-strong: rgba(255, 255, 255, 0.1);
@@ -371,6 +373,11 @@
 
   /* ---------- Game over ---------- */
   .over-head { display: grid; gap: var(--s1); }
+  .over-cat { justify-self: center; width: 120px; height: 100px; margin: calc(-1 * var(--s2)) 0 calc(-1 * var(--s3)); }
+  .pin-chip { justify-self: center; display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 4px var(--s3); border-radius: var(--r-pill); background: var(--surface-strong); font-weight: 800; font-size: var(--fs-sm); color: var(--ink); }
+  .pin-chip svg { width: 10px; height: 14px; color: var(--accent); flex: none; }
+  .new-city { display: grid; gap: var(--s2); justify-items: center; padding-top: var(--s1); }
+  .new-city .pin-chip { background: rgba(255, 162, 76, 0.16); }
   #overTitle.puddle { color: var(--water); }
   #overTitle.hit { color: var(--danger); }
   .badge { justify-self: center; background: var(--gold); color: var(--gold-ink); font-weight: 800; border-radius: var(--r-pill); padding: var(--s1) var(--s3); font-size: var(--fs-sm); }
@@ -379,9 +386,10 @@
 
   /* ---------- Map of the trip ---------- */
   .map-progress { display: grid; gap: var(--s1); font-weight: 800; font-size: var(--fs-sm); color: var(--muted); }
+  .map-label.here { fill: var(--accent); }
   .map-progress .bar i { background: var(--accent); }
-  .france-map { width: 100%; max-width: 420px; margin: 0 auto; display: block; overflow: visible; }
-  .france-map .land { fill: #1f2860; stroke: #4a58a8; stroke-width: 0.5; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(120, 140, 255, 0.35)); }
+  .france-map { width: 100%; max-width: 340px; touch-action: manipulation; cursor: pointer; margin: 0 auto; display: block; overflow: visible; }
+  .france-map .land { fill: var(--map-land); stroke: var(--map-edge); stroke-width: 0.5; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(120, 140, 255, 0.35)); }
   .france-map .route { fill: none; stroke: var(--muted); stroke-width: 0.5; stroke-dasharray: 1.2 1.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.6; }
   .france-map .route.done { stroke: var(--accent); stroke-width: 0.9; stroke-dasharray: none; opacity: 1; }
   .map-city { cursor: pointer; }
@@ -393,7 +401,7 @@
   .map-city.locked.sel .dot { fill: var(--muted); }
   .map-city .pulse { fill: none; stroke: var(--accent); stroke-width: 0.6; transform-box: fill-box; transform-origin: center; animation: map-pulse 1.6s ease-out infinite; }
   @keyframes map-pulse { from { transform: scale(1); opacity: 0.9; } to { transform: scale(2.6); opacity: 0; } }
-  .map-label { font: 800 3.4px system-ui, sans-serif; fill: #fff; paint-order: stroke; stroke: #0b1030; stroke-width: 1px; pointer-events: none; }
+  .map-label { font-family: var(--font-body); font-weight: 800; font-size: 3.4px; fill: var(--ink); paint-order: stroke; stroke: var(--night); stroke-width: 1px; pointer-events: none; }
   .city-card { display: grid; gap: var(--s3); padding: var(--s3); border-radius: var(--r-md); background: var(--surface); text-align: left; }
   .city-pic { position: relative; border-radius: var(--r-sm); overflow: hidden; border: 1px solid var(--line); }
   .city-pic canvas { display: block; width: 100%; aspect-ratio: 16 / 9; }
@@ -405,8 +413,9 @@
   .city-head small { font-weight: 800; font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
   .city-head h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: var(--fs-xl); line-height: 1.1; }
   .city-levels { font-size: var(--fs-xs); font-weight: 800; color: var(--muted); }
-  .round-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-strong); color: var(--ink); font-size: 1.5rem; line-height: 1; cursor: pointer; }
-  .round-btn:disabled { opacity: 0.3; cursor: default; }
+  .city-head .icon-btn svg { width: 22px; height: 22px; }
+  .city-head .icon-btn:disabled { opacity: 0.3; cursor: default; }
+  .map-title { font-size: var(--fs-xl); }
   .city-actions { display: grid; gap: var(--s2); }
   .city-fact { margin: 0; font-size: var(--fs-sm); line-height: 1.5; }
 
@@ -552,7 +561,7 @@
         <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
         <span id="kibbles">0</span>
       </div>
-      <div class="lvl"><span class="city-label"><svg viewBox="0 0 12 16" aria-hidden="true"><path d="M6 15s5-5.6 5-9A5 5 0 0 0 1 6c0 3.4 5 9 5 9z" fill="currentColor"/><circle cx="6" cy="6" r="1.9" fill="var(--night)"/></svg><span id="cityLabel">Marseille</span></span><span id="levelLabel">Quartier 1</span><span class="lvl-bar"><i id="levelBar"></i></span></div>
+      <div class="lvl"><span class="city-label"><svg viewBox="0 0 12 16" aria-hidden="true"><path d="M6 15s5-5.6 5-9A5 5 0 0 0 1 6c0 3.4 5 9 5 9z" fill="currentColor"/><circle cx="6" cy="6" r="1.9" fill="var(--night)"/></svg><span id="cityLabel">Marseille</span></span><span id="levelLabel">La Canebière</span><span class="lvl-bar"><i id="levelBar"></i></span></div>
       <div class="bonus-bar" id="bonusBar"></div>
     </div>
     <div class="buttons">
@@ -734,9 +743,9 @@
           <div class="row"><svg viewBox="0 0 34 24" aria-hidden="true"><path d="M17 2l9 10h-5v10h-8V12H8z" fill="#5aff8a" stroke="#1a6a2a" stroke-width="1.5"/></svg><span><b>Super-saut</b> : saute si haut que tu peux passer au-dessus des cheminées.</span></div>
         </div>
         <div class="label">Poissons d'or</div>
-        <p class="small-text">Très rares : il y a 1 chance sur 15 qu'un poisson d'or se cache dans chaque quartier. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
-        <div class="label">Quartiers et questions</div>
-        <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Tu entres ensuite dans de nouveaux quartiers : le premier fait 1 km, puis chacun est un peu plus long. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
+        <p class="small-text">Très rares : il y a 1 chance sur 15 qu'un poisson d'or se cache dans chaque rue. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
+        <div class="label">Rues et questions</div>
+        <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Pendant la course, tu passes de rue en rue, avec leurs vrais noms : la première fait 1 km, puis chacune est un peu plus longue. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
         <button class="btn ghost" data-close>Fermer</button>
         <p class="fine-print"><a class="link-quiet" href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>
@@ -759,6 +768,8 @@
 
   <div class="overlay" id="overScreen" hidden>
     <div class="card">
+      <canvas class="over-cat" id="overCat" width="240" height="200" aria-hidden="true"></canvas>
+      <p class="pin-chip" id="overPlace"><svg viewBox="0 0 12 16" aria-hidden="true"><path d="M6 15s5-5.6 5-9A5 5 0 0 0 1 6c0 3.4 5 9 5 9z" fill="currentColor"/><circle cx="6" cy="6" r="1.9" fill="var(--night)"/></svg><span id="overPlaceText">Marseille</span></p>
       <div class="over-head">
         <h2 id="overTitle">Plouf !</h2>
         <p id="overText">Le chat est tombé dans une flaque d'eau.</p>
@@ -780,6 +791,10 @@
         <div class="box-head"><b id="xpLevel">Neko · niveau 1</b><span id="xpGain">+0 XP</span></div>
         <div class="bar"><i id="xpBarOver"></i></div>
         <p class="good" id="levelUp" hidden></p>
+        <div class="new-city" id="newCity" hidden>
+          <span class="pin-chip"><svg viewBox="0 0 12 16" aria-hidden="true"><path d="M6 15s5-5.6 5-9A5 5 0 0 0 1 6c0 3.4 5 9 5 9z" fill="currentColor"/><circle cx="6" cy="6" r="1.9" fill="var(--night)"/></svg><span>Nouvelle ville : <b id="newCityName"></b></span></span>
+          <button class="btn small" id="newCityMap">Voir la carte</button>
+        </div>
       </div>
       <div class="box accent" id="chapterBox" hidden>
         <div class="box-head"><b id="chapterTitle">Nouveau chapitre</b><button class="btn small" id="chapterRead">Lire</button></div>
@@ -848,15 +863,15 @@
 
   <div class="overlay" id="mapScreen" hidden>
     <div class="card wide map-card">
-      <h2>Le voyage de Neko</h2>
+      <h2 class="map-title" id="mapTitle">Le voyage de Neko</h2>
       <div class="map-progress"><span id="mapProgress"></span><span class="bar"><i id="mapProgressBar"></i></span></div>
       <svg class="france-map" id="franceMap" viewBox="0 0 102 102" role="group" aria-label="Carte du voyage à travers la France"></svg>
       <article class="city-card">
         <div class="city-pic" id="cityPicWrap"><canvas id="cityPic"></canvas><span class="city-lock" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></span></div>
         <div class="city-head">
-          <button class="round-btn" id="cityPrev" aria-label="Ville précédente">‹</button>
+          <button class="icon-btn" id="cityPrev" aria-label="Ville précédente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <div><small id="cityRegion"></small><h3 id="cityName"></h3><span class="city-levels" id="cityLevels"></span></div>
-          <button class="round-btn" id="cityNext" aria-label="Ville suivante">›</button>
+          <button class="icon-btn" id="cityNext" aria-label="Ville suivante"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <p class="city-fact" id="cityFact"></p>
         <div class="city-actions"><button class="btn" id="cityPlay">Refaire le niveau</button><button class="btn ghost" id="cityStory">Lire le chapitre</button></div>
@@ -890,9 +905,9 @@
   <div class="overlay" id="choiceScreen" hidden>
     <div class="card">
       <h2>D'où repars-tu ?</h2>
-      <p>Tu as déjà atteint le <b class="good">quartier <span id="choiceBest">2</span></b>. Les points ne comptent que pour la distance que tu cours vraiment.</p>
-      <button class="btn big" id="choiceResume">Reprendre au quartier <span id="choiceQ">2</span></button>
-      <button class="btn ghost" id="choiceFresh">Repartir du quartier 1</button>
+      <p>Tu as déjà atteint la <b class="good"><span id="choiceBest">2e rue</span></b>. Les points ne comptent que pour la distance que tu cours vraiment.</p>
+      <button class="btn big" id="choiceResume">Reprendre à la <span id="choiceQ">2e rue</span></button>
+      <button class="btn ghost" id="choiceFresh">Repartir de la 1re rue</button>
       <button class="btn ghost small" id="choiceBack">Retour</button>
     </div>
   </div>
@@ -1360,6 +1375,46 @@
   ];
   const LEVELS_PER_CITY = 5;
   const cityIndexFor = level => Math.max(0, Math.min(CITIES.length - 1, Math.floor((level - 1) / LEVELS_PER_CITY)));
+  // Real streets, squares and quays of each city: one for each stretch of a run (the list starts again after the 8th)
+  const STREETS = {
+    marseille: ['La Canebière', 'Le Vieux-Port', 'Le Panier', 'Rue de la République', 'Le cours Julien', 'Le Prado', 'La Corniche Kennedy', 'Le Vallon des Auffes'],
+    sainttropez: ['Le Vieux-Port', 'La place des Lices', 'Le quai Suffren', 'Le quai Jean-Jaurès', 'La Ponche', 'La rue Gambetta', 'La Citadelle', 'La plage des Graniers'],
+    nice: ['La promenade des Anglais', 'Le Vieux-Nice', 'Le cours Saleya', 'La place Masséna', "L'avenue Jean-Médecin", 'La colline du Château', 'Le port Lympia', 'Le quai des États-Unis'],
+    gordes: ['La place du Château', 'Les calades du village', 'Le château de Gordes', 'Le belvédère', 'Le village des Bories', "L'abbaye de Sénanque", 'Les champs de lavande', 'La route des Ocres'],
+    avignon: ["La place de l'Horloge", 'La rue de la République', 'La place du Palais', 'Le rocher des Doms', 'Le pont Saint-Bénezet', 'La rue des Teinturiers', 'Les remparts', 'La rue Joseph-Vernet'],
+    arles: ['Les Arènes', 'La place du Forum', 'Le boulevard des Lices', 'Le Théâtre antique', 'Les Alyscamps', 'La place de la République', 'Les thermes de Constantin', 'Les quais du Rhône'],
+    nimes: ['Les Arènes', 'La Maison carrée', 'Les jardins de la Fontaine', 'La tour Magne', 'Le boulevard Victor-Hugo', "La place de l'Horloge", "La rue de l'Aspic", "La place d'Assas"],
+    montpellier: ['La place de la Comédie', "L'Écusson", 'La promenade du Peyrou', 'La rue de la Loge', 'Antigone', 'La rue Foch', 'La place Jean-Jaurès', "L'esplanade Charles-de-Gaulle"],
+    carcassonne: ['La Cité', 'La porte Narbonnaise', 'Le château comtal', 'La basilique Saint-Nazaire', 'Les Lices', 'Le Pont-Vieux', 'La bastide Saint-Louis', 'La place Carnot'],
+    toulouse: ['La place du Capitole', "La rue d'Alsace-Lorraine", 'Le quai de la Daurade', 'Le Pont-Neuf', 'Le couvent des Jacobins', 'La place Saint-Georges', 'La basilique Saint-Sernin', 'La rue du Taur'],
+    lourdes: ['Le château fort', 'Le sanctuaire', 'Le boulevard de la Grotte', 'Les bords du gave de Pau', 'Le pic du Jer', 'La rue de la Grotte', 'La place du Marcadal', 'Le lac de Lourdes'],
+    biarritz: ['La Grande Plage', 'Le rocher de la Vierge', 'Le phare', 'Le port des Pêcheurs', 'La côte des Basques', 'La place Clemenceau', 'La rue Mazagran', 'Les Halles'],
+    bordeaux: ['La place de la Bourse', "Le miroir d'eau", 'La rue Sainte-Catherine', 'La place des Quinconces', 'Le pont de pierre', "Le cours de l'Intendance", 'La place du Parlement', 'La Grosse Cloche'],
+    larochelle: ['Le Vieux-Port', 'La tour Saint-Nicolas', 'La tour de la Chaîne', 'La Grosse Horloge', 'La rue du Palais', 'Les Minimes', 'La rue des Merciers', 'Le quai Duperré'],
+    nantes: ["Les Machines de l'île", 'Le château des ducs de Bretagne', 'Le passage Pommeraye', 'La place Royale', 'Le Bouffay', 'Le cours Cambronne', 'Le quai de la Fosse', 'La place du Commerce'],
+    carnac: ['Les alignements du Ménec', 'Les alignements de Kermario', 'Le tumulus Saint-Michel', 'La Grande Plage', 'Carnac-Plage', 'Le bourg', "L'église Saint-Cornély", 'Les salines'],
+    quimper: ['La cathédrale Saint-Corentin', 'La rue Kéréon', 'La place au Beurre', "Les quais de l'Odet", 'Le mont Frugy', 'Locmaria', 'La rue du Guéodet', 'La place Saint-Corentin'],
+    saintmalo: ['Intra-Muros', 'Les remparts', 'La Grande Porte', 'La plage du Sillon', 'Le Fort national', 'La rue Jacques-Cartier', 'La place Chateaubriand', 'Le Grand Bé'],
+    montsaintmichel: ["La porte de l'Avancée", 'La Grande Rue', "L'abbaye", 'Le cloître', 'Les remparts', 'La tour Gabriel', 'La chapelle Saint-Aubert', 'La baie'],
+    etretat: ["La falaise d'Aval", "La porte d'Aval", "L'Aiguille", "La falaise d'Amont", 'La chapelle Notre-Dame-de-la-Garde', 'Le Perrey', 'Les Halles', "Les jardins d'Étretat"],
+    rouen: ['Le Gros-Horloge', 'La rue du Gros-Horloge', 'La place du Vieux-Marché', 'La cathédrale', 'La rue Eau-de-Robec', "L'aître Saint-Maclou", 'Les quais de Seine', 'Le pont Boieldieu'],
+    paris: ['Les Champs-Élysées', 'La tour Eiffel', 'Montmartre', 'Le Louvre', "L'île de la Cité", 'Le Marais', 'Les quais de Seine', 'La place de la Concorde'],
+    amiens: ['La cathédrale Notre-Dame', 'Les hortillonnages', 'Le quartier Saint-Leu', 'La tour Perret', 'La rue des Trois-Cailloux', 'La place Gambetta', 'La maison de Jules Verne', 'Le beffroi'],
+    lille: ['La Grand-Place', 'Le Vieux-Lille', 'La rue de la Monnaie', 'La Vieille Bourse', "Le beffroi de l'hôtel de ville", 'La rue Faidherbe', 'La Citadelle', 'La place Rihour'],
+    reims: ['La cathédrale Notre-Dame', "La place Drouet-d'Erlon", 'La basilique Saint-Remi', 'Le palais du Tau', 'La porte de Mars', 'La rue de Vesle', 'La place Royale', 'Les halles du Boulingrin'],
+    strasbourg: ['La Petite France', 'La place Kléber', 'La cathédrale Notre-Dame', 'Les Ponts couverts', 'La place Gutenberg', 'La rue des Grandes-Arcades', 'La Grande Île', 'Le quai des Bateliers'],
+    colmar: ['La Petite Venise', 'Le quai de la Poissonnerie', 'La maison des Têtes', 'Le Koïfhus', 'La rue des Marchands', 'La collégiale Saint-Martin', 'Le musée Unterlinden', 'Les bords de la Lauch'],
+    vesoul: ['La colline de la Motte', 'La chapelle de la Motte', "L'église Saint-Georges", 'Le vieux Vesoul', 'La place de la République', 'Les bords du Durgeon', 'Le lac de Vaivre', 'Le théâtre Edwige-Feuillère'],
+    dijon: ['La place de la Libération', 'Le palais des ducs', 'La rue de la Chouette', 'La rue des Forges', 'La rue de la Liberté', 'Les Halles', "L'église Notre-Dame", 'La place François-Rude'],
+    clermont: ['La place de Jaude', 'La cathédrale', 'La rue des Gras', 'La basilique Notre-Dame-du-Port', 'La place de la Victoire', 'Montferrand', 'Le jardin Lecoq', 'La vue sur le puy de Dôme'],
+    lyon: ['La place Bellecour', 'Le Vieux Lyon', 'La Croix-Rousse', 'La colline de Fourvière', 'La rue de la République', 'Les traboules', 'Les quais du Rhône', 'La place des Terreaux'],
+    grenoble: ['Les Bulles', 'Le fort de la Bastille', 'La place Grenette', 'La place Notre-Dame', 'Le quai Stéphane-Jay', "Les bords de l'Isère", 'La rue Félix-Poulat', 'Le jardin de Ville'],
+    annecy: ["Le palais de l'Île", 'Les canaux du Thiou', 'Le pont des Amours', 'Le Pâquier', 'La rue Sainte-Claire', "Le château d'Annecy", 'Les bords du lac', 'La rue Royale'],
+    chamonix: ['La place Balmat', 'La rue du Docteur-Paccard', "Les bords de l'Arve", 'Le Montenvers', 'La mer de Glace', "L'aiguille du Midi", 'Le Brévent', 'La vue sur le mont Blanc'],
+    besancon: ['La Citadelle', 'La boucle du Doubs', 'La Grande Rue', 'La place du Huit-Septembre', "L'horloge astronomique", 'Le quai Vauban', 'Le square Castan', 'La porte Noire'],
+  };
+  const streetName = (n, i = cityIdx) => { const s = STREETS[CITIES[i].id]; return s[(n - 1) % s.length]; };
+  const nth = n => (n === 1 ? '1re' : `${n}e`);
   // Night-time roof colors for each kind of roof: [top, middle, bottom], tile lines, parapet side and top
   const ROOFS = {
     tuile:   { roof: ['#7a4436', '#5e3029', '#43211f'], tile: '#2c1412', parSide: '#3a1d1a', parTop: '#9a5e48' },
@@ -3071,7 +3126,7 @@
       reachQuarter(level);
       rollGoldFish(level);
       sfx.level();
-      toast(`Quartier ${level} !`);
+      toast(`📍 ${streetName(level)}`);
     }
     // A question break every 30 seconds of running
     if (state === 'play' && quizClock >= QUIZ_EVERY) {
@@ -3969,10 +4024,15 @@
     shadeShape(c, sk, head, hy, 18);
 
     // Big round eyes that blink now and then
-    const blink = t !== 0 && (t + 0.4) % 3.6 < 0.14;
+    const blink = !o.mood && t !== 0 && (t + 0.4) % 3.6 < 0.14;
     const eye = EYES[sk.id] || '#6cc04a';
     for (const sd of [-1, 1]) {
       const ex = sd * 7, ey = hy + 1;
+      if (o.mood === 'happy') {
+        c.strokeStyle = sk.outline; c.lineWidth = 2;
+        c.beginPath(); c.arc(ex, ey + 1.5, 3.6, 1.15 * Math.PI, 1.85 * Math.PI); c.stroke();
+        continue;
+      }
       if (blink) {
         c.strokeStyle = sk.outline; c.lineWidth = 1.8;
         c.beginPath(); c.arc(ex, ey - 1, 3.7, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
@@ -3993,7 +4053,21 @@
     c.beginPath(); c.moveTo(-2.4, hy + 6); c.lineTo(2.4, hy + 6); c.lineTo(0, hy + 8.4); c.closePath(); c.fill(); c.stroke();
     c.lineWidth = 1.2;
     c.beginPath(); c.moveTo(0, hy + 8.4); c.lineTo(0, hy + 9.4); c.stroke();
-    for (const sd of [-1, 1]) { c.beginPath(); c.arc(sd * 1.8, hy + 9.4, 1.8, 0, Math.PI); c.stroke(); }
+    if (o.mood === 'happy') {
+      c.fillStyle = '#c2405a';
+      c.beginPath(); c.arc(0, hy + 9.6, 3.2, 0, Math.PI); c.closePath(); c.fill(); c.stroke();
+      c.fillStyle = '#ff8fa8'; c.beginPath(); c.ellipse(0, hy + 11.6, 1.7, 0.9, 0, 0, TAU); c.fill();
+    } else if (o.mood === 'sad') {
+      c.beginPath(); c.arc(0, hy + 12.4, 2.6, 1.2 * Math.PI, 1.8 * Math.PI); c.stroke();
+      // Worried eyebrows and a little tear
+      c.lineWidth = 1.4;
+      for (const sd of [-1, 1]) { c.beginPath(); c.moveTo(sd * 3.6, hy - 6.4); c.lineTo(sd * 10, hy - 4); c.stroke(); }
+      c.fillStyle = '#8fd3ff'; c.strokeStyle = '#2f74d4'; c.lineWidth = 0.7;
+      c.beginPath(); c.moveTo(10.5, hy + 4.5); c.quadraticCurveTo(13, hy + 8.5, 10.5, hy + 9.2); c.quadraticCurveTo(8, hy + 8.5, 10.5, hy + 4.5); c.fill(); c.stroke();
+      c.strokeStyle = sk.outline; c.lineWidth = 1.2;
+    } else {
+      for (const sd of [-1, 1]) { c.beginPath(); c.arc(sd * 1.8, hy + 9.4, 1.8, 0, Math.PI); c.stroke(); }
+    }
 
     // Whiskers
     c.strokeStyle = sk.outline; c.globalAlpha = 0.55; c.lineWidth = 1;
@@ -4533,8 +4607,8 @@
     choiceFrom = state;
     choiceAt = performance.now();
     state = 'choose';
-    $('choiceBest').textContent = q;
-    $('choiceQ').textContent = q;
+    $('choiceBest').textContent = `${nth(q)} rue : ${streetName(q)}`;
+    $('choiceQ').textContent = `${nth(q)} rue`;
     show('choiceScreen');
     $('choiceResume').focus({ preventScroll: true });
   }
@@ -4610,18 +4684,38 @@
     bank += kibbles;
     track('meters', Math.floor((dist - startDist) / 10));
     lastRun = { score: sc, kibbles, level };
+    const runCity = cityIdx;
+    $('overPlaceText').textContent = `${CITIES[runCity].name} · ${streetName(level, runCity)}`;
+    drawOverCat(isBest && sc > 0 ? 'happy' : 'sad');
     endOfRun(sc);
     saveProgress();
     updateBank();
     const gap = best - sc;
     $('nearBest').hidden = isBest || gap > Math.max(100, best * 0.25);
     $('nearBest').textContent = `Plus que ${gap} points pour battre ton record !`;
-    $('levelOver').textContent = level > 1 ? `Tu as atteint le quartier ${level} à ${CITY().name}.` : 'Cours 1 km pour atteindre le quartier 2.';
+    $('levelOver').textContent = level > 1 ? `Tu as atteint la ${nth(level)} rue de ${CITIES[runCity].name}.` : `Cours 1 km pour atteindre la 2e rue : ${streetName(2, runCity)}.`;
     $('missionsGain').innerHTML = runMissions ? `${runMissions} réussie${runMissions > 1 ? 's' : ''} · +${runRewards} ${FISH_SVG}` : '';
     renderPanels();
     hud.hidden = true;
     show('overScreen');
     $('againBtn').focus({ preventScroll: true });
+  }
+
+  // The cat at the top of the end card: sad after a fall, happy with a new record
+  function drawOverCat(mood) {
+    const cv = $('overCat'), c = cv.getContext('2d');
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    c.clearRect(0, 0, cv.width, cv.height);
+    if (mood === 'happy') {
+      for (let k = 0; k < 7; k++) {
+        const a = -Math.PI * (0.1 + 0.8 * k / 6), x = 120 + Math.cos(a) * 100, y = 140 + Math.sin(a) * 110;
+        c.fillStyle = k % 2 ? '#ffd34d' : '#ff9ecf';
+        c.beginPath(); for (let j = 0; j < 8; j++) { const r = j % 2 ? 3 : 9, b = j * Math.PI / 4; c.lineTo(x + Math.cos(b) * r, y + Math.sin(b) * r); } c.fill();
+      }
+    }
+    c.translate(120, 196);
+    c.scale(2.3, 2.3);
+    drawCatFront(c, skinPaint(currentSkin(), 0), { t: 0, hat: hatId, costume: currentCostume(), mood });
   }
 
   function pause() {
@@ -5204,7 +5298,7 @@
     combo:    { ev: 'combo',   base: [2, 3, 4],         text: n => `Atteins un combo x${n}`, run: true, max: true },
     quiz:     { ev: 'quiz',    base: [3, 8, 15],        text: n => `Donne ${n} bonnes réponses` },
     laneRun:  { ev: 'lane',    base: [20, 40, 70],      text: n => `Change ${n} fois de couloir en une partie`, run: true },
-    level:    { ev: 'level',   base: [2, 3, 4],         text: n => `Atteins le quartier ${n}`, run: true, max: true },
+    level:    { ev: 'level',   base: [2, 3, 4],         text: n => `Atteins la ${nth(n)} rue`, run: true, max: true },
   };
   const MISSION_REWARD = [25, 40, 60];
   const DAILY_TARGETS = { scoreRun: 1500, kibRun: 60, level: 4, antLow: 15, puddle: 15, quiz: 6, combo: 4, bonus: 5, ouf: 5 };
@@ -5506,7 +5600,7 @@
   function updateHudExtras() {
     const m = Math.floor(dist / 10), lo = level > 1 ? levelAt(level - 1) : 0, hi = levelAt(level);
     $('cityLabel').textContent = CITY().name;
-    $('levelLabel').textContent = `Quartier ${level}`;
+    $('levelLabel').textContent = streetName(level);
     $('levelBar').style.width = Math.min(100, Math.max(0, 100 * (m - lo) / (hi - lo))) + '%';
     const html = Object.keys(active).map(k => `<div class="chip" style="--c:${BONUSES[k].color}"><span>${BONUSES[k].name}</span><i style="width:${Math.min(100, Math.round(100 * active[k] / BONUSES[k].dur))}%"></i></div>`).join('');
     if (html !== lastBonusHtml) { $('bonusBar').innerHTML = html; lastBonusHtml = html; }
@@ -6200,14 +6294,14 @@
         + (i === reached ? `<circle class="pulse" cx="${x}" cy="${y}" r="2.6"/>` : '')
         + `<circle class="dot" cx="${x}" cy="${y}" r="${i === reached ? 2.2 : 1.5}"/></g>`;
     }).join('');
-    const [sx, sy] = pts[mapSel];
-    const left = +sx > 70;
+    const label = (i, cls) => { const [lx, ly] = pts[i], left = +lx > 70; return `<text class="map-label${cls}" x="${+lx + (left ? -4 : 4)}" y="${+ly + 1.3}" text-anchor="${left ? 'end' : 'start'}">${CITIES[i].name}</text>`; };
     $('franceMap').innerHTML = `<path class="land" d="${mapPath(FRANCE)} ${mapPath(CORSICA)}"/>`
       + `<polyline class="route" points="${line(pts)}"/>`
       + `<polyline class="route done" points="${line(pts.slice(0, reached + 1))}"/>`
       + dots
-      + `<text class="map-label" x="${+sx + (left ? -4 : 4)}" y="${+sy + 1.3}" text-anchor="${left ? 'end' : 'start'}">${CITIES[mapSel].name}</text>`;
-    $('mapProgress').textContent = `Ville ${reached + 1} sur ${CITIES.length} · ${CITIES[reached].name}`;
+      + (mapSel !== reached ? label(reached, ' here') : '') + label(mapSel, '');
+    $('mapTitle').textContent = `Le voyage de ${catName()}`;
+    $('mapProgress').textContent = `${CITIES[reached].name} · ville ${reached + 1} sur ${CITIES.length}`;
     $('mapProgressBar').style.width = (100 * (reached + 1) / CITIES.length) + '%';
     renderCityCard();
   }
@@ -6220,11 +6314,12 @@
     $('cityRegion').textContent = c.region;
     $('cityName').textContent = c.name;
     $('cityLevels').textContent = i === CITIES.length - 1 ? `À partir du niveau ${from}` : `Niveaux ${from} à ${from + LEVELS_PER_CITY - 1}`;
-    $('cityFact').textContent = open ? c.fact : `Atteins le niveau ${from} pour découvrir cette ville.`;
+    const left = from - profile.level;
+    $('cityFact').textContent = open ? c.fact : `Encore ${left} niveau${left > 1 ? 'x' : ''} avant ${c.name} !`;
     $('cityPlay').hidden = !open;
+    $('cityPlay').textContent = `${i === reached ? 'Jouer' : 'Rejouer'} à ${c.name}`;
     $('cityStory').hidden = !open;
-    $('cityStory').textContent = `Chapitre ${i + 1} · ${CHAPTERS[i][1]}`;
-    $('cityPlay').textContent = i === reached ? 'Jouer ici' : 'Refaire le niveau';
+    $('cityStory').textContent = `Lire le chapitre ${i + 1}`;
     $('cityPrev').disabled = i === 0;
     $('cityNext').disabled = i === CITIES.length - 1;
   }
@@ -6237,10 +6332,24 @@
     $('mapScreen').scrollTop = 0;
     $('mapBack').focus({ preventScroll: true });
   }
-  const selectCity = i => { mapSel = Math.max(0, Math.min(CITIES.length - 1, i)); renderMap(); };
+  const selectCity = (i, reveal) => {
+    mapSel = Math.max(0, Math.min(CITIES.length - 1, i));
+    renderMap();
+    if (reveal) $('cityPicWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  // A tap anywhere on the map picks the nearest city, so small dots are easy to reach
   $('franceMap').addEventListener('click', e => {
-    const g = e.target.closest('[data-city]');
-    if (g) { selectCity(+g.dataset.city); sfx.lane(); }
+    const svg = $('franceMap'), pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    let bestI = -1, bestD = 14 * 14;
+    CITIES.forEach((c, i) => { const [x, y] = mapXY(c.lon, c.lat), d = (x - p.x) ** 2 + (y - p.y) ** 2; if (d < bestD) { bestD = d; bestI = i; } });
+    if (bestI >= 0) { selectCity(bestI, true); sfx.lane(); }
+  });
+  window.addEventListener('keydown', e => {
+    if ($('mapScreen').hidden) return;
+    if (e.code === 'ArrowLeft') { e.preventDefault(); selectCity(mapSel - 1); }
+    else if (e.code === 'ArrowRight') { e.preventDefault(); selectCity(mapSel + 1); }
   });
   $('cityPrev').addEventListener('click', () => selectCity(mapSel - 1));
   $('cityNext').addEventListener('click', () => selectCity(mapSel + 1));
@@ -6250,6 +6359,7 @@
     playCity = mapSel === cityIndexFor(profile.level) ? null : mapSel;
     startGame(1);
   });
+  $('newCityMap').addEventListener('click', () => openMap('overScreen'));
   $('cityStory').addEventListener('click', () => openStory('mapScreen', mapSel + 1));
   $('mapBtn').addEventListener('click', () => openMap('startScreen'));
   $('mapBack').addEventListener('click', () => show(mapReturn));
@@ -6295,8 +6405,9 @@
     $('levelUp').hidden = !reward;
     const news = ROAD_UNLOCKS.filter(u => u.level > levelBefore && u.level <= profile.level);
     const cityNow = cityIndexFor(profile.level), newCity = cityNow !== cityIndexFor(levelBefore);
+    $('newCity').hidden = !newCity;
+    $('newCityName').textContent = CITIES[cityNow].name;
     $('levelUp').textContent = `Niveau supérieur ! +${reward} croquettes`
-      + (newCity ? ` · Nouvelle ville : ${CITIES[cityNow].name} !` : '')
       + gifts.map(g => ` · Nouveau chat offert : ${g.name} !`).join('')
       + news.map(u => ` · Nouveau sur les toits : ${u.name} (${u.text})`).join('');
     if (newCity) { playCity = null; applyCity(cityNow); }
@@ -6378,7 +6489,7 @@
     c.fillText(String(r.score), 540, 420);
     c.fillStyle = '#c9cbef';
     c.font = 'bold 38px Nunito, system-ui, sans-serif';
-    c.fillText(`points · quartier ${r.level} · ${r.kibbles} croquettes`, 540, 490);
+    c.fillText(`points · ${CITY().name} · ${r.kibbles} croquettes`, 540, 490);
     if (THEME_ID) {
       c.fillStyle = TH.accent;
       c.font = '40px "Lilita One", "Arial Rounded MT Bold", sans-serif';
@@ -6575,7 +6686,7 @@
   const COSTUME_PRICE = 6;
   const POWERS = [
     { id: 'long', name: 'Bonus plus longs', price: 3, text: 'Les bonus durent deux fois plus longtemps pendant la prochaine partie.' },
-    { id: 'quick', name: 'Départ rapide', price: 3, text: 'La prochaine partie commence au quartier 2, avec un bouclier pendant 5 secondes.' },
+    { id: 'quick', name: 'Départ rapide', price: 3, text: 'La prochaine partie commence à la 2e rue, avec un bouclier pendant 5 secondes.' },
     { id: 'hint', name: 'Indice aux questions', price: 2, text: 'Pendant la prochaine partie, une mauvaise réponse disparaît à chaque question.' },
     { id: 'magnet', name: 'Aimant de départ', price: 2, text: 'La prochaine partie commence avec un aimant qui dure 30 secondes.' },
   ];
@@ -6961,7 +7072,7 @@
   function buildFishShop(grid) {
     const head = document.createElement('div');
     head.className = 'box full fish-head';
-    head.innerHTML = `<div class="box-head"><b>Tes poissons d'or</b><span class="gold-count">${GOLD_SVG} ${gold.count}</span></div><p class="small-text">Ils sont très rares : un seul se cache parfois dans un quartier. Ils servent aussi à te relever une fois par partie.</p>`;
+    head.innerHTML = `<div class="box-head"><b>Tes poissons d'or</b><span class="gold-count">${GOLD_SVG} ${gold.count}</span></div><p class="small-text">Ils sont très rares : un seul se cache parfois dans une rue. Ils servent aussi à te relever une fois par partie.</p>`;
     grid.append(head);
 
     section(grid, `Déguisements de fête · ${COSTUME_PRICE} poissons d’or`);
