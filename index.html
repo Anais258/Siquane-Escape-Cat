@@ -4212,6 +4212,18 @@
     c.beginPath(); c.ellipse(x, y, rx, ry, rot || 0, 0, TAU); hatPath(c, fill, outline);
   }
 
+  // Bands and bottom edges curve down a little (sag) to wrap around the head
+  const HAT_SAG = 3;
+  const sagAt = (x, half) => HAT_SAG * (1 - (x / half) ** 2);
+  function bandPath(c, x0, x1, top, h) {
+    const r = h / 2;
+    c.beginPath(); c.moveTo(x0, top);
+    c.quadraticCurveTo(0, top + 2 * HAT_SAG, x1, top);
+    c.quadraticCurveTo(x1 + r, top + r, x1, top + h);
+    c.quadraticCurveTo(0, top + h + 2 * HAT_SAG, x0, top + h);
+    c.quadraticCurveTo(x0 - r, top + r, x0, top);
+    c.closePath();
+  }
   // Thin headband that follows the round of the head, with an outline
   function headband(c, fill, line) {
     c.lineCap = 'round';
@@ -4226,7 +4238,7 @@
       hatPath(c, '#e84a5f');
       c.strokeStyle = '#fff1e6'; c.lineWidth = 2.4;
       c.beginPath(); c.moveTo(-12, -9); c.quadraticCurveTo(0, -12, 12, -9); c.stroke();
-      c.beginPath(); c.roundRect(-15, -3, 30, 7, 3); hatPath(c, '#fff1e6');
+      bandPath(c, -15, 15, -3, 7); hatPath(c, '#fff1e6');
       ell(c, 0, -21, 5.5, 5.5, '#fff1e6');
     },
     bob(c, t) {
@@ -4245,12 +4257,13 @@
     },
     toque(c) {
       for (const [x, y, r] of [[-8, -15, 8], [8, -15, 8], [0, -21, 10]]) ell(c, x, y, r, r, '#fbfbff', '#5c5a70');
-      c.beginPath(); c.rect(-11, -8, 22, 9); hatPath(c, '#fbfbff', '#5c5a70');
+      c.beginPath(); c.moveTo(-11, -8); c.lineTo(11, -8); c.lineTo(11, 1); c.quadraticCurveTo(0, 1 + 2 * HAT_SAG, -11, 1); c.closePath();
+      hatPath(c, '#fbfbff', '#5c5a70');
       c.strokeStyle = '#c9c8d8'; c.lineWidth = 1;
-      for (const x of [-5, 0, 5]) { c.beginPath(); c.moveTo(x, -7); c.lineTo(x, 0); c.stroke(); }
+      for (const x of [-5, 0, 5]) { c.beginPath(); c.moveTo(x, -7); c.lineTo(x, sagAt(x, 11)); c.stroke(); }
     },
     pasteque(c) {
-      const half = (r, fill, outline) => { c.beginPath(); c.arc(0, 2, r, Math.PI, 0); c.closePath(); hatPath(c, fill, outline); };
+      const half = (r, fill, outline) => { c.beginPath(); c.arc(0, 2, r, Math.PI, 0); c.quadraticCurveTo(0, 2 + 2 * HAT_SAG * r / 17, -r, 2); c.closePath(); hatPath(c, fill, outline); };
       half(17, '#3f9b4a', '#1f5a28');
       half(14.5, '#e9f5d0', '#e9f5d0');
       half(12.5, '#ff5a6e', '#ff5a6e');
@@ -4284,7 +4297,7 @@
       c.beginPath();
       c.moveTo(-14, 1); c.lineTo(-14, -16); c.lineTo(-8, -8); c.lineTo(-3.5, -19); c.lineTo(0, -9);
       // Rounded bottom edge that wraps around the head
-      c.lineTo(3.5, -19); c.lineTo(8, -8); c.lineTo(14, -16); c.lineTo(14, 1); c.quadraticCurveTo(0, 7, -14, 1); c.closePath();
+      c.lineTo(3.5, -19); c.lineTo(8, -8); c.lineTo(14, -16); c.lineTo(14, 1); c.quadraticCurveTo(0, 1 + 2 * HAT_SAG, -14, 1); c.closePath();
       hatPath(c, '#ffcc33', '#8a5a00');
       ell(c, -7, -1.5, 2.2, 2.2, '#e8445a', '#8a5a00');
       ell(c, 0, -0.5, 2.4, 2.4, '#3d7bff', '#8a5a00');
@@ -4302,7 +4315,7 @@
       hatPath(c, '#3b4cc0', '#16205c');
       drawStar(c, -4, -10, 2.4, '#ffd34d');
       drawStar(c, 6, -15, 2, '#ffd34d');
-      c.beginPath(); c.roundRect(-15, -4, 30, 8, 4); hatPath(c, '#f4f1ff', '#9a98b8');
+      bandPath(c, -15, 15, -4, 8); hatPath(c, '#f4f1ff', '#9a98b8');
       drawStar(c, 24 + flop, -8, 5, '#ffd34d');
     },
     antenne(c, t) {
@@ -4358,9 +4371,9 @@
       }
       c.beginPath(); c.moveTo(-15, 2); c.quadraticCurveTo(-15, -19, 0, -19); c.quadraticCurveTo(15, -19, 15, 2); c.closePath();
       hatPath(c, '#9aa3b5', '#3a3f50');
-      c.beginPath(); c.rect(-15, -3, 30, 5); hatPath(c, '#b08840', '#5a400f');
+      bandPath(c, -15, 15, -3, 5); hatPath(c, '#b08840', '#5a400f');
       c.fillStyle = '#5a400f';
-      for (const x of [-10, -3.5, 3.5, 10]) { c.beginPath(); c.arc(x, -0.5, 1, 0, TAU); c.fill(); }
+      for (const x of [-10, -3.5, 3.5, 10]) { c.beginPath(); c.arc(x, -0.5 + sagAt(x, 15), 1, 0, TAU); c.fill(); }
       c.beginPath(); c.rect(-1.5, -19, 3, 16); hatPath(c, '#b08840', '#5a400f');
     },
     licorne(c, t) {
@@ -4446,7 +4459,7 @@
       ['#e8445a', '#ffd34d', '#3d7bff', '#3fbf6a'].forEach((col, k) => { c.fillStyle = col; c.fillRect(-14 + k * 7, -19, 7, 22); });
       c.restore();
       dome(); c.strokeStyle = '#1d1630'; c.lineWidth = 1.8; c.stroke();
-      c.beginPath(); c.roundRect(-15, -3, 30, 6, 3); hatPath(c, '#fff1e6');
+      bandPath(c, -15, 15, -3, 6); hatPath(c, '#fff1e6');
       c.beginPath(); c.rect(-1.2, -25, 2.4, 8); hatPath(c, '#9aa3b5', '#3a3f50');
       // Spinning propeller: the blades shrink as they turn edge-on
       const w = Math.cos(t * 18) * 7;
@@ -4461,7 +4474,7 @@
       c.quadraticCurveTo(18 + flop, -27, 22 + flop, -8);
       c.quadraticCurveTo(12, -17, 13, 0); c.closePath();
       hatPath(c, '#d42a2a', '#5a0a0a');
-      c.beginPath(); c.roundRect(-15, -4, 30, 8, 4); hatPath(c, '#ffffff', '#9a98b8');
+      bandPath(c, -15, 15, -4, 8); hatPath(c, '#ffffff', '#9a98b8');
       ell(c, 22 + flop, -6, 5, 5, '#ffffff', '#9a98b8');
     },
     citrouille(c) {
@@ -4483,9 +4496,9 @@
       headband(c, '#ffb3d1', '#a85a7a');
     },
     fete(c, t) {
-      c.beginPath(); c.moveTo(-11, 0); c.lineTo(0, -32); c.lineTo(11, 0); c.closePath();
-      hatPath(c, '#7a3dff', '#2a0a6a');
-      c.save(); c.beginPath(); c.moveTo(-11, 0); c.lineTo(0, -32); c.lineTo(11, 0); c.closePath(); c.clip();
+      const cone = () => { c.beginPath(); c.moveTo(-11, 0); c.lineTo(0, -32); c.lineTo(11, 0); c.quadraticCurveTo(0, 2 * HAT_SAG, -11, 0); c.closePath(); };
+      cone(); hatPath(c, '#7a3dff', '#2a0a6a');
+      c.save(); cone(); c.clip();
       c.strokeStyle = '#ffd76a'; c.lineWidth = 3;
       for (let y = -4; y > -32; y -= 8) { c.beginPath(); c.moveTo(-12, y); c.lineTo(12, y - 5); c.stroke(); }
       c.restore();
@@ -4520,7 +4533,7 @@
       }
       ell(c, -6, -8, 2.6, 2.6, '#ffcf4a', '#8a5a00');
       ell(c, 6, -8, 2.6, 2.6, '#ffcf4a', '#8a5a00');
-      c.beginPath(); c.roundRect(-15, -3, 30, 5, 2); hatPath(c, '#ffcf4a', '#8a5a00');
+      bandPath(c, -15, 15, -3, 5); hatPath(c, '#ffcf4a', '#8a5a00');
     },
     paille(c) {
       ell(c, 0, 0, 23, 6, '#e9c46a', '#8a6a1a');
