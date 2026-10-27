@@ -769,7 +769,7 @@
         <div class="label">Poissons d'or</div>
         <p class="small-text">Très rares : il y a 1 chance sur 15 qu'un poisson d'or se cache dans chaque rue. Quand tu perds, un poisson d'or te permet de repartir au même endroit (une fois par partie). Ils servent aussi à acheter des déguisements de fête et des pouvoirs dans la boutique.</p>
         <div class="label">Rues et questions</div>
-        <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Pendant la course, tu passes de rue en rue, avec leurs vrais noms : la première fait 1 km, puis chacune est un peu plus longue. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
+        <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Une question bien répondue ne revient plus ; une question ratée revient un peu plus tard, pour bien retenir la réponse. Pendant la course, tu passes de rue en rue, avec leurs vrais noms : la première fait 1 km, puis chacune est un peu plus longue. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
         <button class="btn ghost" data-close>Fermer</button>
         <p class="fine-print"><a class="link-quiet" href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>
@@ -4646,6 +4646,7 @@
 
   function startGame(fromQ = 1) {
     initAudio();
+    runSeen = new Set();
     closeSheets();
     resetWorld();
     runLevel = profile.level;
@@ -5263,9 +5264,749 @@
     ['fr', 4, 'Complète : « Si j’avais des ailes, je ___ au-dessus des toits. » (voler)', ['volerais', 'volerai', 'vole'], 'Après « si » suivi de l’imparfait, on utilise le conditionnel présent : je volerais.'],
     ['fr', 4, 'Que veut dire l’expression « donner sa langue au chat » ?', ['Renoncer à trouver la réponse', 'Parler beaucoup trop', 'Garder un secret'], 'On donne sa langue au chat quand on abandonne et qu’on demande la solution.'],
     ['fr', 4, 'Que veut dire l’expression « avoir un chat dans la gorge » ?', ['Être enroué', 'Avoir très faim', 'Avoir peur'], 'On a « un chat dans la gorge » quand la voix est enrouée.'],
+    // ---- Nouvelles questions : Sciences et nature ----
+    // Sciences et nature, CP-CE1
+    ['sci', 1, 'Quel animal fait du miel ?', ['L’abeille', 'La mouche', 'La fourmi'], 'L’abeille butine les fleurs et fabrique le miel dans sa ruche.'],
+    ['sci', 1, 'Où vit le poisson ?', ['Dans l’eau', 'Dans un arbre', 'Sous la terre'], 'Le poisson vit dans l’eau : dans la mer, les rivières ou les lacs.'],
+    ['sci', 1, 'Combien de saisons y a-t-il dans une année ?', ['4', '2', '6'], 'Il y a 4 saisons : le printemps, l’été, l’automne et l’hiver.'],
+    ['sci', 1, 'Quel est le petit de la vache ?', ['Le veau', 'L’agneau', 'Le poulain'], 'Le petit de la vache est le veau. L’agneau est le petit du mouton, le poulain celui du cheval.'],
+    ['sci', 1, 'Quel animal a une trompe ?', ['L’éléphant', 'La girafe', 'Le zèbre'], 'L’éléphant se sert de sa trompe pour respirer, boire et attraper la nourriture.'],
+    ['sci', 1, 'Avec quel sens sent-on les odeurs ?', ['L’odorat', 'L’ouïe', 'Le toucher'], 'On sent les odeurs avec le nez : c’est l’odorat.'],
+    ['sci', 1, 'Avec quoi entend-on ?', ['Les oreilles', 'Les yeux', 'Les mains'], 'On entend les sons avec les oreilles : c’est l’ouïe.'],
+    ['sci', 1, 'Que fait l’ours brun pendant une grande partie de l’hiver ?', ['Il dort dans sa tanière', 'Il part à la plage', 'Il nage dans la mer'], 'L’ours brun passe l’hiver à dormir dans une tanière pour économiser son énergie.'],
+    ['sci', 1, 'En quelle saison tombent les feuilles de beaucoup d’arbres ?', ['En automne', 'Au printemps', 'En été'], 'En automne, les feuilles de beaucoup d’arbres jaunissent puis tombent.'],
+    ['sci', 1, 'Quel animal a une carapace ?', ['La tortue', 'Le lapin', 'Le chat'], 'La tortue a une carapace dure qui la protège.'],
+    ['sci', 1, 'Que mange la vache ?', ['De l’herbe', 'De la viande', 'Des poissons'], 'La vache est herbivore : elle mange de l’herbe et du foin.'],
+    ['sci', 1, 'D’où vient la pluie ?', ['Des nuages', 'Du Soleil', 'Des arbres'], 'Les gouttes d’eau se forment dans les nuages, puis tombent en pluie.'],
+    ['sci', 1, 'Quel animal fait « coin-coin » ?', ['Le canard', 'Le cochon', 'Le mouton'], 'Le canard cancane : il fait « coin-coin ».'],
+    ['sci', 1, 'Que voit-on souvent dans le ciel la nuit ?', ['La Lune et les étoiles', 'Le Soleil', 'Un arc-en-ciel'], 'La nuit, quand le ciel est dégagé, on voit la Lune et les étoiles.'],
+    ['sci', 1, 'Combien de pattes a un oiseau ?', ['2', '4', '6'], 'Les oiseaux ont 2 pattes et 2 ailes.'],
+    ['sci', 1, 'Où l’oiseau pond-il ses œufs ?', ['Dans un nid', 'Dans une ruche', 'Dans un terrier'], 'La plupart des oiseaux pondent leurs œufs dans un nid.'],
+    ['sci', 1, 'Que devient un têtard en grandissant ?', ['Une grenouille', 'Un poisson', 'Un serpent'], 'Le têtard vit dans l’eau, puis il lui pousse des pattes : il devient une grenouille.'],
+    ['sci', 1, 'Quel fruit pousse sur un pommier ?', ['La pomme', 'La poire', 'La cerise'], 'Le pommier donne des pommes, le poirier des poires et le cerisier des cerises.'],
+    ['sci', 1, 'Avec quelle partie du corps mâche-t-on ?', ['Les dents', 'Les oreilles', 'Les genoux'], 'Les dents coupent et écrasent les aliments pour qu’on puisse les avaler.'],
+    ['sci', 1, 'Qu’est-ce qui nous éclaire et nous chauffe le jour ?', ['Le Soleil', 'La Lune', 'Les nuages'], 'Le Soleil est une étoile : il nous donne de la lumière et de la chaleur.'],
+    // CE2-CM1
+    ['sci', 2, 'Combien de dents de lait a un enfant ?', ['20', '32', '10'], 'Un enfant a 20 dents de lait, qui sont remplacées peu à peu par 32 dents définitives.'],
+    ['sci', 2, 'Quel est l’animal le plus rapide sur terre ?', ['Le guépard', 'Le lion', 'Le cheval'], 'Le guépard peut dépasser 100 km/h sur une courte distance.'],
+    ['sci', 2, 'Comment s’appelle le satellite naturel de la Terre ?', ['La Lune', 'Mars', 'Le Soleil'], 'La Lune tourne autour de la Terre : c’est son satellite naturel.'],
+    ['sci', 2, 'Combien de temps la Terre met-elle pour tourner sur elle-même ?', ['Environ 24 heures', 'Environ 1 heure', 'Environ 1 an'], 'La Terre fait un tour sur elle-même en environ 24 heures : c’est ce qui fait le jour et la nuit.'],
+    ['sci', 2, 'Que mange un animal herbivore ?', ['Des plantes', 'De la viande', 'Des insectes seulement'], 'Un herbivore ne mange que des plantes, comme la vache ou le lapin.'],
+    ['sci', 2, 'Lequel de ces animaux est un mammifère ?', ['Le dauphin', 'Le requin', 'Le saumon'], 'Le dauphin est un mammifère : il respire de l’air et allaite ses petits.'],
+    ['sci', 2, 'Quel organe nous permet de respirer ?', ['Les poumons', 'Le foie', 'Les reins'], 'Les poumons font entrer l’air dans le corps et en rejettent le dioxyde de carbone.'],
+    ['sci', 2, 'Que voit-on quand le Soleil éclaire des gouttes de pluie ?', ['Un arc-en-ciel', 'Un éclair', 'Une ombre'], 'Les gouttes de pluie séparent la lumière blanche en plusieurs couleurs : c’est l’arc-en-ciel.'],
+    ['sci', 2, 'Que se passe-t-il quand on met de la glace au soleil ?', ['Elle fond', 'Elle grossit', 'Elle devient du sable'], 'Avec la chaleur, la glace fond et redevient de l’eau liquide.'],
+    ['sci', 2, 'Quelle planète a de grands anneaux bien visibles ?', ['Saturne', 'Mars', 'Mercure'], 'Saturne est célèbre pour ses grands anneaux faits de glace et de poussières.'],
+    ['sci', 2, 'Comment appelle-t-on un animal qui mange de tout ?', ['Un omnivore', 'Un herbivore', 'Un carnivore'], 'Un omnivore mange à la fois des plantes et de la viande, comme l’ours ou l’être humain.'],
+    ['sci', 2, 'Où se trouve le cerveau ?', ['Dans la tête', 'Dans le ventre', 'Dans la jambe'], 'Le cerveau est protégé par le crâne, dans la tête.'],
+    ['sci', 2, 'Quel animal change de couleur pour se cacher ?', ['Le caméléon', 'Le chien', 'Le hibou'], 'Le caméléon peut changer la couleur de sa peau, par exemple selon son humeur ou la lumière.'],
+    ['sci', 2, 'Que fabrique une araignée pour attraper ses proies ?', ['Une toile', 'Un nid', 'Une ruche'], 'L’araignée tisse une toile avec la soie qu’elle produit.'],
+    ['sci', 2, 'Quel est le point cardinal opposé au nord ?', ['Le sud', 'L’est', 'L’ouest'], 'Le sud est à l’opposé du nord, et l’ouest à l’opposé de l’est.'],
+    ['sci', 2, 'Quel instrument sert à mesurer la température ?', ['Un thermomètre', 'Une balance', 'Une règle'], 'Le thermomètre mesure la température, en degrés Celsius en France.'],
+    ['sci', 2, 'Quelle partie de la plante devient souvent un fruit ?', ['La fleur', 'La racine', 'La tige'], 'Après avoir été pollinisée, la fleur se transforme en fruit qui contient les graines.'],
+    ['sci', 2, 'Quel insecte transporte le pollen de fleur en fleur ?', ['L’abeille', 'Le moustique', 'La puce'], 'En butinant, l’abeille transporte le pollen et aide les fleurs à devenir des fruits.'],
+    ['sci', 2, 'Quel animal pond des œufs alors que c’est un mammifère ?', ['L’ornithorynque', 'Le chat', 'Le kangourou'], 'L’ornithorynque, en Australie, est un mammifère très spécial : il pond des œufs.'],
+    ['sci', 2, 'À quelle température l’eau gèle-t-elle ?', ['0 °C', '100 °C', '20 °C'], 'L’eau pure gèle à 0 °C et bout à 100 °C.'],
+    // CM2-6e
+    ['sci', 3, 'Quel est le plus gros os du corps humain ?', ['Le fémur', 'Le crâne', 'La côte'], 'Le fémur, l’os de la cuisse, est l’os le plus long et le plus solide du corps.'],
+    ['sci', 3, 'Combien de dents a un adulte, dents de sagesse comprises ?', ['32', '20', '42'], 'Un adulte a 32 dents, dont 4 dents de sagesse.'],
+    ['sci', 3, 'Comment s’appelle l’étoile la plus proche de la Terre ?', ['Le Soleil', 'L’étoile Polaire', 'Sirius'], 'Le Soleil est une étoile, et c’est de loin la plus proche de nous.'],
+    ['sci', 3, 'Comment appelle-t-on les animaux qui ont une colonne vertébrale ?', ['Les vertébrés', 'Les invertébrés', 'Les insectes'], 'Les vertébrés ont un squelette avec une colonne vertébrale : poissons, oiseaux, mammifères…'],
+    ['sci', 3, 'Que transporte le sang dans tout le corps ?', ['Le dioxygène', 'Du sable', 'De l’électricité'], 'Le sang transporte le dioxygène et les nutriments vers toutes les parties du corps.'],
+    ['sci', 3, 'Qu’est-ce qui provoque les marées ?', ['L’attraction de la Lune', 'Le vent', 'Les baleines'], 'La Lune, et un peu le Soleil, attirent l’eau des océans : c’est ce qui crée les marées.'],
+    ['sci', 3, 'Comment appelle-t-on une montagne qui peut cracher de la lave ?', ['Un volcan', 'Un glacier', 'Une falaise'], 'Un volcan laisse sortir la lave, du magma venu des profondeurs de la Terre.'],
+    ['sci', 3, 'Quelle matière un aimant attire-t-il ?', ['Le fer', 'Le bois', 'Le plastique'], 'Un aimant attire le fer et certains autres métaux, mais pas le bois ni le plastique.'],
+    ['sci', 3, 'Combien de temps la Lune met-elle environ pour faire le tour de la Terre ?', ['Environ un mois', 'Un jour', 'Un an'], 'La Lune fait le tour de la Terre en environ 27 jours, un peu moins d’un mois.'],
+    ['sci', 3, 'Quel organe filtre le sang pour fabriquer l’urine ?', ['Les reins', 'Le cœur', 'Les poumons'], 'Les reins nettoient le sang et rejettent les déchets dans l’urine.'],
+    ['sci', 3, 'Que se passe-t-il quand une étoile de mer perd un bras ?', ['Il peut repousser', 'Elle meurt toujours', 'Elle devient un poisson'], 'Beaucoup d’étoiles de mer peuvent faire repousser un bras perdu.'],
+    ['sci', 3, 'Quel état de l’eau est la neige ?', ['Solide', 'Liquide', 'Gazeux'], 'La neige est faite de petits cristaux de glace : de l’eau à l’état solide.'],
+    ['sci', 3, 'Lequel de ces animaux n’est pas un insecte ?', ['L’araignée', 'La fourmi', 'Le papillon'], 'L’araignée a 8 pattes : c’est un arachnide, pas un insecte.'],
+    ['sci', 3, 'Comment s’appelle le passage d’un liquide à un gaz quand on chauffe ?', ['L’évaporation', 'La fusion', 'La solidification'], 'Quand on chauffe de l’eau, elle s’évapore : elle passe de l’état liquide à l’état gazeux.'],
+    ['sci', 3, 'Où se trouvent les cordes vocales ?', ['Dans la gorge', 'Dans le nez', 'Dans le ventre'], 'Les cordes vocales, dans le larynx au niveau de la gorge, vibrent pour produire la voix.'],
+    ['sci', 3, 'Quelle énergie produisent les éoliennes ?', ['De l’électricité grâce au vent', 'De l’eau', 'Du pétrole'], 'Le vent fait tourner les pales de l’éolienne, qui produit de l’électricité.'],
+    ['sci', 3, 'De quoi sont faits les nuages ?', ['De minuscules gouttes d’eau ou de glace', 'De fumée', 'De coton'], 'Les nuages sont formés de très petites gouttes d’eau ou de cristaux de glace en suspension.'],
+    ['sci', 3, 'Comment s’appelle la couche d’air qui entoure la Terre ?', ['L’atmosphère', 'La croûte', 'Le noyau'], 'L’atmosphère est l’enveloppe d’air qui entoure la Terre et nous protège.'],
+    ['sci', 3, 'Quel animal est le plus grand oiseau du monde ?', ['L’autruche', 'L’aigle', 'Le pélican'], 'L’autruche peut mesurer plus de 2,5 mètres. Elle ne vole pas, mais court très vite.'],
+    ['sci', 3, 'Comment appelle-t-on les animaux qui vivent la nuit ?', ['Les animaux nocturnes', 'Les animaux diurnes', 'Les animaux aquatiques'], 'Les animaux nocturnes, comme la chouette ou le hérisson, sont actifs la nuit.'],
+    // 5e et plus
+    ['sci', 4, 'Quel est le symbole chimique de l’or ?', ['Au', 'Or', 'Ag'], 'Le symbole de l’or est Au, du latin « aurum ». Ag est celui de l’argent.'],
+    ['sci', 4, 'Quelle molécule porte l’information génétique ?', ['L’ADN', 'Le glucose', 'L’amidon'], 'L’ADN, dans le noyau des cellules, contient les gènes.'],
+    ['sci', 4, 'Quelle est l’unité de la puissance électrique ?', ['Le watt', 'Le volt', 'L’ohm'], 'La puissance se mesure en watts (W), la tension en volts et la résistance en ohms.'],
+    ['sci', 4, 'Quel savant a énoncé la loi de la gravitation universelle ?', ['Isaac Newton', 'Albert Einstein', 'Galilée'], 'Isaac Newton a décrit la gravitation à la fin du XVIIe siècle.'],
+    ['sci', 4, 'Quelle scientifique a reçu deux prix Nobel, en physique et en chimie ?', ['Marie Curie', 'Rosalind Franklin', 'Ada Lovelace'], 'Marie Curie a reçu le prix Nobel de physique en 1903 et celui de chimie en 1911.'],
+    ['sci', 4, 'Quel est le pH d’une eau pure ?', ['7', '0', '14'], 'Une eau pure est neutre : son pH est de 7. En dessous, c’est acide ; au-dessus, basique.'],
+    ['sci', 4, 'Comment s’appelle la plus petite partie d’un élément chimique ?', ['L’atome', 'La cellule', 'Le pixel'], 'Toute la matière est faite d’atomes, eux-mêmes faits de protons, de neutrons et d’électrons.'],
+    ['sci', 4, 'Quel gaz les plantes absorbent-elles pour la photosynthèse ?', ['Le dioxyde de carbone', 'Le dioxygène', 'L’azote'], 'Les plantes absorbent du dioxyde de carbone et rejettent du dioxygène.'],
+    ['sci', 4, 'Quel gaz compose environ 78 % de l’air ?', ['L’azote', 'Le dioxygène', 'Le dioxyde de carbone'], 'L’air contient environ 78 % d’azote et 21 % de dioxygène.'],
+    ['sci', 4, 'Combien de temps la Lune met-elle pour passer d’une pleine lune à la suivante ?', ['Environ 29 jours et demi', 'Exactement 7 jours', 'Environ 365 jours'], 'Il y a environ 29,5 jours entre deux pleines lunes : c’est un mois lunaire.'],
+    ['sci', 4, 'Quelle est la vitesse du son dans l’air, à peu près ?', ['340 mètres par seconde', '300 000 km par seconde', '3 mètres par seconde'], 'Le son va à environ 340 m/s dans l’air : bien moins vite que la lumière.'],
+    ['sci', 4, 'Comment s’appellent les globules qui défendent le corps contre les microbes ?', ['Les globules blancs', 'Les globules rouges', 'Les plaquettes'], 'Les globules blancs combattent les infections. Les globules rouges transportent le dioxygène.'],
+    ['sci', 4, 'Quelle est la plus grande planète tellurique (rocheuse) du système solaire ?', ['La Terre', 'Mars', 'Vénus'], 'Les planètes rocheuses sont Mercure, Vénus, la Terre et Mars. La Terre est la plus grande.'],
+    ['sci', 4, 'Comment appelle-t-on un mélange où on ne distingue plus les constituants à l’œil nu ?', ['Un mélange homogène', 'Un mélange hétérogène', 'Une suspension'], 'Dans un mélange homogène, comme l’eau sucrée, on ne voit qu’une seule phase.'],
+    ['sci', 4, 'Quel organe produit l’insuline ?', ['Le pancréas', 'Le foie', 'L’estomac'], 'Le pancréas fabrique l’insuline, qui régule le taux de sucre dans le sang.'],
+    ['sci', 4, 'Dans quelle galaxie se trouve le système solaire ?', ['La Voie lactée', 'Andromède', 'Le Grand Nuage de Magellan'], 'Le système solaire se trouve dans la Voie lactée, une galaxie en spirale.'],
+    ['sci', 4, 'Quelle est la formule du dioxyde de carbone ?', ['CO₂', 'CO', 'O₂'], 'Le dioxyde de carbone est fait d’un atome de carbone et de deux atomes d’oxygène : CO₂.'],
+    ['sci', 4, 'Quel physicien a formulé la célèbre équation E = mc² ?', ['Albert Einstein', 'Isaac Newton', 'Niels Bohr'], 'Albert Einstein a publié cette équation en 1905 : la masse peut se transformer en énergie.'],
+    ['sci', 4, 'Quelle couche protège la Terre d’une partie des rayons ultraviolets du Soleil ?', ['La couche d’ozone', 'La croûte terrestre', 'Le noyau'], 'La couche d’ozone, dans la stratosphère, absorbe une grande partie des rayons UV.'],
+    ['sci', 4, 'Comment appelle-t-on un animal qui garde une température du corps constante ?', ['Un animal à sang chaud (homéotherme)', 'Un animal à sang froid', 'Un amphibien'], 'Les mammifères et les oiseaux régulent leur température : ce sont des homéothermes.'],
+    // ---- Nouvelles questions : Histoire et géographie ----
+    // Histoire et géographie, CP-CE1
+    ['hist', 1, 'Quel jour vient avant samedi ?', ['Vendredi', 'Dimanche', 'Lundi'], 'L’ordre est : lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche.'],
+    ['hist', 1, 'Quel est le premier mois de l’année ?', ['Janvier', 'Décembre', 'Mars'], 'L’année commence en janvier et se termine en décembre.'],
+    ['hist', 1, 'Combien y a-t-il d’heures dans une journée ?', ['24', '12', '60'], 'Une journée entière, jour et nuit, dure 24 heures.'],
+    ['hist', 1, 'Quel mois vient après juin ?', ['Juillet', 'Mai', 'Août'], 'Après juin vient juillet, puis août : ce sont les mois des grandes vacances.'],
+    ['hist', 1, 'Qui vivait dans les châteaux forts ?', ['Les seigneurs', 'Les dinosaures', 'Les astronautes'], 'Au Moyen Âge, le seigneur vivait dans son château fort avec sa famille et ses soldats.'],
+    ['hist', 1, 'Avec quoi les hommes préhistoriques faisaient-ils du feu ?', ['Des silex ou des bâtons frottés', 'Des allumettes', 'Un briquet'], 'Les hommes préhistoriques faisaient jaillir des étincelles avec des pierres ou frottaient des bâtons.'],
+    ['hist', 1, 'Comment s’appelle une très grande étendue de sable très sèche ?', ['Un désert', 'Une forêt', 'Un lac'], 'Un désert reçoit très peu de pluie, comme le Sahara en Afrique.'],
+    ['hist', 1, 'Comment s’appelle une terre entourée d’eau ?', ['Une île', 'Une montagne', 'Une ville'], 'Une île est entourée d’eau de tous les côtés, comme la Corse.'],
+    ['hist', 1, 'Qu’est-ce qu’un calendrier ?', ['Un tableau des jours et des mois', 'Une carte du monde', 'Un livre de recettes'], 'Le calendrier montre les jours, les semaines et les mois de l’année.'],
+    ['hist', 1, 'Quel est le pays où l’on vit si on habite à Marseille ?', ['La France', 'L’Espagne', 'L’Italie'], 'Marseille est une grande ville du sud de la France.'],
+    ['hist', 1, 'Qu’utilisait-on pour s’éclairer avant l’électricité ?', ['Des bougies et des lampes à huile', 'Des ampoules', 'Des écrans'], 'Avant l’électricité, on s’éclairait avec des bougies, des lampes à huile ou à pétrole.'],
+    ['hist', 1, 'Quel animal les chevaliers montaient-ils ?', ['Le cheval', 'L’éléphant', 'Le chameau'], 'Les chevaliers du Moyen Âge combattaient à cheval.'],
+    ['hist', 1, 'Qu’est-ce qu’une carte de géographie ?', ['Un dessin d’un lieu vu d’en haut', 'Une carte à jouer', 'Un ticket de bus'], 'Une carte représente un pays, une ville ou une région comme si on la voyait du ciel.'],
+    ['hist', 1, 'Qui est le papa de ton papa ?', ['Ton grand-père', 'Ton oncle', 'Ton cousin'], 'Le père de ton père ou de ta mère est ton grand-père.'],
+    ['hist', 1, 'Comment s’appelle une très haute colline aux sommets enneigés ?', ['Une montagne', 'Une plage', 'Une prairie'], 'Les montagnes sont très hautes, et leurs sommets sont souvent couverts de neige.'],
+    ['hist', 1, 'Sur une horloge, quelle aiguille indique les heures ?', ['La petite aiguille', 'La grande aiguille', 'L’aiguille des secondes'], 'La petite aiguille montre les heures, la grande aiguille montre les minutes.'],
+    ['hist', 1, 'Où vivaient les premiers hommes préhistoriques, souvent ?', ['Dans des grottes ou des abris', 'Dans des immeubles', 'Dans des châteaux'], 'Les hommes préhistoriques s’abritaient dans des grottes, sous des abris de roche ou dans des huttes.'],
+    ['hist', 1, 'Quel moyen de transport roule sur des rails ?', ['Le train', 'Le bateau', 'L’avion'], 'Le train roule sur des rails, le bateau navigue et l’avion vole.'],
+    ['hist', 1, 'Combien y a-t-il de minutes dans une heure ?', ['60', '100', '24'], 'Une heure dure 60 minutes, et une minute dure 60 secondes.'],
+    ['hist', 1, 'Comment s’appelle la saison des grandes vacances d’été ?', ['L’été', 'L’hiver', 'L’automne'], 'Les grandes vacances ont lieu en été, en juillet et en août.'],
+    // CE2-CM1
+    ['hist', 2, 'Comment s’appelaient les habitants de la Gaule ?', ['Les Gaulois', 'Les Vikings', 'Les Égyptiens'], 'Les Gaulois vivaient sur le territoire de la France actuelle avant la conquête romaine.'],
+    ['hist', 2, 'Quel chef romain a conquis la Gaule ?', ['Jules César', 'Charlemagne', 'Napoléon'], 'Jules César a conquis la Gaule vers 50 avant Jésus-Christ.'],
+    ['hist', 2, 'Quel chef gaulois a été vaincu à Alésia ?', ['Vercingétorix', 'Clovis', 'Astérix'], 'Vercingétorix s’est rendu à Jules César après le siège d’Alésia, en 52 avant Jésus-Christ.'],
+    ['hist', 2, 'Quelle jeune fille a combattu les Anglais pendant la guerre de Cent Ans ?', ['Jeanne d’Arc', 'Marie Curie', 'Cléopâtre'], 'Jeanne d’Arc a aidé le roi Charles VII pendant la guerre de Cent Ans, au XVe siècle.'],
+    ['hist', 2, 'Quel grand fleuve traverse l’Égypte ?', ['Le Nil', 'Le Danube', 'La Seine'], 'Le Nil traverse l’Égypte du sud au nord. Sans lui, le pays serait presque entièrement désertique.'],
+    ['hist', 2, 'Sur quel continent se trouve l’Égypte ?', ['L’Afrique', 'L’Asie', 'L’Amérique'], 'L’Égypte se trouve au nord-est de l’Afrique.'],
+    ['hist', 2, 'Sur quel continent se trouve le Japon ?', ['L’Asie', 'L’Europe', 'L’Afrique'], 'Le Japon est un pays fait d’îles, à l’est de l’Asie.'],
+    ['hist', 2, 'Quel roi des Francs s’est fait baptiser vers l’an 500 ?', ['Clovis', 'Louis XIV', 'Henri IV'], 'Clovis, roi des Francs, s’est fait baptiser à Reims vers l’an 500.'],
+    ['hist', 2, 'Comment s’appelle la période des chevaliers et des châteaux forts ?', ['Le Moyen Âge', 'La Préhistoire', 'L’Antiquité'], 'Le Moyen Âge dure environ mille ans, de la fin de l’Empire romain à la fin du XVe siècle.'],
+    ['hist', 2, 'Quelle est la capitale du Portugal ?', ['Lisbonne', 'Porto', 'Madrid'], 'Lisbonne est la capitale du Portugal, au bord de l’océan Atlantique.'],
+    ['hist', 2, 'Quelle est la capitale de la Belgique ?', ['Bruxelles', 'Anvers', 'Liège'], 'Bruxelles est la capitale de la Belgique et accueille de nombreuses institutions européennes.'],
+    ['hist', 2, 'Quel est le plus haut sommet du monde ?', ['L’Everest', 'Le mont Blanc', 'Le Kilimandjaro'], 'L’Everest, dans l’Himalaya, culmine à environ 8 849 mètres.'],
+    ['hist', 2, 'Quelle invention de Gutenberg a permis d’imprimer des livres ?', ['L’imprimerie', 'La télévision', 'Le téléphone'], 'Vers 1450, Gutenberg a mis au point l’imprimerie à caractères mobiles.'],
+    ['hist', 2, 'Quel animal les Romains utilisaient-ils pour les courses de chars ?', ['Le cheval', 'Le chameau', 'Le bœuf'], 'Les courses de chars tirés par des chevaux étaient très populaires dans la Rome antique.'],
+    ['hist', 2, 'Quel pays a la forme d’une botte ?', ['L’Italie', 'L’Espagne', 'La Grèce'], 'Sur une carte, l’Italie ressemble à une botte qui avance dans la mer Méditerranée.'],
+    ['hist', 2, 'Quels peuples venus du nord naviguaient sur des drakkars ?', ['Les Vikings', 'Les Romains', 'Les Gaulois'], 'Les Vikings venaient de Scandinavie et voyageaient sur des bateaux appelés drakkars.'],
+    ['hist', 2, 'Que trouve-t-on au pôle Nord ?', ['De la glace et de l’océan', 'Une forêt tropicale', 'Un désert de sable'], 'Le pôle Nord est au milieu de l’océan Arctique, recouvert de glace.'],
+    ['hist', 2, 'Quel pays est le voisin de la France au nord-est, avec Berlin pour capitale ?', ['L’Allemagne', 'La Suisse', 'Le Luxembourg'], 'L’Allemagne a une frontière avec la France, et sa capitale est Berlin.'],
+    ['hist', 2, 'Quelle ville était appelée Lutèce par les Romains ?', ['Paris', 'Lyon', 'Bordeaux'], 'Lutèce est le nom antique de Paris.'],
+    ['hist', 2, 'Quel est le nom du grand désert du nord de l’Afrique ?', ['Le Sahara', 'Le Gobi', 'L’Atacama'], 'Le Sahara est le plus grand désert chaud du monde.'],
+    // CM2-6e
+    ['hist', 3, 'Quel roi a été guillotiné en 1793 ?', ['Louis XVI', 'Louis XIV', 'François Ier'], 'Louis XVI a été jugé et guillotiné en janvier 1793, pendant la Révolution.'],
+    ['hist', 3, 'Quel roi a fait construire le château de Versailles tel qu’on le connaît ?', ['Louis XIV', 'Louis XVI', 'Charlemagne'], 'Louis XIV a fait agrandir Versailles et y a installé la cour en 1682.'],
+    ['hist', 3, 'Quel navigateur a fait le premier tour du monde par la mer (expédition de 1519 à 1522) ?', ['Magellan', 'Christophe Colomb', 'Marco Polo'], 'L’expédition de Magellan a fait le premier tour du monde. Magellan est mort en route, aux Philippines.'],
+    ['hist', 3, 'Dans quelle ville antique se dresse le Colisée ?', ['Rome', 'Athènes', 'Alexandrie'], 'Le Colisée est un immense amphithéâtre construit à Rome il y a près de 2 000 ans.'],
+    ['hist', 3, 'Quel temple célèbre se trouve sur l’Acropole d’Athènes ?', ['Le Parthénon', 'Le Panthéon', 'Le Colisée'], 'Le Parthénon, dédié à la déesse Athéna, domine Athènes depuis le Ve siècle avant J.-C.'],
+    ['hist', 3, 'Comment s’appelaient les rois de l’Égypte ancienne ?', ['Les pharaons', 'Les empereurs', 'Les tsars'], 'Les pharaons régnaient sur l’Égypte ancienne, comme Toutânkhamon ou Ramsès II.'],
+    ['hist', 3, 'Quel mur long de milliers de kilomètres a été construit en Chine ?', ['La Grande Muraille', 'Le mur d’Hadrien', 'Le mur de Berlin'], 'La Grande Muraille de Chine a été bâtie et agrandie pendant des siècles pour protéger le pays.'],
+    ['hist', 3, 'Quel est le plus long fleuve d’Europe ?', ['La Volga', 'Le Rhin', 'La Loire'], 'La Volga, en Russie, mesure environ 3 500 km.'],
+    ['hist', 3, 'Quelle est la capitale du Japon ?', ['Tokyo', 'Kyoto', 'Pékin'], 'Tokyo est la capitale du Japon et l’une des plus grandes villes du monde.'],
+    ['hist', 3, 'Quelle est la capitale des États-Unis ?', ['Washington', 'New York', 'Los Angeles'], 'La capitale des États-Unis est Washington, où se trouve la Maison-Blanche.'],
+    ['hist', 3, 'Qui était Charlemagne ?', ['Un roi des Francs devenu empereur', 'Un pharaon', 'Un explorateur'], 'Charlemagne, roi des Francs, a été couronné empereur à Rome en l’an 800.'],
+    ['hist', 3, 'Quelle ville a été détruite par l’éruption du Vésuve en 79 ?', ['Pompéi', 'Venise', 'Athènes'], 'L’éruption du Vésuve a enseveli Pompéi sous les cendres. La ville a été retrouvée bien plus tard.'],
+    ['hist', 3, 'Quel est le plus grand pays d’Amérique du Sud ?', ['Le Brésil', 'L’Argentine', 'Le Chili'], 'Le Brésil couvre près de la moitié de l’Amérique du Sud.'],
+    ['hist', 3, 'Quelle ligne imaginaire partage la Terre en hémisphère Nord et hémisphère Sud ?', ['L’équateur', 'Le méridien de Greenwich', 'Le tropique du Cancer'], 'L’équateur fait le tour de la Terre à égale distance des deux pôles.'],
+    ['hist', 3, 'Quel roi de France est connu pour l’édit de Nantes (1598) ?', ['Henri IV', 'Louis XIII', 'Philippe le Bel'], 'Avec l’édit de Nantes, Henri IV a accordé des droits aux protestants pour mettre fin aux guerres de Religion.'],
+    ['hist', 3, 'Quel roi de France a vaincu à Marignan en 1515 ?', ['François Ier', 'Louis XI', 'Henri II'], 'François Ier a remporté la bataille de Marignan en 1515, au début de son règne.'],
+    ['hist', 3, 'Quelles grandes routes reliaient la Chine à l’Europe pour le commerce ?', ['Les routes de la soie', 'Les routes du sel', 'Les routes de l’or'], 'Les routes de la soie transportaient la soie, les épices et les idées entre l’Asie et l’Europe.'],
+    ['hist', 3, 'Combien y a-t-il de pays dans l’Union européenne (en 2026) ?', ['27', '12', '50'], 'Depuis la sortie du Royaume-Uni en 2020, l’Union européenne compte 27 pays.'],
+    ['hist', 3, 'Quelle est la capitale de la Grèce ?', ['Athènes', 'Sparte', 'Thessalonique'], 'Athènes est la capitale de la Grèce, berceau de la démocratie dans l’Antiquité.'],
+    ['hist', 3, 'Quel océan se trouve entre l’Afrique et l’Australie ?', ['L’océan Indien', 'L’océan Atlantique', 'L’océan Arctique'], 'L’océan Indien s’étend entre l’Afrique, l’Asie et l’Australie.'],
+    // 5e et plus
+    ['hist', 4, 'En quelle année a eu lieu le débarquement allié en Normandie ?', ['1944', '1940', '1918'], 'Le 6 juin 1944, les Alliés ont débarqué sur les plages de Normandie.'],
+    ['hist', 4, 'Qui a lancé l’appel du 18 juin 1940 ?', ['Le général de Gaulle', 'Le maréchal Pétain', 'Jean Moulin'], 'Depuis Londres, le général de Gaulle a appelé les Français à continuer le combat.'],
+    ['hist', 4, 'En quelle année la Ve République a-t-elle été fondée ?', ['1958', '1945', '1981'], 'La Constitution de la Ve République a été adoptée en 1958.'],
+    ['hist', 4, 'Quel traité de 1957 a lancé la construction européenne ?', ['Le traité de Rome', 'Le traité de Versailles', 'Le traité de Maastricht'], 'Le traité de Rome a créé la Communauté économique européenne en 1957.'],
+    ['hist', 4, 'En quelle année l’euro est-il arrivé dans les porte-monnaie ?', ['2002', '1992', '2010'], 'Les pièces et billets en euros ont remplacé le franc le 1er janvier 2002.'],
+    ['hist', 4, 'Quel empereur a été battu à Waterloo en 1815 ?', ['Napoléon Ier', 'Napoléon III', 'Charles Quint'], 'Napoléon Ier a été vaincu à Waterloo, en Belgique actuelle, puis exilé à Sainte-Hélène.'],
+    ['hist', 4, 'Quelle loi de 1905 sépare les Églises et l’État en France ?', ['La loi de séparation des Églises et de l’État', 'La loi Ferry', 'L’édit de Nantes'], 'La loi de 1905 garantit la liberté de conscience et la neutralité de l’État : c’est la base de la laïcité.'],
+    ['hist', 4, 'En quelle année l’esclavage a-t-il été définitivement aboli en France ?', ['1848', '1789', '1905'], 'L’esclavage a été aboli en 1848, grâce notamment à Victor Schœlcher.'],
+    ['hist', 4, 'Quelle révolution a transformé l’économie au XIXe siècle avec les usines et la machine à vapeur ?', ['La révolution industrielle', 'La Révolution française', 'La Renaissance'], 'La révolution industrielle a développé les usines, le charbon, la machine à vapeur et le chemin de fer.'],
+    ['hist', 4, 'Quel pays a lancé le premier satellite artificiel, Spoutnik, en 1957 ?', ['L’URSS', 'Les États-Unis', 'La France'], 'L’URSS a lancé Spoutnik 1 en 1957, au début de la conquête spatiale.'],
+    ['hist', 4, 'Comment appelle-t-on la période de tensions entre les États-Unis et l’URSS après 1945 ?', ['La guerre froide', 'La guerre de Cent Ans', 'La Belle Époque'], 'La guerre froide oppose les deux blocs de 1947 à 1991, sans guerre directe entre eux.'],
+    ['hist', 4, 'Quelle est la capitale du Brésil ?', ['Brasília', 'Rio de Janeiro', 'São Paulo'], 'Brasília est la capitale du Brésil depuis 1960.'],
+    ['hist', 4, 'Quelle est la capitale de la Turquie ?', ['Ankara', 'Istanbul', 'Izmir'], 'Ankara est la capitale de la Turquie, même si Istanbul est sa plus grande ville.'],
+    ['hist', 4, 'Quel est le pays le plus peuplé du monde (en 2026) ?', ['L’Inde', 'La Chine', 'Les États-Unis'], 'L’Inde a dépassé la Chine en 2023 et compte plus de 1,4 milliard d’habitants.'],
+    ['hist', 4, 'Quel homme a mené la lutte non violente pour l’indépendance de l’Inde ?', ['Gandhi', 'Nelson Mandela', 'Martin Luther King'], 'Gandhi a conduit la lutte non violente qui a mené à l’indépendance de l’Inde en 1947.'],
+    ['hist', 4, 'Qui a été le premier président noir d’Afrique du Sud, en 1994 ?', ['Nelson Mandela', 'Desmond Tutu', 'Kofi Annan'], 'Après 27 ans de prison, Nelson Mandela est devenu président en 1994, à la fin de l’apartheid.'],
+    ['hist', 4, 'Comment s’appelle le mouvement artistique et scientifique né en Italie au XVe siècle ?', ['La Renaissance', 'Le Moyen Âge', 'Les Lumières'], 'La Renaissance redécouvre l’Antiquité et voit naître Léonard de Vinci ou Michel-Ange.'],
+    ['hist', 4, 'Comment s’appelle le mouvement d’idées du XVIIIe siècle de Voltaire et Rousseau ?', ['Les Lumières', 'Le romantisme', 'L’humanisme'], 'Les philosophes des Lumières défendaient la raison, la liberté et la tolérance.'],
+    ['hist', 4, 'Quel conflit a opposé la France et l’Angleterre de 1337 à 1453 ?', ['La guerre de Cent Ans', 'La guerre de Trente Ans', 'Les croisades'], 'Malgré son nom, la guerre de Cent Ans a duré 116 ans, avec des périodes de paix.'],
+    ['hist', 4, 'Quelle ligne de fortifications française a été contournée par l’armée allemande en 1940 ?', ['La ligne Maginot', 'Le mur de l’Atlantique', 'La ligne Siegfried'], 'L’armée allemande est passée par les Ardennes, en évitant la ligne Maginot.'],
+    // ---- Nouvelles questions : Français ----
+    // Français, CP-CE1
+    ['fr', 1, 'Quelle est la dernière lettre de l’alphabet ?', ['Z', 'Y', 'W'], 'L’alphabet commence par A et se termine par Z.'],
+    ['fr', 1, 'Combien y a-t-il de lettres dans l’alphabet ?', ['26', '20', '30'], 'L’alphabet français compte 26 lettres.'],
+    ['fr', 1, 'Quel mot rime avec « bateau » ?', ['Gâteau', 'Maison', 'Soleil'], 'Bateau et gâteau finissent par le même son : « o ».'],
+    ['fr', 1, 'Quel est le contraire de « jour » ?', ['Nuit', 'Matin', 'Soleil'], 'Le contraire du jour, c’est la nuit.'],
+    ['fr', 1, 'Quel mot est un fruit ?', ['La banane', 'La carotte', 'Le pain'], 'La banane est un fruit, la carotte est un légume.'],
+    ['fr', 1, 'Combien de syllabes y a-t-il dans « chocolat » ?', ['3', '2', '4'], 'Cho-co-lat : il y a 3 syllabes.'],
+    ['fr', 1, 'Quel est le contraire de « ouvert » ?', ['Fermé', 'Grand', 'Plein'], 'Une porte peut être ouverte ou fermée.'],
+    ['fr', 1, 'Quel mot commence par la lettre « M » ?', ['Maison', 'Table', 'Lune'], 'Maison commence par M, table par T et lune par L.'],
+    ['fr', 1, 'Quelle lettre manque : « ch_t » ?', ['a', 'o', 'i'], 'On écrit « chat », avec un a.'],
+    ['fr', 1, 'Quel mot désigne une couleur ?', ['Bleu', 'Vélo', 'Courir'], 'Bleu est une couleur. Vélo est un objet, courir est une action.'],
+    ['fr', 1, 'Quel est le contraire de « plein » ?', ['Vide', 'Lourd', 'Long'], 'Un verre plein est rempli, un verre vide ne contient rien.'],
+    ['fr', 1, 'Quel petit mot va devant « chat » ?', ['Le', 'La', 'Les'], 'On dit « le chat » au masculin singulier.'],
+    ['fr', 1, 'Quel petit mot va devant « souris » ?', ['La', 'Le', 'Un'], 'On dit « la souris » : souris est un mot féminin.'],
+    ['fr', 1, 'Quel mot désigne une action ?', ['Sauter', 'Pomme', 'Joli'], 'Sauter est un verbe : il dit ce que l’on fait.'],
+    ['fr', 1, 'Combien de mots y a-t-il dans « Le chat dort » ?', ['3', '2', '4'], 'Le / chat / dort : la phrase compte 3 mots.'],
+    ['fr', 1, 'Par quoi commence toujours une phrase ?', ['Une majuscule', 'Un point', 'Une virgule'], 'Une phrase commence par une majuscule et se termine par un point.'],
+    ['fr', 1, 'Quel mot rime avec « souris » ?', ['Gris', 'Chat', 'Bol'], 'Souris et gris finissent par le même son : « i ».'],
+    ['fr', 1, 'Quel est le contraire de « dessus » ?', ['Dessous', 'Devant', 'Dedans'], 'Le contraire de dessus est dessous.'],
+    ['fr', 1, 'Quel mot est un animal de la ferme ?', ['Le cochon', 'Le lion', 'Le requin'], 'Le cochon vit à la ferme. Le lion vit dans la savane et le requin dans la mer.'],
+    ['fr', 1, 'Quelle lettre fait le son « sss » dans « soleil » ?', ['S', 'O', 'L'], 'Soleil commence par la lettre S, qui fait le son « sss ».'],
+    // CE2-CM1
+    ['fr', 2, 'Quel est le pluriel de « un journal » ?', ['Des journaux', 'Des journals', 'Des journeaux'], 'La plupart des mots en -al font leur pluriel en -aux : un journal, des journaux.'],
+    ['fr', 2, 'Quel est le pluriel de « un bijou » ?', ['Des bijoux', 'Des bijous', 'Des bijou'], 'Bijou fait partie des 7 mots en -ou qui prennent un x : bijou, caillou, chou, genou, hibou, joujou, pou.'],
+    ['fr', 2, 'Complète : « Ils ___ un chat noir. » (verbe avoir)', ['ont', 'sont', 'on'], 'Avec « ils », le verbe avoir s’écrit « ont ».'],
+    ['fr', 2, 'Complète : « Vous ___ sur le toit. » (verbe être)', ['êtes', 'sommes', 'est'], 'Avec « vous », le verbe être s’écrit « êtes ».'],
+    ['fr', 2, 'Quel est le féminin de « lion » ?', ['Lionne', 'Lione', 'Lionnesse'], 'Le féminin de lion est lionne, avec deux n.'],
+    ['fr', 2, 'Quel est le féminin de « boulanger » ?', ['Boulangère', 'Boulangerie', 'Boulangeuse'], 'Le féminin de boulanger est boulangère.'],
+    ['fr', 2, 'Quel mot est un nom propre ?', ['Marseille', 'Ville', 'Maison'], 'Un nom propre désigne une personne ou un lieu précis et commence par une majuscule.'],
+    ['fr', 2, 'Quel est le contraire de « gentil » ?', ['Méchant', 'Joli', 'Calme'], 'Le contraire de gentil est méchant.'],
+    ['fr', 2, 'Quel mot appartient à la famille de « dent » ?', ['Dentiste', 'Danser', 'Dindon'], 'Dentiste vient de dent : c’est le médecin des dents.'],
+    ['fr', 2, 'Quel signe termine une question ?', ['Le point d’interrogation', 'Le point', 'La virgule'], 'Une phrase qui pose une question se termine par un point d’interrogation.'],
+    ['fr', 2, 'Complète au futur : « Demain, je ___ au parc. » (aller)', ['irai', 'allerai', 'vais'], 'Au futur, aller devient « j’irai ».'],
+    ['fr', 2, 'Quel mot veut dire presque la même chose que « maison » ?', ['Habitation', 'Jardin', 'Rue'], 'Une habitation est un endroit où l’on habite, comme une maison.'],
+    ['fr', 2, 'Quel est le pluriel de « un genou » ?', ['Des genoux', 'Des genous', 'Des genouxs'], 'Genou fait partie des mots en -ou qui prennent un x au pluriel.'],
+    ['fr', 2, 'Dans « Le petit chat joue », quel mot est l’adjectif ?', ['Petit', 'Chat', 'Joue'], 'Petit donne une précision sur le chat : c’est un adjectif.'],
+    ['fr', 2, 'Complète : « Le chat ___ du lait. » (boire, au présent)', ['boit', 'bois', 'boient'], 'Au présent, avec « il » ou « le chat », on écrit « boit ».'],
+    ['fr', 2, 'Quel mot s’écrit avec « ph » ?', ['Photo', 'Fleur', 'Farine'], 'Photo s’écrit avec « ph », qui se prononce comme « f ».'],
+    ['fr', 2, 'Dans l’ordre alphabétique, quel mot vient en dernier ?', ['Zèbre', 'Lapin', 'Ours'], 'Z est la dernière lettre de l’alphabet, donc zèbre vient en dernier.'],
+    ['fr', 2, 'Quel est le contraire de « monter » ?', ['Descendre', 'Grimper', 'Sauter'], 'On monte un escalier, puis on le descend.'],
+    ['fr', 2, 'Quel mot est un verbe à l’infinitif ?', ['Chanter', 'Chanson', 'Chanteur'], 'Chanter est un verbe à l’infinitif, terminé par -er.'],
+    ['fr', 2, 'Complète : « Les chats ___ sur le toit. » (dormir, au présent)', ['dorment', 'dort', 'dormons'], 'Avec « les chats » (ils), on écrit « dorment ».'],
+    // CM2-6e
+    ['fr', 3, 'Complète : « Hier, les chats ___ sur le toit. » (passé composé de monter)', ['sont montés', 'ont montés', 'sont monté'], 'Monter (sans complément) se conjugue avec être, et le participe s’accorde avec le sujet : sont montés.'],
+    ['fr', 3, 'Quel est le synonyme de « rapide » ?', ['Véloce', 'Lent', 'Lourd'], 'Véloce veut dire très rapide.'],
+    ['fr', 3, 'Quel mot est un antonyme de « généreux » ?', ['Avare', 'Gentil', 'Riche'], 'Un avare ne veut rien partager : c’est le contraire de généreux.'],
+    ['fr', 3, 'Complète : « Il ___ beaucoup de chats dans ce quartier. »', ['y a', 'ya', 'i a'], 'On écrit « il y a », en trois mots.'],
+    ['fr', 3, 'Dans « Le chat dort sur le toit », quel est le complément de lieu ?', ['Sur le toit', 'Le chat', 'Dort'], '« Sur le toit » indique où le chat dort : c’est un complément de lieu.'],
+    ['fr', 3, 'Quel temps est utilisé dans « Il était une fois… » ?', ['L’imparfait', 'Le futur', 'Le présent'], '« Était » est le verbe être à l’imparfait, le temps des débuts de contes.'],
+    ['fr', 3, 'Choisis : « ___ chat est-il sur le toit ? »', ['Quel', 'Quelle', 'Qu’elle'], 'Chat est masculin : on écrit « quel ».'],
+    ['fr', 3, 'Choisis : « Elle ___ son chat. » (verbe appeler)', ['appelle', 'apelle', 'appele'], 'Appeler double le l devant un e muet : elle appelle.'],
+    ['fr', 3, 'Quel mot contient un préfixe qui veut dire « le contraire » ?', ['Impossible', 'Possible', 'Possibilité'], 'Le préfixe im- (ou in-) donne le sens contraire : possible, impossible.'],
+    ['fr', 3, 'Choisis : « Les chats ___ ronronnent. »', ['qui', 'qu’il', 'quil'], '« Les chats qui ronronnent » : qui est un pronom relatif.'],
+    ['fr', 3, 'Quel est le participe passé de « prendre » ?', ['Pris', 'Prendu', 'Prit'], 'Le participe passé de prendre est pris : j’ai pris.'],
+    ['fr', 3, 'Quelle est la nature de « et » dans « le chat et le chien » ?', ['Une conjonction de coordination', 'Un verbe', 'Un adjectif'], 'Et relie deux mots : c’est une conjonction de coordination.'],
+    ['fr', 3, 'Choisis : « Ce ___ mes croquettes. »', ['sont', 'son', 'sons'], '« Ce sont » vient du verbe être, qu’on peut remplacer par « c’étaient ».'],
+    ['fr', 3, 'Complète au futur : « Nous ___ demain. » (venir)', ['viendrons', 'venirons', 'viendront'], 'Au futur, venir devient viendr- : nous viendrons.'],
+    ['fr', 3, 'Quel mot est un homonyme de « mer » ?', ['Mère', 'Mur', 'Mars'], 'Mer et mère se prononcent pareil mais n’ont pas le même sens.'],
+    ['fr', 3, 'Choisis : « Il ___ trop tard. »', ['est', 'et', 'ai'], '« Il est », du verbe être. On peut le remplacer par « il était ».'],
+    ['fr', 3, 'Quel est le sens du mot « intrépide » ?', ['Qui n’a peur de rien', 'Très fatigué', 'Très gourmand'], 'Une personne intrépide est courageuse et n’a pas peur du danger.'],
+    ['fr', 3, 'Complète : « Le chat s’est ___ au soleil. » (allonger)', ['allongé', 'allongée', 'allonger'], 'Le chat (masculin) s’est allongé : participe passé accordé au masculin singulier.'],
+    ['fr', 3, 'Quel signe introduit un dialogue dans un récit ?', ['Le tiret ou les guillemets', 'Le point-virgule', 'Les parenthèses'], 'Les paroles des personnages s’écrivent entre guillemets ou après un tiret.'],
+    ['fr', 3, 'Complète : « Où ___-tu caché ? »', ['t’es', 'tes', 'tais'], '« Où t’es-tu caché ? » : te + es, du verbe se cacher au passé composé.'],
+    // 5e et plus
+    ['fr', 4, 'Quelle figure de style y a-t-il dans « Le vent chante dans les arbres » ?', ['Une personnification', 'Une comparaison', 'Une hyperbole'], 'On prête au vent une action humaine, chanter : c’est une personnification.'],
+    ['fr', 4, 'Quelle figure de style y a-t-il dans « Je meurs de faim » ?', ['Une hyperbole', 'Une métaphore', 'Une litote'], 'On exagère pour insister : c’est une hyperbole.'],
+    ['fr', 4, 'Complète : « Bien qu’il ___ tard, le chat sort. » (être)', ['soit', 'est', 'était'], '« Bien que » est suivi du subjonctif : bien qu’il soit.'],
+    ['fr', 4, 'Complète : « Les chattes se sont ___ les pattes. » (laver)', ['lavé', 'lavées', 'lavés'], 'Le complément « les pattes » est placé après le verbe : le participe ne s’accorde pas.'],
+    ['fr', 4, 'Complète au passé simple : « Ils ___ sur le toit. » (courir)', ['coururent', 'courèrent', 'couraient'], 'Au passé simple, courir donne : ils coururent.'],
+    ['fr', 4, 'Quelle est la fonction de « fatigué » dans « Le chat semble fatigué » ?', ['Attribut du sujet', 'Complément d’objet direct', 'Complément circonstanciel'], 'Après un verbe d’état comme sembler, l’adjectif est attribut du sujet.'],
+    ['fr', 4, 'Quel est le sens de l’expression « avoir d’autres chats à fouetter » ?', ['Avoir des choses plus importantes à faire', 'Être méchant avec les chats', 'Avoir beaucoup d’animaux'], 'Cette expression veut dire qu’on a plus important à faire.'],
+    ['fr', 4, 'Que veut dire « appeler un chat un chat » ?', ['Dire les choses franchement', 'Parler aux animaux', 'Se tromper de nom'], 'Appeler un chat un chat, c’est dire les choses telles qu’elles sont, sans détour.'],
+    ['fr', 4, 'Quelle figure de style y a-t-il dans « Va, je ne te hais point » ?', ['Une litote', 'Une hyperbole', 'Une anaphore'], 'Cette réplique de Corneille dit moins pour suggérer plus : c’est une litote.'],
+    ['fr', 4, 'Complète : « Quoi qu’il ___, le chat retombe sur ses pattes. » (arriver)', ['arrive', 'arrives', 'arrivera'], '« Quoi que » est suivi du subjonctif : quoi qu’il arrive.'],
+    ['fr', 4, 'Choisis : « ___ fois que le chat saute, il gagne des points. »', ['Chaque', 'Chacun', 'Chacune'], 'Chaque est un déterminant, placé devant un nom. Chacun est un pronom.'],
+    ['fr', 4, 'Quel est le mode du verbe dans « Saute ! » ?', ['L’impératif', 'L’indicatif', 'Le subjonctif'], 'On donne un ordre : le verbe est à l’impératif.'],
+    ['fr', 4, 'Combien de syllabes compte un alexandrin ?', ['12', '10', '8'], 'L’alexandrin est un vers de 12 syllabes, très utilisé en poésie classique.'],
+    ['fr', 4, 'Complète : « Il faut que nous ___ ensemble. » (aller)', ['allions', 'allons', 'irons'], 'Après « il faut que », subjonctif : que nous allions.'],
+    ['fr', 4, 'Quel mot est un adverbe ?', ['Doucement', 'Doux', 'Douceur'], 'Doucement modifie un verbe : c’est un adverbe. Doux est un adjectif, douceur un nom.'],
+    ['fr', 4, 'Quelle figure de style répète un mot en début de vers ou de phrase ?', ['L’anaphore', 'L’oxymore', 'La métonymie'], 'L’anaphore répète le même mot au début de plusieurs vers ou phrases.'],
+    ['fr', 4, 'Quelle figure de style associe deux mots contraires, comme « une obscure clarté » ?', ['Un oxymore', 'Une litote', 'Une comparaison'], 'L’oxymore réunit deux mots de sens opposé, comme dans « cette obscure clarté » de Corneille.'],
+    ['fr', 4, 'Complète : « Les croquettes, je les ai ___. » (manger)', ['mangées', 'mangé', 'mangés'], 'Le COD « les » (les croquettes) est placé avant le verbe : on accorde au féminin pluriel.'],
+    ['fr', 4, 'Quel est le registre d’un texte qui cherche à faire rire ?', ['Le registre comique', 'Le registre tragique', 'Le registre lyrique'], 'Le registre comique cherche à amuser le lecteur.'],
+    ['fr', 4, 'Que signifie le mot « éphémère » ?', ['Qui dure peu de temps', 'Qui est très grand', 'Qui revient tous les ans'], 'Une chose éphémère ne dure pas longtemps, comme un arc-en-ciel.'],
+    // ---- Nouvelles questions : Arts et culture ----
+    // Arts et culture, CP-CE1
+    ['art', 1, 'Que donne le mélange du blanc et du noir ?', ['Du gris', 'Du rose', 'Du vert'], 'En mélangeant du blanc et du noir, on obtient du gris.'],
+    ['art', 1, 'Que donne le mélange du rouge et du blanc ?', ['Du rose', 'Du violet', 'Du marron'], 'Du rouge avec du blanc donne du rose.'],
+    ['art', 1, 'Quel instrument a des cordes et se joue avec les doigts ?', ['La guitare', 'La trompette', 'Le tambour'], 'On pince ou on gratte les cordes de la guitare avec les doigts.'],
+    ['art', 1, 'Dans quel conte une petite fille entre-t-elle chez trois ours ?', ['Boucle d’or', 'Cendrillon', 'Le Petit Poucet'], 'Boucle d’or entre dans la maison des trois ours, goûte leur soupe et s’endort dans le petit lit.'],
+    ['art', 1, 'Quel personnage vit au pays imaginaire et ne veut pas grandir ?', ['Peter Pan', 'Pinocchio', 'Le Petit Prince'], 'Peter Pan vit au pays imaginaire avec la fée Clochette.'],
+    ['art', 1, 'Dans quel conte un loup se déguise-t-il en grand-mère ?', ['Le Petit Chaperon rouge', 'Les Trois Petits Cochons', 'Hansel et Gretel'], 'Le loup mange la grand-mère puis prend sa place dans le lit.'],
+    ['art', 1, 'Quel instrument tape-t-on pour faire « boum » ?', ['Le tambour', 'La flûte', 'Le violon'], 'Le tambour est un instrument à percussion : on le frappe.'],
+    ['art', 1, 'Quel sport se pratique dans une piscine ?', ['La natation', 'Le vélo', 'Le ski'], 'La natation, c’est nager dans l’eau, à la piscine, à la mer ou au lac.'],
+    ['art', 1, 'Avec quoi peint-on souvent ?', ['Un pinceau', 'Une fourchette', 'Un marteau'], 'Le peintre trempe son pinceau dans la peinture.'],
+    ['art', 1, 'Quel petit garçon sème des cailloux pour retrouver son chemin ?', ['Le Petit Poucet', 'Pinocchio', 'Aladdin'], 'Le Petit Poucet sème des petits cailloux blancs, puis des miettes de pain.'],
+    ['art', 1, 'Quelle forme a 3 côtés ?', ['Le triangle', 'Le carré', 'Le cercle'], 'Le triangle a 3 côtés, le carré en a 4 et le cercle n’en a pas.'],
+    ['art', 1, 'Quel sport se joue avec une raquette et une petite balle jaune, par-dessus un filet ?', ['Le tennis', 'Le football', 'Le judo'], 'Au tennis, on se renvoie la balle avec une raquette par-dessus le filet.'],
+    ['art', 1, 'Comment appelle-t-on la personne qui dirige un orchestre ?', ['Le chef d’orchestre', 'Le chanteur', 'Le peintre'], 'Le chef d’orchestre guide les musiciens avec sa baguette.'],
+    ['art', 1, 'Quel conte raconte l’histoire d’un vilain petit oiseau qui devient un beau cygne ?', ['Le Vilain Petit Canard', 'Le Chat botté', 'La Belle au bois dormant'], 'Dans ce conte d’Andersen, le « vilain petit canard » était en fait un cygne.'],
+    ['art', 1, 'Quelle princesse croque une pomme empoisonnée ?', ['Blanche-Neige', 'Cendrillon', 'Raiponce'], 'La méchante reine donne une pomme empoisonnée à Blanche-Neige.'],
+    ['art', 1, 'Quel sport se pratique à cheval ?', ['L’équitation', 'L’escrime', 'L’aviron'], 'L’équitation, c’est monter à cheval. L’escrime se pratique avec une épée, l’aviron dans un bateau.'],
+    ['art', 1, 'Quel personnage de conte dort cent ans ?', ['La Belle au bois dormant', 'Cendrillon', 'Blanche-Neige'], 'La princesse se pique le doigt et s’endort pour cent ans.'],
+    ['art', 1, 'Combien de joueurs y a-t-il dans un match de tennis en simple ?', ['2', '4', '11'], 'En simple, un joueur affronte un autre joueur.'],
+    ['art', 1, 'Qui Pierre attrape-t-il avec une corde dans « Pierre et le Loup » ?', ['Le loup', 'Le chat', 'Le canard'], 'Aidé par l’oiseau, Pierre attrape le loup par la queue avec une corde.'],
+    ['art', 1, 'Comment s’appelle un dessin fait de traits pour un livre ?', ['Une illustration', 'Une sculpture', 'Une chanson'], 'Les illustrations accompagnent le texte des livres pour enfants.'],
+    // CE2-CM1
+    ['art', 2, 'Dans « Pierre et le Loup », quel instrument joue le chat ?', ['La clarinette', 'Le basson', 'Le hautbois'], 'Prokofiev a confié le rôle du chat à la clarinette, le grand-père au basson et le canard au hautbois.'],
+    ['art', 2, 'Qui a écrit « Le Petit Nicolas » ?', ['René Goscinny', 'Hergé', 'Roald Dahl'], 'René Goscinny a écrit les histoires du Petit Nicolas, illustrées par Sempé.'],
+    ['art', 2, 'Dans la fable « La Cigale et la Fourmi », que fait la cigale tout l’été ?', ['Elle chante', 'Elle travaille', 'Elle dort'], 'La cigale chante tout l’été et se trouve sans rien à manger quand l’hiver arrive.'],
+    ['art', 2, 'Quel sculpteur a fait la statue de la Liberté, à New York ?', ['Auguste Bartholdi', 'Auguste Rodin', 'Michel-Ange'], 'La statue de la Liberté, offerte par la France, est l’œuvre de Bartholdi. Gustave Eiffel a conçu sa structure.'],
+    ['art', 2, 'Combien de cordes a un violon ?', ['4', '6', '12'], 'Le violon a 4 cordes, qu’on frotte avec un archet.'],
+    ['art', 2, 'Comment appelle-t-on un tableau qui représente des fruits ou des objets ?', ['Une nature morte', 'Un portrait', 'Un paysage'], 'Une nature morte représente des objets, des fleurs ou des fruits.'],
+    ['art', 2, 'Quel héros de bande dessinée belge a un chien nommé Milou ?', ['Tintin', 'Astérix', 'Spirou'], 'Tintin, créé par Hergé, voyage dans le monde entier avec son chien Milou.'],
+    ['art', 2, 'Quel sport se joue avec un ballon ovale ?', ['Le rugby', 'Le basket', 'Le volley'], 'Le rugby se joue avec un ballon ovale, qu’on passe en arrière avec les mains.'],
+    ['art', 2, 'Dans quel pays se trouve la tour de Pise, qui penche ?', ['L’Italie', 'La France', 'L’Espagne'], 'La tour de Pise, en Italie, penche à cause du sol trop mou sous ses fondations.'],
+    ['art', 2, 'Quel compositeur était un enfant prodige qui jouait déjà en concert à 6 ans ?', ['Mozart', 'Beethoven', 'Vivaldi'], 'Wolfgang Amadeus Mozart composait et jouait en public dès sa petite enfance.'],
+    ['art', 2, 'Quel personnage de Collodi est une marionnette en bois ?', ['Pinocchio', 'Gulliver', 'Robinson'], 'Pinocchio est une marionnette en bois qui rêve de devenir un vrai petit garçon.'],
+    ['art', 2, 'Quels sont les anneaux du drapeau olympique ?', ['5 anneaux de couleur', '3 étoiles', 'Une flamme'], 'Les 5 anneaux entrelacés représentent les continents unis par le sport.'],
+    ['art', 2, 'Quel art utilise l’argile pour fabriquer des vases et des bols ?', ['La poterie', 'La peinture', 'La danse'], 'La poterie consiste à façonner l’argile puis à la cuire au four.'],
+    ['art', 2, 'Qui a écrit « Alice au pays des merveilles » ?', ['Lewis Carroll', 'Roald Dahl', 'Jules Verne'], 'Lewis Carroll a publié « Alice au pays des merveilles » en 1865.'],
+    ['art', 2, 'Qui a écrit « Charlie et la chocolaterie » ?', ['Roald Dahl', 'J. K. Rowling', 'Lewis Carroll'], 'Roald Dahl a aussi écrit « Matilda » et « Le Bon Gros Géant ».'],
+    ['art', 2, 'Quel jeune sorcier va à l’école de Poudlard ?', ['Harry Potter', 'Merlin', 'Gandalf'], 'Harry Potter, créé par J. K. Rowling, étudie la magie à Poudlard.'],
+    ['art', 2, 'Combien de joueurs une équipe de rugby à XV a-t-elle sur le terrain ?', ['15', '11', '7'], 'Comme son nom l’indique, le rugby à XV se joue à 15 joueurs par équipe.'],
+    ['art', 2, 'Quelle course cycliste fait le tour de la France chaque été ?', ['Le Tour de France', 'Le Dakar', 'Les 24 Heures du Mans'], 'Le Tour de France existe depuis 1903. Le premier au classement porte le maillot jaune.'],
+    ['art', 2, 'Quelle couleur de maillot porte le premier du classement général du Tour de France ?', ['Jaune', 'Vert', 'À pois rouges'], 'Le maillot jaune récompense le premier au classement général.'],
+    ['art', 2, 'Quel instrument a des tuyaux et se trouve souvent dans les églises ?', ['L’orgue', 'La harpe', 'Le saxophone'], 'L’orgue envoie de l’air dans de nombreux tuyaux pour faire de la musique.'],
+    // CM2-6e
+    ['art', 3, 'Qui a écrit « Les Trois Mousquetaires » ?', ['Alexandre Dumas', 'Victor Hugo', 'Jules Verne'], 'Alexandre Dumas a raconté les aventures de d’Artagnan, Athos, Porthos et Aramis.'],
+    ['art', 3, 'Qui a écrit « Le Tour du monde en quatre-vingts jours » ?', ['Jules Verne', 'Alexandre Dumas', 'Hector Malot'], 'Jules Verne y raconte le pari de Phileas Fogg, qui fait le tour du monde en 80 jours.'],
+    ['art', 3, 'Dans « L’Odyssée », quel héros met dix ans à rentrer chez lui ?', ['Ulysse', 'Hercule', 'Achille'], 'L’Odyssée, attribuée à Homère, raconte le long retour d’Ulysse vers l’île d’Ithaque.'],
+    ['art', 3, 'Quel héros grec a accompli douze travaux ?', ['Hercule (Héraclès)', 'Ulysse', 'Thésée'], 'Héraclès, appelé Hercule par les Romains, a réalisé douze travaux très difficiles.'],
+    ['art', 3, 'Quel monstre Thésée a-t-il affronté dans le labyrinthe ?', ['Le Minotaure', 'La Méduse', 'Le Cyclope'], 'Le Minotaure, mi-homme mi-taureau, vivait dans le labyrinthe de Crète.'],
+    ['art', 3, 'Quel peintre néerlandais s’est coupé une partie de l’oreille ?', ['Vincent van Gogh', 'Rembrandt', 'Vermeer'], 'Van Gogh s’est mutilé l’oreille en 1888, pendant son séjour à Arles.'],
+    ['art', 3, 'Quel peintre a peint « La Jeune Fille à la perle » ?', ['Johannes Vermeer', 'Rembrandt', 'Léonard de Vinci'], 'Vermeer a peint ce tableau vers 1665, aux Pays-Bas.'],
+    ['art', 3, 'Quel est le nom de la cathédrale de Paris qui a brûlé en 2019 et rouvert en 2024 ?', ['Notre-Dame de Paris', 'Le Sacré-Cœur', 'La Sainte-Chapelle'], 'Notre-Dame de Paris a rouvert en décembre 2024 après cinq ans de travaux.'],
+    ['art', 3, 'Quelle ville a accueilli les Jeux olympiques d’été en 2024 ?', ['Paris', 'Londres', 'Tokyo'], 'Paris a accueilli les Jeux olympiques et paralympiques de 2024.'],
+    ['art', 3, 'Qui a écrit « Sans famille » ?', ['Hector Malot', 'Victor Hugo', 'Jules Verne'], 'Hector Malot raconte les aventures de Rémi, enfant trouvé, et de son chien Capi.'],
+    ['art', 3, 'Quel instrument jouait Jimi Hendrix ?', ['La guitare électrique', 'Le piano', 'La batterie'], 'Jimi Hendrix est l’un des guitaristes les plus célèbres de l’histoire du rock.'],
+    ['art', 3, 'Quelle déesse grecque était déesse de la sagesse ?', ['Athéna', 'Aphrodite', 'Héra'], 'Athéna, déesse de la sagesse, a donné son nom à la ville d’Athènes.'],
+    ['art', 3, 'Quel dieu grec régnait sur l’Olympe ?', ['Zeus', 'Poséidon', 'Hadès'], 'Zeus, maître de la foudre, était le roi des dieux de l’Olympe.'],
+    ['art', 3, 'Quel dieu romain correspond à Poséidon, dieu des mers ?', ['Neptune', 'Mars', 'Jupiter'], 'Les Romains appelaient Neptune le dieu grec des mers Poséidon.'],
+    ['art', 3, 'Quelle compétition de football a lieu tous les 4 ans entre les équipes nationales ?', ['La Coupe du monde', 'Le Tour de France', 'Roland-Garros'], 'La Coupe du monde de football rassemble les meilleures équipes nationales tous les 4 ans.'],
+    ['art', 3, 'Quel tournoi de tennis se joue sur terre battue à Paris ?', ['Roland-Garros', 'Wimbledon', 'L’US Open'], 'Roland-Garros, à Paris, est le grand tournoi de tennis sur terre battue.'],
+    ['art', 3, 'Qui a peint « Le Déjeuner sur l’herbe » en 1863 ?', ['Édouard Manet', 'Claude Monet', 'Paul Cézanne'], 'Ce tableau de Manet a fait scandale au Salon des refusés de 1863.'],
+    ['art', 3, 'Quel cinéaste a créé le personnage de Charlot ?', ['Charlie Chaplin', 'Walt Disney', 'Georges Méliès'], 'Charlie Chaplin a créé Charlot, le vagabond au chapeau melon et à la canne.'],
+    ['art', 3, 'Quels frères ont inventé le cinématographe en 1895 ?', ['Les frères Lumière', 'Les frères Wright', 'Les frères Grimm'], 'Auguste et Louis Lumière ont présenté leurs premiers films à Paris en 1895.'],
+    ['art', 3, 'Quels frères ont réuni des contes comme « Hansel et Gretel » ?', ['Les frères Grimm', 'Les frères Lumière', 'Les frères Montgolfier'], 'Les frères Grimm ont recueilli des contes populaires allemands au XIXe siècle.'],
+    // 5e et plus
+    ['art', 4, 'Qui a écrit « Roméo et Juliette » ?', ['William Shakespeare', 'Molière', 'Jean Racine'], 'Shakespeare a écrit cette tragédie d’amour à la fin du XVIe siècle.'],
+    ['art', 4, 'Qui a écrit « Le Cid » ?', ['Pierre Corneille', 'Jean Racine', 'Molière'], 'Le Cid, de Corneille, a été joué pour la première fois en 1637.'],
+    ['art', 4, 'Qui a écrit « Germinal » ?', ['Émile Zola', 'Victor Hugo', 'Gustave Flaubert'], 'Germinal, de Zola, raconte la vie et la grève des mineurs du Nord.'],
+    ['art', 4, 'Qui a écrit « Madame Bovary » ?', ['Gustave Flaubert', 'Honoré de Balzac', 'Stendhal'], 'Gustave Flaubert a publié Madame Bovary en 1857.'],
+    ['art', 4, 'Quel peintre espagnol est connu pour ses montres molles ?', ['Salvador Dalí', 'Pablo Picasso', 'Joan Miró'], 'Dans « La Persistance de la mémoire », Dalí peint des montres qui fondent.'],
+    ['art', 4, 'À quel mouvement appartient Salvador Dalí ?', ['Le surréalisme', 'L’impressionnisme', 'Le classicisme'], 'Le surréalisme s’inspire des rêves et de l’inconscient.'],
+    ['art', 4, 'Quel compositeur a écrit la « Symphonie n° 9 » dont l’« Ode à la joie » est devenue l’hymne européen ?', ['Ludwig van Beethoven', 'Mozart', 'Haydn'], 'L’Ode à la joie, tirée de la 9e symphonie de Beethoven, est l’hymne de l’Union européenne.'],
+    ['art', 4, 'Qui a composé « Le Boléro » ?', ['Maurice Ravel', 'Claude Debussy', 'Erik Satie'], 'Ravel a composé le Boléro en 1928.'],
+    ['art', 4, 'Qui a peint « Impression, soleil levant », qui a donné son nom à l’impressionnisme ?', ['Claude Monet', 'Auguste Renoir', 'Edgar Degas'], 'Le titre de ce tableau de Monet (1872) a donné son nom au mouvement impressionniste.'],
+    ['art', 4, 'Quel peintre est célèbre pour ses danseuses de l’Opéra ?', ['Edgar Degas', 'Paul Cézanne', 'Henri Matisse'], 'Degas a peint et sculpté de nombreuses danseuses.'],
+    ['art', 4, 'Quel architecte a construit la pyramide du Louvre ?', ['Ieoh Ming Pei', 'Le Corbusier', 'Gustave Eiffel'], 'La pyramide de verre du Louvre, de I. M. Pei, a été inaugurée en 1989.'],
+    ['art', 4, 'Quel écrivain a créé le commissaire Maigret ?', ['Georges Simenon', 'Agatha Christie', 'Maurice Leblanc'], 'Georges Simenon a écrit plus de 70 romans avec le commissaire Maigret.'],
+    ['art', 4, 'Quel écrivain a créé Arsène Lupin, le gentleman cambrioleur ?', ['Maurice Leblanc', 'Gaston Leroux', 'Arthur Conan Doyle'], 'Maurice Leblanc a créé Arsène Lupin en 1905.'],
+    ['art', 4, 'Quel est le nom du chat de Gargamel dans « Les Schtroumpfs » ?', ['Azraël', 'Grosminet', 'Garfield'], 'Azraël, le chat de Gargamel, rêve d’attraper les Schtroumpfs.'],
+    ['art', 4, 'Quel est le titre de l’opéra de Bizet dont l’héroïne est une Andalouse ?', ['Carmen', 'La Traviata', 'Aïda'], 'Carmen, de Georges Bizet, a été créé à Paris en 1875.'],
+    ['art', 4, 'Quel poète a écrit « Demain, dès l’aube… » ?', ['Victor Hugo', 'Arthur Rimbaud', 'Paul Verlaine'], 'Victor Hugo a écrit ce poème en souvenir de sa fille Léopoldine.'],
+    ['art', 4, 'Quel poète a écrit « Le Dormeur du val » ?', ['Arthur Rimbaud', 'Charles Baudelaire', 'Alfred de Musset'], 'Rimbaud a écrit ce poème à 16 ans, en 1870.'],
+    ['art', 4, 'Quelle épopée babylonienne est l’un des plus anciens récits connus ?', ['L’Épopée de Gilgamesh', 'L’Iliade', 'La Chanson de Roland'], 'L’Épopée de Gilgamesh, écrite en Mésopotamie, a plus de 3 500 ans.'],
+    ['art', 4, 'Quelle chanson de geste raconte la mort de Roland à Roncevaux ?', ['La Chanson de Roland', 'Le Roman de Renart', 'Tristan et Iseut'], 'La Chanson de Roland, écrite vers 1100, raconte la bataille de Roncevaux.'],
+    ['art', 4, 'Quel animal rusé est le héros du « Roman de Renart » ?', ['Un renard', 'Un chat', 'Un loup'], 'Renart, le renard, joue des tours à Ysengrin le loup et à Tibert le chat.'],
+    // ---- Nouvelles questions : Les chats ----
+    // Les chats, CP-CE1
+    ['chat', 1, 'Que fait un chat pour montrer qu’il est content quand il voit quelqu’un ?', ['Il lève la queue', 'Il aboie', 'Il se cache'], 'Une queue bien droite, c’est souvent un « bonjour » joyeux.'],
+    ['chat', 1, 'Combien d’oreilles a un chat ?', ['2', '4', '1'], 'Le chat a 2 oreilles pointues, qui bougent dans tous les sens.'],
+    ['chat', 1, 'Quel est le jouet préféré de beaucoup de chats ?', ['Une pelote de laine', 'Un livre', 'Une chaise'], 'Les chats adorent jouer avec une pelote ou une petite balle qui roule.'],
+    ['chat', 1, 'Que mange un chat ?', ['Des croquettes ou de la pâtée', 'Des cailloux', 'Du foin'], 'Le chat mange surtout de la viande et du poisson, sous forme de croquettes ou de pâtée.'],
+    ['chat', 1, 'Où un chat aime-t-il grimper ?', ['En hauteur', 'Dans l’eau', 'Sous terre'], 'Les chats aiment observer le monde depuis un endroit haut : un arbre, un meuble, un toit.'],
+    ['chat', 1, 'Comment un chat dort-il souvent quand il a froid ?', ['Roulé en boule', 'Allongé sur le dos, pattes en l’air', 'Debout'], 'Roulé en boule, le chat garde mieux sa chaleur.'],
+    ['chat', 1, 'Quelle couleur de pelage n’existe pas chez le chat ?', ['Vert', 'Noir', 'Roux'], 'Les chats peuvent être noirs, blancs, roux, gris ou crème… mais jamais verts.'],
+    ['chat', 1, 'Que fait un chat quand il est fatigué ?', ['Il fait la sieste', 'Il chante', 'Il nage'], 'Le chat adore faire de longues siestes, souvent au chaud.'],
+    ['chat', 1, 'Avec quoi le chat sent-il les odeurs ?', ['Son nez', 'Sa queue', 'Ses griffes'], 'Le chat a un très bon odorat, bien meilleur que le nôtre.'],
+    ['chat', 1, 'Un chat aime-t-il en général prendre un bain ?', ['Non, la plupart n’aiment pas l’eau', 'Oui, tous les jours', 'Seulement le dimanche'], 'La plupart des chats n’aiment pas être mouillés. Ils se lavent eux-mêmes avec leur langue.'],
+    ['chat', 1, 'Que fait un chat avant de sauter ?', ['Il se tasse et remue l’arrière-train', 'Il s’endort', 'Il miaule très fort'], 'Avant de bondir, le chat se ramasse et remue l’arrière-train pour bien viser.'],
+    ['chat', 1, 'Comment s’appelle la maison où l’on garde des chats perdus ?', ['Un refuge', 'Une école', 'Une gare'], 'Dans un refuge, des bénévoles soignent les chats et leur cherchent une famille.'],
+    ['chat', 1, 'Combien de vies a un chat, selon un dicton français ?', ['Neuf', 'Une', 'Cent'], 'On dit qu’il a neuf vies, car il s’en sort souvent. En vrai, il n’en a qu’une : il faut en prendre soin !'],
+    ['chat', 1, 'Le chat a-t-il une queue ?', ['Oui, presque toujours', 'Non, jamais', 'Il en a deux'], 'Presque tous les chats ont une queue, qui les aide à garder l’équilibre.'],
+    ['chat', 1, 'Que veut dire un chat qui cligne lentement des yeux en te regardant ?', ['Il te fait confiance', 'Il a sommeil, c’est tout', 'Il est en colère'], 'Un clignement lent est comme un sourire de chat : il se sent bien avec toi.'],
+    ['chat', 1, 'Le chat a-t-il des dents pointues ?', ['Oui', 'Non', 'Il n’a pas de dents'], 'Ses crocs pointus servent à attraper et à couper la viande.'],
+    ['chat', 1, 'Comment une maman chat transporte-t-elle ses chatons ?', ['Elle les tient par la peau du cou', 'Elle les met dans un panier', 'Elle les pousse avec sa queue'], 'La maman attrape doucement le chaton par la peau du cou : il se laisse porter sans bouger.'],
+    ['chat', 1, 'Pourquoi un chat se lèche-t-il souvent ?', ['Pour se laver', 'Parce qu’il a soif', 'Pour se réchauffer les dents'], 'Le chat passe une grande partie de sa journée à faire sa toilette.'],
+    ['chat', 1, 'Comment un chat marche-t-il sans bruit ?', ['Sur ses coussinets', 'Avec des chaussures', 'En volant'], 'Ses coussinets moelleux lui permettent de marcher en silence.'],
+    ['chat', 1, 'Où un chaton dort-il tout petit ?', ['Contre sa maman', 'Dans un arbre', 'Dans l’eau'], 'Les chatons se blottissent contre leur mère pour avoir chaud et téter.'],
+    // CE2-CM1
+    ['chat', 2, 'Combien de griffes un chat a-t-il en tout, en général ?', ['18', '10', '30'], 'En général, 5 griffes à chaque patte avant et 4 à chaque patte arrière : 18 en tout.'],
+    ['chat', 2, 'Pourquoi un chat aime-t-il se coucher au soleil ?', ['Il aime la chaleur', 'Il veut bronzer', 'Il compte les nuages'], 'Les chats adorent la chaleur et cherchent les endroits ensoleillés.'],
+    ['chat', 2, 'Comment appelle-t-on un chat sans maître qui vit dehors ?', ['Un chat errant', 'Un chat domestique', 'Un chat de race'], 'Un chat errant vit dehors, sans famille. Filou, dans le jeu, en est un.'],
+    ['chat', 2, 'Que signifie un chat qui remue vivement la queue de gauche à droite ?', ['Il est agacé ou excité', 'Il est très calme', 'Il a faim'], 'Contrairement au chien, un chat qui fouette la queue est souvent énervé.'],
+    ['chat', 2, 'À quel âge un chaton peut-il quitter sa mère ?', ['Vers 2 à 3 mois', 'À 1 semaine', 'À 5 ans'], 'Un chaton doit rester avec sa mère au moins 8 semaines, et idéalement 12.'],
+    ['chat', 2, 'Quel organe aide le chat à garder l’équilibre ?', ['Son oreille interne', 'Son nez', 'Ses moustaches seulement'], 'L’oreille interne du chat est très sensible : elle l’aide à se rétablir en tombant.'],
+    ['chat', 2, 'Pourquoi un chat rapporte-t-il parfois une proie à la maison ?', ['Il la met à l’abri sur son territoire', 'Il veut un animal de compagnie', 'Il est malade'], 'La maison est son territoire : il y rapporte ses proies pour les manger tranquille, ou les montre à sa « famille ».'],
+    ['chat', 2, 'Quel sens est le plus faible chez le chat ?', ['Le goût', 'L’ouïe', 'L’odorat'], 'Le chat a beaucoup moins de papilles que nous, mais une ouïe et un odorat excellents.'],
+    ['chat', 2, 'Combien de chats y a-t-il environ dans les foyers français ?', ['Environ 15 millions', 'Environ 1 000', 'Environ 1 milliard'], 'La France compte environ 15 millions de chats : c’est l’animal de compagnie préféré des Français.'],
+    ['chat', 2, 'Que fait un chat qui « fait le gros dos » ?', ['Il essaie de paraître plus grand pour impressionner', 'Il s’étire pour dormir', 'Il a mal au ventre'], 'En faisant le gros dos et en hérissant ses poils, il veut sembler plus impressionnant.'],
+    ['chat', 2, 'Quel chat noir de dessin animé, né en 1919, est l’un des plus anciens héros de cartoon ?', ['Félix le Chat', 'Garfield', 'Tom'], 'Félix le Chat est apparu en 1919, bien avant Mickey.'],
+    ['chat', 2, 'Quel chat de dessin animé poursuit toujours la souris Jerry ?', ['Tom', 'Félix', 'Sylvestre'], 'Tom court toujours après Jerry, sans jamais réussir à l’attraper.'],
+    ['chat', 2, 'Quel chat de dessin animé chasse le canari Titi ?', ['Gros Minet', 'Tom', 'Garfield'], 'Gros Minet (Sylvester en anglais) essaie toujours d’attraper Titi.'],
+    ['chat', 2, 'Pourquoi un chat griffe-t-il les meubles ?', ['Pour entretenir ses griffes et marquer son territoire', 'Pour embêter ses maîtres', 'Parce qu’il a froid'], 'Griffer use les vieilles griffes et laisse son odeur. Un griffoir l’aide à épargner les meubles.'],
+    ['chat', 2, 'Avec quoi un chat marque-t-il son odeur quand il se frotte la tête ?', ['Des glandes sur ses joues', 'Ses griffes', 'Ses dents'], 'Le chat a des glandes odorantes sur les joues : en se frottant, il dit « c’est à moi ».'],
+    ['chat', 2, 'Que doit-on mettre à la disposition d’un chat en permanence ?', ['De l’eau fraîche', 'Du lait', 'Du chocolat'], 'Un chat doit toujours avoir de l’eau fraîche. Le lait et le chocolat ne sont pas bons pour lui.'],
+    ['chat', 2, 'Comment appelle-t-on les chats noir et blanc « en costume » ?', ['Des chats tuxedo', 'Des chats tigrés', 'Des chats calico'], 'Les chats tuxedo ont un pelage noir avec un plastron blanc, comme un smoking.'],
+    ['chat', 2, 'Quel est le métier du médecin qui soigne les chats ?', ['Vétérinaire', 'Dentiste', 'Pédiatre'], 'Le vétérinaire soigne les animaux. Il faut emmener son chat chez lui chaque année.'],
+    ['chat', 2, 'Que fait un chat qui « chasse » une petite lumière rouge au mur ?', ['Il obéit à son instinct de chasseur', 'Il est malade', 'Il veut manger la lumière'], 'Le point qui bouge réveille son instinct de chasse. Il faut finir le jeu par un vrai jouet à attraper.'],
+    ['chat', 2, 'Combien de dents a un chaton ?', ['26 dents de lait', '30 dents', 'Aucune'], 'Le chaton a 26 dents de lait, remplacées vers 6 mois par 30 dents adultes.'],
+    // CM2-6e
+    ['chat', 3, 'De quel pays vient le chat persan ?', ['De l’Iran (l’ancienne Perse)', 'De la France', 'Du Canada'], 'Le persan tient son nom de la Perse, l’actuel Iran.'],
+    ['chat', 3, 'Quelle race de chat a les oreilles pliées vers l’avant ?', ['Le scottish fold', 'Le siamois', 'Le bengal'], 'Le scottish fold, venu d’Écosse, a des oreilles repliées.'],
+    ['chat', 3, 'Quelle race au pelage gris-bleu est associée à la France ?', ['Le chartreux', 'Le siamois', 'Le persan'], 'Le chartreux est une race française au pelage gris-bleu et aux yeux cuivrés.'],
+    ['chat', 3, 'Quel chat a un pelage tacheté comme un petit léopard ?', ['Le bengal', 'Le persan', 'Le sacré de Birmanie'], 'Le bengal a été créé en croisant des chats domestiques avec le chat-léopard d’Asie.'],
+    ['chat', 3, 'Combien de fois sa propre hauteur un chat peut-il sauter environ ?', ['Environ 5 fois', 'Une seule fois', 'Environ 50 fois'], 'Grâce à ses pattes arrière très puissantes, un chat peut sauter environ 5 fois sa hauteur.'],
+    ['chat', 3, 'Pourquoi un chat ne retombe-t-il pas toujours sur ses pattes ?', ['Il lui faut assez de hauteur pour se retourner', 'Il oublie', 'Il le fait exprès'], 'Le réflexe de redressement demande un peu de temps de chute. Une chute peut toujours le blesser.'],
+    ['chat', 3, 'Quel animal est le plus grand félin du monde ?', ['Le tigre', 'Le lion', 'Le guépard'], 'Le tigre de Sibérie est le plus grand félin : il peut dépasser 3 mètres avec la queue.'],
+    ['chat', 3, 'Quel félin vit en groupe, appelé une troupe ?', ['Le lion', 'Le tigre', 'Le léopard'], 'Le lion est le seul grand félin à vivre en groupe.'],
+    ['chat', 3, 'Combien de chatons une chatte peut-elle avoir par an au maximum, environ ?', ['Une douzaine ou plus', 'Un seul', 'Une centaine'], 'Une chatte peut avoir 2 ou 3 portées par an : c’est pourquoi on stérilise les chats.'],
+    ['chat', 3, 'Pourquoi stérilise-t-on souvent les chats ?', ['Pour éviter trop de chatons abandonnés', 'Pour qu’ils grandissent plus', 'Pour qu’ils changent de couleur'], 'La stérilisation évite des portées non voulues et beaucoup de chats abandonnés.'],
+    ['chat', 3, 'Qu’est-ce qui permet d’identifier un chat perdu ?', ['Une puce électronique ou un tatouage', 'La couleur de sa gamelle', 'Son miaulement'], 'En France, l’identification par puce ou tatouage est obligatoire pour les chats.'],
+    ['chat', 3, 'Quel chat sacré a des « gants » blancs aux pattes ?', ['Le sacré de Birmanie', 'Le siamois', 'Le sphynx'], 'Le sacré de Birmanie a les yeux bleus et les quatre pattes blanches, comme des gants.'],
+    ['chat', 3, 'Combien de temps un chat passe-t-il à faire sa toilette ?', ['Une bonne partie de sa journée', 'Jamais', 'Une minute par semaine'], 'Un chat peut passer jusqu’à un tiers ou la moitié de son temps éveillé à se laver.'],
+    ['chat', 3, 'Quelle est la principale différence entre les moustaches et les poils ordinaires ?', ['Les moustaches sont reliées à des nerfs très sensibles', 'Elles sont en plastique', 'Elles ne tombent jamais'], 'Les vibrisses détectent le moindre mouvement d’air : elles l’aident à se déplacer dans le noir.'],
+    ['chat', 3, 'Quel organe donne au chat sa vision nocturne excellente ?', ['Le tapis clair (tapetum lucidum)', 'Ses moustaches', 'Ses oreilles'], 'Le tapetum lucidum renvoie la lumière dans l’œil : c’est aussi pour cela que ses yeux brillent.'],
+    ['chat', 3, 'Comment les chats boivent-ils ?', ['Avec le bout de la langue, très vite', 'Avec une paille', 'En aspirant comme nous'], 'Le chat touche l’eau du bout de la langue et tire une petite colonne d’eau, jusqu’à 4 fois par seconde.'],
+    ['chat', 3, 'Quelle couleur de chat porte bonheur selon une croyance au Royaume-Uni et au Japon ?', ['Noir', 'Roux', 'Blanc'], 'Au Royaume-Uni et au Japon, croiser un chat noir est souvent vu comme un porte-bonheur.'],
+    ['chat', 3, 'Comment s’appelle la statuette japonaise de chat qui lève la patte ?', ['Le maneki-neko', 'Le sushi-neko', 'Le tamagotchi'], 'Le maneki-neko, « chat qui invite », lève la patte pour attirer la chance.'],
+    ['chat', 3, 'Que veut dire « neko » en japonais ?', ['Chat', 'Chien', 'Toit'], '« Neko » veut dire chat en japonais : c’est le nom du héros du jeu !'],
+    ['chat', 3, 'Quelle est la température de confort préférée d’un chat ?', ['Plus chaude que la nôtre', 'Plus froide que la nôtre', 'En dessous de 0 °C'], 'Les chats se sentent bien vers 30 °C : c’est pourquoi ils adorent les radiateurs.'],
+    // 5e et plus
+    ['chat', 4, 'Depuis combien de temps environ le chat vit-il aux côtés des humains ?', ['Environ 10 000 ans', 'Environ 100 ans', 'Environ 1 million d’années'], 'Une tombe de Chypre vieille d’environ 9 500 ans contenait déjà un chat enterré avec un humain.'],
+    ['chat', 4, 'Pourquoi le chat s’est-il rapproché des premiers agriculteurs ?', ['Il chassait les rongeurs attirés par les réserves de grain', 'Il gardait les troupeaux', 'Il tirait les charrues'], 'Les greniers attiraient les souris, et les chats sont venus les chasser.'],
+    ['chat', 4, 'Comment s’appelle la peur excessive des chats ?', ['L’ailurophobie', 'L’arachnophobie', 'La claustrophobie'], 'L’ailurophobie vient du grec « ailouros », le chat.'],
+    ['chat', 4, 'Quelle est la vitesse de réaction d’un chat qui tombe pour se retourner ?', ['Moins d’une seconde', 'Environ une minute', 'Environ 10 secondes'], 'Le chat se retourne en quelques dixièmes de seconde grâce à sa colonne vertébrale très souple.'],
+    ['chat', 4, 'Quel acide aminé indispensable le chat doit-il trouver dans la viande ?', ['La taurine', 'La caféine', 'La chlorophylle'], 'Le chat ne fabrique pas assez de taurine : un manque peut abîmer son cœur et ses yeux.'],
+    ['chat', 4, 'Pourquoi le lys est-il très dangereux pour un chat ?', ['Il peut abîmer gravement ses reins', 'Il le rend allergique au soleil', 'Il fait tomber ses moustaches'], 'Même un peu de pollen de lys avalé peut provoquer une insuffisance rénale chez le chat.'],
+    ['chat', 4, 'Pourquoi un chat ronronne-t-il parfois quand il est malade ou blessé ?', ['Le ronronnement semble l’apaiser', 'Il est content d’être malade', 'Pour appeler les autres chats'], 'Les chats ne ronronnent pas seulement de plaisir : cela semble aussi les calmer quand ils ont mal.'],
+    ['chat', 4, 'Quelle fréquence a environ le ronronnement d’un chat ?', ['Entre 25 et 150 Hz', 'Environ 10 000 Hz', 'Environ 1 Hz'], 'Le ronronnement vibre à basse fréquence, entre 25 et 150 hertz environ.'],
+    ['chat', 4, 'Comment s’appelle le cri menaçant du chat, comme un souffle ?', ['Le feulement', 'Le ronronnement', 'Le roucoulement'], 'Le chat qui feule souffle fort, bouche ouverte, pour dire « recule ! ».'],
+    ['chat', 4, 'Quel scientifique a imaginé une expérience de pensée avec un chat dans une boîte ?', ['Erwin Schrödinger', 'Albert Einstein', 'Marie Curie'], 'Le « chat de Schrödinger » illustre un paradoxe de la physique quantique (aucun chat n’a été mis en boîte !).'],
+    ['chat', 4, 'Quelle chatte a été envoyée dans l’espace par la France en 1963 ?', ['Félicette', 'Laïka', 'Minette'], 'Félicette a fait un vol suborbital en 1963 et en est revenue. Laïka était une chienne soviétique.'],
+    ['chat', 4, 'Quel chat de la littérature parle et donne des conseils au Petit Prince ?', ['Aucun : c’est un renard', 'Le Chat botté', 'Le chat du Cheshire'], 'Dans « Le Petit Prince », c’est le renard qui dit : « On ne voit bien qu’avec le cœur. »'],
+    ['chat', 4, 'Quel écrivain français a écrit « La Chatte » et adorait les chats ?', ['Colette', 'Marcel Proust', 'Émile Zola'], 'Colette a publié « La Chatte » en 1933 et a vécu entourée de chats.'],
+    ['chat', 4, 'Quel est le lien entre le lynx, le lion et le chat domestique ?', ['Ils sont tous de la famille des félidés', 'Ils sont tous herbivores', 'Ils vivent tous en Europe'], 'Tous les félins appartiennent à la famille des félidés.'],
+    ['chat', 4, 'Pourquoi les chats roux sont-ils plus souvent des mâles ?', ['Le gène roux est porté par le chromosome X', 'Les femelles mangent plus de carottes', 'Au hasard, sans raison'], 'Un mâle (XY) n’a besoin que d’un X roux, alors qu’une femelle (XX) en a besoin de deux.'],
+    ['chat', 4, 'Combien de vertèbres environ compte la queue d’un chat ?', ['Une vingtaine', 'Trois', 'Une centaine'], 'La queue du chat compte de 18 à 23 vertèbres : elle est très mobile.'],
+    ['chat', 4, 'Comment le chat sort-il ses griffes ?', ['Ses muscles tirent sur des tendons', 'Elles poussent d’un coup', 'Il les gonfle d’air'], 'Au repos, les griffes sont rentrées. Les muscles des doigts tirent sur des tendons pour les sortir.'],
+    ['chat', 4, 'Quel est le nom du chat domestique sauvage qui vit encore en Europe, plus massif ?', ['Le chat forestier (Felis silvestris)', 'Le chat de Pallas', 'Le serval'], 'Le chat forestier d’Europe, plus massif, a une queue épaisse annelée de noir.'],
+    ['chat', 4, 'Quel chat est le plus petit félin sauvage du monde ?', ['Le chat rougeâtre', 'Le serval', 'Le caracal'], 'Le chat rougeâtre, du Sri Lanka et de l’Inde, pèse environ 1 à 1,5 kg.'],
+    ['chat', 4, 'Dans l’Égypte ancienne, quelle punition risquait celui qui tuait un chat ?', ['La mort, selon l’historien grec Hérodote', 'Une simple amende', 'Rien du tout'], 'Hérodote raconte que tuer un chat en Égypte pouvait être puni de mort, tant il était sacré.'],
+    // ---- Nouvelles questions : Anglais ----
+    // Anglais, CP-CE1
+    ['en', 1, 'Comment dit-on « vert » en anglais ?', ['Green', 'Grey', 'Blue'], 'Vert se dit « green ». Grey veut dire gris et blue veut dire bleu.'],
+    ['en', 1, 'Que veut dire « blue » ?', ['Bleu', 'Noir', 'Rose'], '« Blue » veut dire bleu, comme le ciel.'],
+    ['en', 1, 'Comment dit-on « maman » en anglais ?', ['Mum', 'Dad', 'Baby'], 'Maman se dit « mum » (ou « mom » aux États-Unis). Papa se dit « dad ».'],
+    ['en', 1, 'Que veut dire « dad » ?', ['Papa', 'Maman', 'Bébé'], '« Dad » veut dire papa.'],
+    ['en', 1, 'Comment dit-on « cinq » en anglais ?', ['Five', 'Four', 'Six'], 'One, two, three, four, five : cinq se dit « five ».'],
+    ['en', 1, 'Que veut dire « horse » ?', ['Cheval', 'Maison', 'Souris'], '« Horse » veut dire cheval. Attention, « house » veut dire maison.'],
+    ['en', 1, 'Comment dit-on « oui » en anglais ?', ['Yes', 'No', 'Hello'], 'Oui se dit « yes » et non se dit « no ».'],
+    ['en', 1, 'Que veut dire « milk » ?', ['Lait', 'Eau', 'Pain'], '« Milk » veut dire lait.'],
+    ['en', 1, 'Comment dit-on « la lune » en anglais ?', ['The moon', 'The sun', 'The star'], 'La lune se dit « the moon ».'],
+    ['en', 1, 'Que veut dire « black » ?', ['Noir', 'Blanc', 'Bleu'], '« Black » veut dire noir, comme un chat noir : « a black cat ».'],
+    ['en', 1, 'Comment dit-on « blanc » en anglais ?', ['White', 'Black', 'Wide'], 'Blanc se dit « white ».'],
+    ['en', 1, 'Que veut dire « Good night » ?', ['Bonne nuit', 'Bonjour', 'Bon appétit'], '« Good night » se dit le soir, avant d’aller dormir.'],
+    ['en', 1, 'Comment dit-on « s’il te plaît » en anglais ?', ['Please', 'Thank you', 'Sorry'], '« Please » veut dire s’il te plaît, « thank you » merci et « sorry » pardon.'],
+    ['en', 1, 'Que veut dire « rabbit » ?', ['Lapin', 'Rat', 'Renard'], '« Rabbit » veut dire lapin.'],
+    ['en', 1, 'Comment dit-on « trois » en anglais ?', ['Three', 'Tree', 'Two'], 'Trois se dit « three ». « Tree » veut dire arbre.'],
+    ['en', 1, 'Que veut dire « big » ?', ['Grand', 'Petit', 'Gentil'], '« Big » veut dire grand ou gros. Petit se dit « small » ou « little ».'],
+    ['en', 1, 'Comment dit-on « le chien » en anglais ?', ['The dog', 'The duck', 'The cat'], 'Le chien se dit « the dog ».'],
+    ['en', 1, 'Que veut dire « pink » ?', ['Rose', 'Violet', 'Orange'], '« Pink » veut dire rose.'],
+    ['en', 1, 'Comment dit-on « la maison » en anglais ?', ['The house', 'The mouse', 'The horse'], 'La maison se dit « the house ».'],
+    ['en', 1, 'Que veut dire « water » ?', ['Eau', 'Gâteau', 'Vent'], '« Water » veut dire eau.'],
+    // CE2-CM1
+    ['en', 2, 'Comment dit-on « dimanche » en anglais ?', ['Sunday', 'Saturday', 'Monday'], 'Dimanche se dit « Sunday », le jour du soleil.'],
+    ['en', 2, 'Que veut dire « I am hungry » ?', ['J’ai faim', 'J’ai froid', 'J’ai peur'], '« Hungry » veut dire affamé : « I am hungry », j’ai faim.'],
+    ['en', 2, 'Complète : « She ___ a cat. » (verbe avoir)', ['has', 'have', 'is'], 'Avec he, she et it, le verbe avoir devient « has ».'],
+    ['en', 2, 'Comment dit-on « l’hiver » en anglais ?', ['Winter', 'Summer', 'Spring'], 'Les saisons : spring (printemps), summer (été), autumn (automne), winter (hiver).'],
+    ['en', 2, 'Que veut dire « How are you? » ?', ['Comment vas-tu ?', 'Quel âge as-tu ?', 'Où es-tu ?'], '« How are you? » veut dire : comment vas-tu ?'],
+    ['en', 2, 'Comment dit-on « la main » en anglais ?', ['The hand', 'The head', 'The hat'], 'La main se dit « the hand ».'],
+    ['en', 2, 'Que veut dire « My favourite colour is red » ?', ['Ma couleur préférée est le rouge', 'Je n’aime pas le rouge', 'Mon chat est rouge'], '« Favourite » veut dire préféré.'],
+    ['en', 2, 'Complète : « They ___ my friends. » (verbe être)', ['are', 'is', 'am'], 'Avec they, le verbe être devient « are ».'],
+    ['en', 2, 'Comment dit-on « vingt » en anglais ?', ['Twenty', 'Twelve', 'Two'], 'Vingt se dit « twenty ». « Twelve » veut dire douze.'],
+    ['en', 2, 'Que veut dire « The cat is under the table » ?', ['Le chat est sous la table', 'Le chat est sur la table', 'Le chat est derrière la table'], '« Under » veut dire sous. Sur se dit « on ».'],
+    ['en', 2, 'Comment dit-on « le frère » en anglais ?', ['The brother', 'The sister', 'The father'], 'Le frère se dit « the brother », la sœur « the sister ».'],
+    ['en', 2, 'Que veut dire « I can swim » ?', ['Je sais nager', 'Je veux nager', 'Je nage mal'], '« Can » exprime ce que l’on sait faire : « I can swim », je sais nager.'],
+    ['en', 2, 'Comment dit-on « le petit-déjeuner » en anglais ?', ['Breakfast', 'Lunch', 'Dinner'], 'Breakfast (petit-déjeuner), lunch (déjeuner), dinner (dîner).'],
+    ['en', 2, 'Que veut dire « It is cold » ?', ['Il fait froid', 'Il fait chaud', 'Il pleut'], '« Cold » veut dire froid, « hot » veut dire chaud.'],
+    ['en', 2, 'Comment dit-on « l’école » en anglais ?', ['School', 'Shop', 'Street'], 'L’école se dit « school ».'],
+    ['en', 2, 'Que veut dire « Open the door, please » ?', ['Ouvre la porte, s’il te plaît', 'Ferme la porte, s’il te plaît', 'Frappe à la porte'], '« Open » veut dire ouvrir. Fermer se dit « close ».'],
+    ['en', 2, 'Quel est le pluriel de « box » ?', ['Boxes', 'Boxs', 'Boxies'], 'Les mots qui finissent par -x prennent -es au pluriel : box, boxes.'],
+    ['en', 2, 'Comment dit-on « le genou » en anglais ?', ['The knee', 'The neck', 'The nose'], 'Le genou se dit « knee » : le k ne se prononce pas.'],
+    ['en', 2, 'Que veut dire « Happy birthday! » ?', ['Joyeux anniversaire !', 'Bonne année !', 'Joyeux Noël !'], '« Happy birthday » veut dire joyeux anniversaire.'],
+    ['en', 2, 'Comment dit-on « juillet » en anglais ?', ['July', 'June', 'January'], 'Juillet se dit « July », juin « June » et janvier « January ».'],
+    // CM2-6e
+    ['en', 3, 'Complète : « I ___ a book now. » (read, en ce moment)', ['am reading', 'read', 'reads'], 'Pour une action en cours, on utilise be + -ing : I am reading.'],
+    ['en', 3, 'Quel est le prétérit de « eat » ?', ['ate', 'eated', 'eaten'], 'Eat est irrégulier : eat, ate, eaten.'],
+    ['en', 3, 'Quel est le pluriel de « child » ?', ['children', 'childs', 'childrens'], 'Child est irrégulier : un enfant, « a child » ; des enfants, « children ».'],
+    ['en', 3, 'Complète : « Where ___ you live? »', ['do', 'does', 'are'], 'Pour poser une question au présent avec you, on utilise « do ».'],
+    ['en', 3, 'Que veut dire « I usually get up at 7 » ?', ['Je me lève d’habitude à 7 heures', 'Je me couche à 7 heures', 'Je me suis levé à 7 heures'], '« Usually » veut dire d’habitude, « get up » veut dire se lever.'],
+    ['en', 3, 'Quel est le contraire de « expensive » ?', ['Cheap', 'Rich', 'Heavy'], '« Expensive » veut dire cher, « cheap » veut dire bon marché.'],
+    ['en', 3, 'Complète : « He ___ like spinach. » (négation au présent)', ['doesn’t', 'don’t', 'isn’t'], 'Avec he, she, it, la négation au présent se fait avec « doesn’t ».'],
+    ['en', 3, 'Que veut dire « between » ?', ['Entre', 'Derrière', 'Au-dessus'], '« Between » veut dire entre : « between the two roofs ».'],
+    ['en', 3, 'Comment dit-on « nous avons » en anglais ?', ['We have', 'We are', 'We has'], 'Avec we, avoir se dit « have » : we have.'],
+    ['en', 3, 'Quel est le prétérit de « see » ?', ['saw', 'seed', 'seen'], 'See est irrégulier : see, saw, seen.'],
+    ['en', 3, 'Que veut dire « Can I have some water, please? » ?', ['Est-ce que je peux avoir de l’eau, s’il te plaît ?', 'Est-ce que tu as soif ?', 'Je n’ai pas d’eau.'], '« Can I have… » est une façon polie de demander quelque chose.'],
+    ['en', 3, 'Complète : « This is ___ cat. » (le chat de Tom)', ['Tom’s', 'Toms', 'Tom'], 'Pour dire « à quelqu’un », on ajoute ’s : Tom’s cat, le chat de Tom.'],
+    ['en', 3, 'Comment dit-on « à côté de » en anglais ?', ['Next to', 'Behind', 'Above'], '« Next to » veut dire à côté de.'],
+    ['en', 3, 'Que veut dire « weather » ?', ['Le temps (qu’il fait)', 'L’hiver', 'L’eau'], '« What’s the weather like? » veut dire : quel temps fait-il ?'],
+    ['en', 3, 'Quel est le comparatif de « fast » ?', ['faster', 'more fast', 'fastest'], 'Pour un adjectif court, on ajoute -er : fast, faster.'],
+    ['en', 3, 'Complète : « There ___ a cat on the roof. »', ['is', 'are', 'be'], 'Avec un seul élément, on dit « there is ».'],
+    ['en', 3, 'Que veut dire « I don’t know » ?', ['Je ne sais pas', 'Je ne veux pas', 'Je ne peux pas'], '« I don’t know » veut dire je ne sais pas.'],
+    ['en', 3, 'Comment dit-on « le jeudi » en anglais ?', ['Thursday', 'Tuesday', 'Wednesday'], 'Jeudi se dit « Thursday » et mardi « Tuesday » : attention à ne pas les confondre.'],
+    ['en', 3, 'Quel mot est un pronom personnel sujet ?', ['They', 'Their', 'Them'], '« They » est sujet (ils/elles), « their » est possessif (leur) et « them » est complément (les/leur).'],
+    ['en', 3, 'Que veut dire « bedroom » ?', ['Chambre', 'Salle de bains', 'Cuisine'], 'Bedroom : chambre ; bathroom : salle de bains ; kitchen : cuisine.'],
+    // 5e et plus
+    ['en', 4, 'Complète : « If I ___ a cat, I would call it Neko. » (have)', ['had', 'have', 'will have'], 'Pour une hypothèse, on utilise le prétérit après « if » : If I had…, I would…'],
+    ['en', 4, 'Quel est le participe passé de « go » ?', ['gone', 'went', 'goed'], 'Go est irrégulier : go, went, gone.'],
+    ['en', 4, 'Complète : « I have been waiting ___ two hours. »', ['for', 'since', 'during'], 'For indique une durée, since un point de départ.'],
+    ['en', 4, 'Que veut dire le faux ami « to pretend » ?', ['Faire semblant', 'Prétendre', 'Préparer'], '« To pretend » veut dire faire semblant. Prétendre se dit plutôt « to claim ».'],
+    ['en', 4, 'Que veut dire le faux ami « eventually » ?', ['Finalement', 'Éventuellement', 'Évidemment'], '« Eventually » veut dire finalement. Éventuellement se dit « possibly ».'],
+    ['en', 4, 'Complète : « The house ___ was built in 1900 is beautiful. »', ['which', 'who', 'whose'], 'Pour une chose, on utilise le relatif « which » (ou « that »).'],
+    ['en', 4, 'Quel est le superlatif de « bad » ?', ['the worst', 'the baddest', 'the most bad'], 'Bad est irrégulier : bad, worse, the worst.'],
+    ['en', 4, 'Complète : « You ___ smoke here: it is forbidden. »', ['mustn’t', 'don’t have to', 'should'], '« Mustn’t » exprime une interdiction.'],
+    ['en', 4, 'Que veut dire « I’m looking forward to seeing you » ?', ['J’ai hâte de te voir', 'Je te cherche', 'Je t’ai vu'], '« To look forward to » veut dire avoir hâte de.'],
+    ['en', 4, 'Complète : « This book ___ by J. K. Rowling. » (voix passive)', ['was written', 'wrote', 'has write'], 'La voix passive se forme avec be + participe passé : was written.'],
+    ['en', 4, 'Que veut dire « It’s raining cats and dogs » ?', ['Il pleut des cordes', 'Il pleut des chats', 'Les chats détestent la pluie'], 'Cette expression anglaise veut dire qu’il pleut très fort.'],
+    ['en', 4, 'Que veut dire « to let the cat out of the bag » ?', ['Révéler un secret', 'Sortir le chat', 'Faire les courses'], 'Laisser le chat sortir du sac, c’est révéler un secret.'],
+    ['en', 4, 'Complète : « She asked me where I ___. » (discours indirect, live)', ['lived', 'live', 'living'], 'Au discours indirect au passé, le présent devient prétérit : where I lived.'],
+    ['en', 4, 'Quel est le prétérit de « think » ?', ['thought', 'thinked', 'thank'], 'Think est irrégulier : think, thought, thought.'],
+    ['en', 4, 'Que veut dire le faux ami « to attend » ?', ['Assister à', 'Attendre', 'Atteindre'], '« To attend a meeting » veut dire assister à une réunion. Attendre se dit « to wait ».'],
+    ['en', 4, 'Complète : « By the time we arrived, the film ___. »', ['had started', 'has started', 'starts'], 'Pour une action antérieure à une autre action passée : le past perfect, had + participe passé.'],
+    ['en', 4, 'Quelle est la capitale de l’Écosse ?', ['Edinburgh', 'Glasgow', 'Dublin'], 'Édimbourg (Edinburgh) est la capitale de l’Écosse, Dublin celle de l’Irlande.'],
+    ['en', 4, 'Quel est le surnom de la grande horloge du palais de Westminster ?', ['Big Ben', 'Big Bang', 'London Eye'], 'Big Ben est le nom de la grosse cloche, souvent utilisé pour toute la tour.'],
+    ['en', 4, 'Complète : « I wish I ___ fly like a bird. »', ['could', 'can', 'will'], 'Après « I wish », on utilise le prétérit (could) pour un souhait irréel.'],
+    ['en', 4, 'Que veut dire « curiosity killed the cat » ?', ['La curiosité est un vilain défaut', 'Le chat est très curieux', 'Le chat a été tué'], 'Ce proverbe met en garde contre une curiosité excessive.'],
+    // ---- Nouvelles questions : La France ----
+    // La France, CP-CE1
+    ['fra', 1, 'Quel animal est un symbole de la France ?', ['Le coq', 'Le lion', 'L’aigle'], 'Le coq gaulois est un symbole de la France, qu’on voit sur les maillots des sportifs.'],
+    ['fra', 1, 'Quel pain long et croustillant est célèbre en France ?', ['La baguette', 'Le bagel', 'La tortilla'], 'La baguette est le pain français le plus connu.'],
+    ['fra', 1, 'Quelle viennoiserie en forme de croissant de lune mange-t-on au petit-déjeuner ?', ['Le croissant', 'Le bretzel', 'Le muffin'], 'Le croissant est une viennoiserie au beurre, très appréciée en France.'],
+    ['fra', 1, 'Quel fleuve traverse Paris ?', ['La Seine', 'La Loire', 'Le Rhône'], 'La Seine traverse Paris avant de rejoindre la Manche au Havre.'],
+    ['fra', 1, 'Quel grand arc se dresse en haut des Champs-Élysées, à Paris ?', ['L’Arc de triomphe', 'La tour Eiffel', 'Le Louvre'], 'L’Arc de triomphe a été voulu par Napoléon. La tombe du Soldat inconnu se trouve dessous.'],
+    ['fra', 1, 'Quel sport pratique-t-on l’hiver dans les Alpes et les Pyrénées ?', ['Le ski', 'La voile', 'Le tennis'], 'L’hiver, on skie dans les stations de montagne des Alpes, des Pyrénées ou du Jura.'],
+    ['fra', 1, 'Quelle fleur violette pousse en Provence ?', ['La lavande', 'La tulipe', 'La rose'], 'Les champs de lavande colorent la Provence en violet au début de l’été.'],
+    ['fra', 1, 'Comment s’appelle la grande île française en Méditerranée ?', ['La Corse', 'La Sicile', 'La Sardaigne'], 'La Corse est une île française. La Sicile et la Sardaigne sont italiennes.'],
+    ['fra', 1, 'Quel petit gâteau en forme de coquillage est français ?', ['La madeleine', 'Le cookie', 'Le donut'], 'La madeleine, petit gâteau en forme de coquille, vient de Lorraine.'],
+    ['fra', 1, 'Que mange-t-on souvent à la Chandeleur ?', ['Des crêpes', 'Des frites', 'De la soupe'], 'Le 2 février, pour la Chandeleur, on fait des crêpes.'],
+    ['fra', 1, 'Quel monument de Paris a été construit pour l’Exposition universelle de 1889 ?', ['La tour Eiffel', 'Le Louvre', 'Notre-Dame'], 'La tour Eiffel a été construite pour l’Exposition universelle de 1889.'],
+    ['fra', 1, 'Dans quelle région mange-t-on beaucoup de crêpes et de galettes ?', ['La Bretagne', 'L’Alsace', 'La Provence'], 'Les crêpes et les galettes de sarrasin sont des spécialités bretonnes.'],
+    ['fra', 1, 'Comment s’appelle la monnaie utilisée en France ?', ['L’euro', 'Le dollar', 'La livre'], 'Depuis 2002, on paie en euros en France.'],
+    ['fra', 1, 'Quel fromage à trous est fabriqué dans l’est de la France ?', ['L’emmental', 'Le camembert', 'Le brie'], 'L’emmental français est fabriqué surtout en Savoie et en Franche-Comté.'],
+    ['fra', 1, 'Comment s’appellent les grandes montagnes à l’est de la France, avec le mont Blanc ?', ['Les Alpes', 'Les Pyrénées', 'Les Vosges'], 'Le mont Blanc se trouve dans les Alpes.'],
+    ['fra', 1, 'Quel grand fromage rond et coulant vient de Normandie ?', ['Le camembert', 'Le gruyère', 'La mozzarella'], 'Le camembert est un fromage de Normandie.'],
+    ['fra', 1, 'Quel jour est la fête nationale française ?', ['Le 14 juillet', 'Le 25 décembre', 'Le 1er janvier'], 'Le 14 juillet rappelle la prise de la Bastille (1789) et la fête de la Fédération (1790).'],
+    ['fra', 1, 'Comment s’appelle la statue de femme qui représente la République française ?', ['Marianne', 'Jeanne', 'Juliette'], 'Marianne, avec son bonnet phrygien, représente la République.'],
+    ['fra', 1, 'Dans quelle ville se trouve le Vieux-Port, au sud de la France ?', ['Marseille', 'Lille', 'Strasbourg'], 'Le Vieux-Port est le cœur de Marseille depuis l’Antiquité.'],
+    ['fra', 1, 'Quel légume rouge est la base de la ratatouille, avec la courgette et l’aubergine ?', ['La tomate', 'La carotte', 'Le radis'], 'La ratatouille est un plat provençal de tomates, courgettes, aubergines et poivrons.'],
+    // CE2-CM1
+    ['fra', 2, 'Combien de régions compte la France métropolitaine ?', ['13', '22', '101'], 'Depuis 2016, la France métropolitaine compte 13 régions.'],
+    ['fra', 2, 'Quelle ville est la capitale de l’Alsace et accueille le Parlement européen ?', ['Strasbourg', 'Colmar', 'Mulhouse'], 'Strasbourg accueille le Parlement européen.'],
+    ['fra', 2, 'Quel fleuve passe par Lyon, en plus de la Saône ?', ['Le Rhône', 'La Seine', 'La Garonne'], 'À Lyon, la Saône se jette dans le Rhône.'],
+    ['fra', 2, 'Quel fleuve traverse Bordeaux ?', ['La Garonne', 'La Loire', 'Le Rhône'], 'Bordeaux s’est construite au bord de la Garonne.'],
+    ['fra', 2, 'Quel fleuve traverse Nantes et Tours ?', ['La Loire', 'La Seine', 'La Garonne'], 'La Loire, plus long fleuve de France, traverse Orléans, Tours et Nantes.'],
+    ['fra', 2, 'Quelle région est célèbre pour ses châteaux de la Renaissance, comme Chambord ?', ['Le Val de Loire', 'La Bretagne', 'L’Alsace'], 'Le Val de Loire compte des dizaines de châteaux, dont Chambord et Chenonceau.'],
+    ['fra', 2, 'Quel plat alsacien est fait de chou fermenté et de charcuterie ?', ['La choucroute', 'La bouillabaisse', 'Le cassoulet'], 'La choucroute est un grand plat de l’Alsace.'],
+    ['fra', 2, 'Quel plat de Savoie se mange avec du fromage fondu et des pommes de terre ?', ['La raclette', 'La paella', 'Le couscous'], 'Pour la raclette, on fait fondre le fromage et on le racle sur des pommes de terre.'],
+    ['fra', 2, 'De quelle ville vient la moutarde la plus célèbre de France ?', ['Dijon', 'Lille', 'Nice'], 'La moutarde de Dijon est connue dans le monde entier.'],
+    ['fra', 2, 'Quelles montagnes séparent l’Alsace de la Lorraine ?', ['Les Vosges', 'Les Pyrénées', 'Le Jura'], 'Le massif des Vosges sépare l’Alsace, à l’est, de la Lorraine, à l’ouest.'],
+    ['fra', 2, 'Quel massif de vieux volcans se trouve au centre de la France ?', ['Le Massif central', 'Le Jura', 'Les Vosges'], 'Le Massif central compte de nombreux volcans endormis, comme le puy de Dôme.'],
+    ['fra', 2, 'Quelle mer sépare la France de l’Angleterre ?', ['La Manche', 'La Méditerranée', 'La mer Baltique'], 'La Manche sépare la France et le Royaume-Uni. Un tunnel passe dessous.'],
+    ['fra', 2, 'Comment s’appelle le tunnel sous la Manche, ouvert en 1994 ?', ['Le tunnel sous la Manche', 'Le tunnel du Mont-Blanc', 'Le tunnel de Fréjus'], 'Le tunnel sous la Manche relie la France et l’Angleterre depuis 1994.'],
+    ['fra', 2, 'Dans quelle région se trouve le Mont-Saint-Michel ?', ['La Normandie', 'La Bretagne', 'La Provence'], 'Le Mont-Saint-Michel est en Normandie, tout près de la Bretagne.'],
+    ['fra', 2, 'Quel pays est le voisin de la France à l’est, célèbre pour ses montres et son chocolat ?', ['La Suisse', 'La Belgique', 'L’Espagne'], 'La Suisse borde la France, du lac Léman au Jura.'],
+    ['fra', 2, 'Quel petit pays se trouve au bord de la Méditerranée, près de Nice ?', ['Monaco', 'Andorre', 'Le Luxembourg'], 'Monaco est un très petit pays, entouré par la France et la mer.'],
+    ['fra', 2, 'Combien de pays ont une frontière terrestre avec la France métropolitaine ?', ['8', '3', '12'], 'Belgique, Luxembourg, Allemagne, Suisse, Italie, Monaco, Espagne et Andorre : 8 pays.'],
+    ['fra', 2, 'Quel est l’hymne national français ?', ['La Marseillaise', 'L’Ode à la joie', 'Le Chant des partisans'], 'La Marseillaise a été chantée par des soldats venus de Marseille en 1792.'],
+    ['fra', 2, 'Quelle course de voitures dure 24 heures dans la Sarthe ?', ['Les 24 Heures du Mans', 'Le Tour de France', 'Le Dakar'], 'Depuis 1923, les voitures roulent 24 heures sans arrêt au Mans.'],
+    ['fra', 2, 'Quelle ville du nord de la France est célèbre pour sa braderie géante ?', ['Lille', 'Nice', 'Toulouse'], 'Chaque année en septembre, la braderie de Lille attire des centaines de milliers de visiteurs.'],
+    // CM2-6e
+    ['fra', 3, 'Combien de départements compte la France, outre-mer compris ?', ['101', '13', '95'], 'La France compte 101 départements, dont 5 en outre-mer.'],
+    ['fra', 3, 'Quelle ville est surnommée « la ville rose » ?', ['Toulouse', 'Lyon', 'Lille'], 'Toulouse doit ce surnom à ses briques couleur rose.'],
+    ['fra', 3, 'Quelle ville est surnommée « la capitale des Gaules » ?', ['Lyon', 'Paris', 'Bordeaux'], 'Lyon, appelée Lugdunum, était la capitale de la Gaule romaine.'],
+    ['fra', 3, 'Quelle ville de Bretagne est surnommée « la cité corsaire » ?', ['Saint-Malo', 'Brest', 'Rennes'], 'Saint-Malo était un port de corsaires, comme Surcouf.'],
+    ['fra', 3, 'Quel est le département d’outre-mer situé en Amérique du Sud ?', ['La Guyane', 'La Réunion', 'Mayotte'], 'La Guyane est en Amérique du Sud. La Réunion et Mayotte sont dans l’océan Indien.'],
+    ['fra', 3, 'Dans quel océan se trouve l’île de La Réunion ?', ['L’océan Indien', 'L’océan Atlantique', 'L’océan Pacifique'], 'La Réunion se trouve dans l’océan Indien, près de Madagascar.'],
+    ['fra', 3, 'Quelles îles françaises se trouvent dans la mer des Caraïbes ?', ['La Guadeloupe et la Martinique', 'La Corse et l’île de Ré', 'Les îles Kerguelen'], 'La Guadeloupe et la Martinique sont aux Antilles, dans la mer des Caraïbes.'],
+    ['fra', 3, 'D’où part la fusée Ariane ?', ['De Kourou, en Guyane', 'De Paris', 'De Marseille'], 'Le centre spatial de Kourou est proche de l’équateur, ce qui aide les fusées à décoller.'],
+    ['fra', 3, 'Quel grand avion franco-britannique pouvait voler plus vite que le son ?', ['Le Concorde', 'L’Airbus A380', 'Le Rafale'], 'Le Concorde reliait Paris à New York en environ 3 h 30, de 1976 à 2003.'],
+    ['fra', 3, 'Dans quelle ville est construit l’avion Airbus ?', ['Toulouse', 'Brest', 'Lille'], 'Toulouse est la capitale de l’aéronautique : on y assemble des avions Airbus.'],
+    ['fra', 3, 'Quel fleuve se jette dans la Méditerranée en entourant la Camargue ?', ['Le Rhône', 'La Loire', 'La Seine'], 'Avant de rejoindre la mer, le Rhône se divise en deux bras qui entourent la Camargue.'],
+    ['fra', 3, 'Quel grand lac est partagé entre la France et la Suisse ?', ['Le lac Léman', 'Le lac d’Annecy', 'Le lac du Bourget'], 'Le lac Léman borde Genève, Lausanne et Évian.'],
+    ['fra', 3, 'Quel est le plus grand lac naturel entièrement en France ?', ['Le lac du Bourget', 'Le lac d’Annecy', 'Le lac Léman'], 'Le lac du Bourget, en Savoie, est le plus grand lac naturel entièrement français.'],
+    ['fra', 3, 'Quelle est la plus haute dune d’Europe, près d’Arcachon ?', ['La dune du Pilat', 'Les dunes de Flandre', 'Les dunes de Camargue'], 'La dune du Pilat mesure environ 100 mètres de haut.'],
+    ['fra', 3, 'Quel viaduc très haut enjambe le Tarn près de Millau ?', ['Le viaduc de Millau', 'Le pont du Gard', 'Le pont de Normandie'], 'Le viaduc de Millau, ouvert en 2004, a la pile la plus haute du monde.'],
+    ['fra', 3, 'Quel aqueduc romain se trouve près de Nîmes ?', ['Le pont du Gard', 'Le pont d’Avignon', 'Le viaduc de Millau'], 'Le pont du Gard amenait l’eau à Nîmes il y a près de 2 000 ans.'],
+    ['fra', 3, 'Dans quel port de Normandie la Seine se jette-t-elle dans la mer ?', ['Le Havre', 'Cherbourg', 'Dieppe'], 'La Seine rejoint la Manche entre Le Havre et Honfleur.'],
+    ['fra', 3, 'Quelle région française est célèbre pour son vin pétillant ?', ['La Champagne', 'La Bretagne', 'La Corse'], 'Le champagne est produit en Champagne, autour de Reims et d’Épernay.'],
+    ['fra', 3, 'Dans quelle ville se trouve le palais des Papes ?', ['Avignon', 'Nîmes', 'Arles'], 'Les papes ont vécu à Avignon au XIVe siècle.'],
+    ['fra', 3, 'Dans quel département se trouve le volcan du Piton de la Fournaise ?', ['La Réunion', 'Le Puy-de-Dôme', 'La Martinique'], 'Le Piton de la Fournaise, à La Réunion, est l’un des volcans les plus actifs du monde.'],
+    // 5e et plus
+    ['fra', 4, 'Quel est le point culminant de la France, outre-mer compris ?', ['Le mont Blanc', 'Le Piton des Neiges', 'Le pic du Midi'], 'Le mont Blanc reste le point le plus haut. Le Piton des Neiges, à La Réunion, mesure environ 3 070 m.'],
+    ['fra', 4, 'En quelle année les régions ont-elles été réduites de 22 à 13 en métropole ?', ['2016', '1982', '2002'], 'La réforme territoriale est entrée en vigueur le 1er janvier 2016.'],
+    ['fra', 4, 'Quelle région a pour capitale Lyon ?', ['Auvergne-Rhône-Alpes', 'Bourgogne-Franche-Comté', 'Provence-Alpes-Côte d’Azur'], 'Lyon est le chef-lieu de la région Auvergne-Rhône-Alpes.'],
+    ['fra', 4, 'Quelle région a pour capitale Dijon ?', ['Bourgogne-Franche-Comté', 'Grand Est', 'Centre-Val de Loire'], 'Dijon est le chef-lieu de la région Bourgogne-Franche-Comté, où se trouve aussi Besançon.'],
+    ['fra', 4, 'Dans quelle ville siège le Conseil de l’Europe ?', ['Strasbourg', 'Bruxelles', 'Genève'], 'Le Conseil de l’Europe et le Parlement européen siègent à Strasbourg.'],
+    ['fra', 4, 'Quel architecte a fortifié Besançon et de nombreuses villes sous Louis XIV ?', ['Vauban', 'Haussmann', 'Le Corbusier'], 'Vauban a construit ou modernisé plus de 150 places fortes, dont la citadelle de Besançon.'],
+    ['fra', 4, 'Quel préfet a transformé Paris avec de grands boulevards sous Napoléon III ?', ['Haussmann', 'Vauban', 'Eiffel'], 'Le baron Haussmann a dessiné les grands boulevards et les immeubles qui portent son nom.'],
+    ['fra', 4, 'Quelle est la deuxième ville la plus peuplée de France ?', ['Marseille', 'Lyon', 'Toulouse'], 'Après Paris, Marseille est la ville la plus peuplée, avec environ 870 000 habitants.'],
+    ['fra', 4, 'Quel est le plus grand port de commerce de France ?', ['Marseille', 'Brest', 'Lorient'], 'Le Grand port maritime de Marseille-Fos est le premier port de commerce français.'],
+    ['fra', 4, 'Quel territoire français du Pacifique est connu pour Tahiti ?', ['La Polynésie française', 'La Nouvelle-Calédonie', 'Wallis-et-Futuna'], 'Tahiti est la plus grande île de la Polynésie française.'],
+    ['fra', 4, 'Grâce à ses territoires d’outre-mer, la France a l’une des plus grandes surfaces maritimes du monde. À quel rang ?', ['Au 2e rang', 'Au 10e rang', 'Au 50e rang'], 'Avec environ 10 millions de km² d’espace maritime, la France est 2e au monde, juste après les États-Unis.'],
+    ['fra', 4, 'Quel site préhistorique d’Ardèche contient des peintures vieilles de plus de 30 000 ans ?', ['La grotte Chauvet', 'La grotte de Lascaux', 'Le gouffre de Padirac'], 'La grotte Chauvet, découverte en 1994, abrite parmi les plus anciennes peintures connues.'],
+    ['fra', 4, 'Dans quelle ville a eu lieu le sacre de nombreux rois de France ?', ['Reims', 'Paris', 'Orléans'], 'De nombreux rois de France ont été sacrés dans la cathédrale de Reims.'],
+    ['fra', 4, 'Quelle ville a été la capitale de la France libre pendant une partie de la Seconde Guerre mondiale, en Afrique ?', ['Brazzaville', 'Alger', 'Dakar'], 'Le général de Gaulle a fait de Brazzaville la capitale de la France libre en 1940.'],
+    ['fra', 4, 'Où siège le Sénat ?', ['Au palais du Luxembourg', 'Au palais Bourbon', 'Au palais de l’Élysée'], 'Le Sénat siège au palais du Luxembourg ; l’Assemblée nationale au palais Bourbon.'],
+    ['fra', 4, 'Où réside le président de la République ?', ['Au palais de l’Élysée', 'Au château de Versailles', 'À l’hôtel Matignon'], 'Le président vit et travaille à l’Élysée. Le Premier ministre est à Matignon.'],
+    ['fra', 4, 'Combien de temps dure le mandat du président de la République depuis 2002 ?', ['5 ans', '7 ans', '4 ans'], 'Le quinquennat a remplacé le septennat avec l’élection de 2002.'],
+    ['fra', 4, 'Quel est le département portant le numéro 13 ?', ['Les Bouches-du-Rhône', 'Le Rhône', 'La Gironde'], 'Le 13, ce sont les Bouches-du-Rhône, autour de Marseille.'],
+    ['fra', 4, 'Quel est le département portant le numéro 25 ?', ['Le Doubs', 'La Haute-Saône', 'Le Jura'], 'Le Doubs (25) a pour préfecture Besançon. La Haute-Saône (70) a pour préfecture Vesoul.'],
+    ['fra', 4, 'Quel grand écrivain est né à Besançon en 1802 ?', ['Victor Hugo', 'Émile Zola', 'Jules Verne'], 'Victor Hugo est né à Besançon le 26 février 1802.'],
   ];
 
-  const SUBJECTS = { sci: 'Sciences et nature', hist: 'Histoire et géographie', fr: 'Français et maths', art: 'Arts et culture', chat: 'Les chats', en: 'Anglais' };
+  // Two questions about each city of the trip, asked now and then in the "La France" subject
+  const CITY_QUESTIONS = {
+      marseille: [
+        ['Comment les Marseillais surnomment-ils Notre-Dame-de-la-Garde ?', ['La Bonne Mère', 'La Grande Dame', 'La Tour Blanche'], 'Du haut de sa colline, « la Bonne Mère » veille sur les marins et sur la ville.'],
+        ['Quelle est la célèbre soupe de poissons de Marseille ?', ['La bouillabaisse', 'La garbure', 'La potée'], 'La bouillabaisse était à l’origine le repas des pêcheurs, avec les poissons qu’ils ne vendaient pas.'],
+      ],
+      sainttropez: [
+        ['Où se trouve Saint-Tropez ?', ['Au bord de la Méditerranée', 'Au bord de l’océan Atlantique', 'Dans les montagnes'], 'Saint-Tropez est un petit port de la Côte d’Azur, au bord de la Méditerranée.'],
+        ['Quel jeu de boules joue-t-on sur la place des Lices de Saint-Tropez ?', ['La pétanque', 'Le bowling', 'Le golf'], 'La pétanque est née en Provence au début du XXe siècle.'],
+      ],
+      nice: [
+        ['Comment s’appelle la grande promenade au bord de la mer à Nice ?', ['La promenade des Anglais', 'Les Champs-Élysées', 'La Croisette'], 'Elle a été construite au XIXe siècle grâce à des Anglais qui passaient l’hiver à Nice. La Croisette est à Cannes.'],
+        ['Quelle salade célèbre porte le nom de Nice ?', ['La salade niçoise', 'La salade César', 'La salade grecque'], 'La vraie salade niçoise contient des tomates, des œufs, des olives et des anchois ou du thon.'],
+      ],
+      gordes: [
+        ['Comment s’appellent les petites cabanes en pierres sèches qu’on trouve près de Gordes ?', ['Des bories', 'Des igloos', 'Des chalets'], 'Les bories sont construites en empilant des pierres, sans ciment.'],
+        ['Dans quelle région se trouve Gordes ?', ['Le Luberon, en Provence', 'La Bretagne', 'L’Alsace'], 'Gordes est un village perché du Luberon, en Provence.'],
+      ],
+      avignon: [
+        ['Que chante-t-on sur le pont d’Avignon ?', ['« On y danse, on y danse »', '« Frère Jacques »', '« Au clair de la lune »'], 'La chanson dit : « Sur le pont d’Avignon, on y danse, on y danse, tous en rond. »'],
+        ['Quel grand festival de théâtre a lieu chaque été à Avignon ?', ['Le festival d’Avignon', 'Le festival de Cannes', 'Les Vieilles Charrues'], 'Créé en 1947 par Jean Vilar, le festival d’Avignon est l’un des plus grands festivals de théâtre du monde.'],
+      ],
+      arles: [
+        ['Quel peintre a vécu à Arles et peint des tournesols ?', ['Vincent van Gogh', 'Claude Monet', 'Pablo Picasso'], 'Van Gogh a peint près de 200 tableaux à Arles en 1888 et 1889.'],
+        ['Quelle grande région naturelle avec des chevaux blancs et des flamants roses se trouve près d’Arles ?', ['La Camargue', 'La Beauce', 'La Brie'], 'La Camargue, entre les bras du Rhône, est célèbre pour ses chevaux blancs, ses taureaux et ses flamants roses.'],
+      ],
+      nimes: [
+        ['Quel temple romain très bien conservé se trouve à Nîmes ?', ['La Maison carrée', 'Le Parthénon', 'Le Panthéon'], 'La Maison carrée, construite il y a environ 2 000 ans, est l’un des temples romains les mieux conservés.'],
+        ['Quel animal est sur le blason de Nîmes ?', ['Un crocodile', 'Un lion', 'Un coq'], 'Le crocodile enchaîné à un palmier rappelle les soldats romains venus d’Égypte.'],
+      ],
+      montpellier: [
+        ['Comment s’appelle la grande place au cœur de Montpellier ?', ['La place de la Comédie', 'La place Bellecour', 'La place Stanislas'], 'La place de la Comédie, avec son opéra, est le cœur de la ville.'],
+        ['Quelle très ancienne école de Montpellier existe depuis le Moyen Âge ?', ['La faculté de médecine', 'Une école de pilotes', 'Une école de cuisine'], 'La faculté de médecine de Montpellier est l’une des plus anciennes du monde encore en activité.'],
+      ],
+      carcassonne: [
+        ['Comment s’appelle la ville fortifiée de Carcassonne ?', ['La Cité', 'Le Bourg', 'La Citadelle'], 'La Cité de Carcassonne est entourée de deux enceintes et de 52 tours.'],
+        ['Quel plat aux haricots blancs et à la viande vient de la région de Carcassonne ?', ['Le cassoulet', 'La choucroute', 'La paella'], 'Castelnaudary, Carcassonne et Toulouse se disputent le meilleur cassoulet.'],
+      ],
+      toulouse: [
+        ['Pourquoi Toulouse est-elle appelée « la ville rose » ?', ['Pour la couleur de ses briques', 'Pour ses champs de roses', 'Pour son équipe de rugby'], 'Les maisons de Toulouse sont construites en briques de terre cuite, couleur rose orangé.'],
+        ['Quelle fleur violette est le symbole de Toulouse ?', ['La violette', 'La lavande', 'Le coquelicot'], 'On trouve à Toulouse des bonbons, des parfums et des liqueurs à la violette.'],
+      ],
+      lourdes: [
+        ['Dans quelles montagnes se trouve Lourdes ?', ['Les Pyrénées', 'Les Alpes', 'Les Vosges'], 'Lourdes est au pied des Pyrénées, au bord du gave de Pau.'],
+        ['Comment appelle-t-on les torrents de montagne dans les Pyrénées, comme à Lourdes ?', ['Des gaves', 'Des oueds', 'Des fjords'], 'Dans les Pyrénées, les torrents s’appellent des gaves, comme le gave de Pau.'],
+      ],
+      biarritz: [
+        ['Quel sport de glisse sur les vagues est très pratiqué à Biarritz ?', ['Le surf', 'Le ski', 'Le patin à glace'], 'Biarritz est l’un des berceaux du surf en Europe depuis 1957.'],
+        ['Dans quelle région se trouve Biarritz ?', ['Le Pays basque', 'La Bretagne', 'La Normandie'], 'Biarritz est sur la côte du Pays basque, près de l’Espagne.'],
+      ],
+      bordeaux: [
+        ['Comment s’appelle le grand bassin plat devant la place de la Bourse à Bordeaux ?', ['Le miroir d’eau', 'Le lac du Bois', 'La fontaine des Quatre-Saisons'], 'Le miroir d’eau reflète la place de la Bourse. Les enfants adorent y marcher l’été.'],
+        ['Quel petit gâteau caramélisé est une spécialité de Bordeaux ?', ['Le canelé', 'Le macaron', 'Le kouign-amann'], 'Le canelé est croustillant dehors, moelleux dedans, parfumé à la vanille.'],
+      ],
+      larochelle: [
+        ['Que trouve-t-on à l’entrée du Vieux-Port de La Rochelle ?', ['Deux grandes tours', 'Un phare géant', 'Une grande roue'], 'La tour Saint-Nicolas et la tour de la Chaîne gardent l’entrée du port depuis le Moyen Âge.'],
+        ['Quel pont relie La Rochelle à une île voisine ?', ['Le pont de l’île de Ré', 'Le pont du Gard', 'Le pont Neuf'], 'Le pont de l’île de Ré, long de près de 3 km, a été ouvert en 1988.'],
+      ],
+      nantes: [
+        ['Quel animal géant mécanique se promène à Nantes ?', ['Un éléphant', 'Un dragon', 'Une baleine'], 'Le Grand Éléphant des Machines de l’île mesure 12 mètres de haut et transporte des passagers.'],
+        ['Quel petit gâteau sec célèbre était fabriqué à Nantes ?', ['Le Petit Beurre LU', 'Le macaron', 'Le cookie'], 'Le Petit Beurre a été créé à Nantes par la biscuiterie LU en 1886.'],
+      ],
+      carnac: [
+        ['Que trouve-t-on par milliers à Carnac ?', ['Des menhirs alignés', 'Des volcans', 'Des moulins à vent'], 'Plus de 3 000 menhirs ont été dressés à Carnac il y a plus de 6 000 ans.'],
+        ['Dans quelle région se trouve Carnac ?', ['La Bretagne', 'La Provence', 'L’Auvergne'], 'Carnac est dans le Morbihan, en Bretagne.'],
+      ],
+      quimper: [
+        ['Quelle spécialité de Quimper est faite de farine de sarrasin ?', ['La galette', 'La pizza', 'La fougasse'], 'La galette bretonne est une crêpe salée à la farine de sarrasin, ou blé noir.'],
+        ['Pour quoi la ville de Quimper est-elle célèbre ?', ['Ses faïences peintes', 'Ses gratte-ciel', 'Ses mines d’or'], 'Les faïences de Quimper, peintes à la main, sont fabriquées depuis plus de 300 ans.'],
+      ],
+      saintmalo: [
+        ['Quel célèbre corsaire est né à Saint-Malo ?', ['Robert Surcouf', 'Barbe Noire', 'Jack Sparrow'], 'Robert Surcouf, né à Saint-Malo en 1773, est l’un des corsaires les plus célèbres.'],
+        ['Quel explorateur né à Saint-Malo est parti découvrir le Canada ?', ['Jacques Cartier', 'Christophe Colomb', 'Marco Polo'], 'Jacques Cartier a exploré le fleuve Saint-Laurent, au Canada, à partir de 1534.'],
+      ],
+      montsaintmichel: [
+        ['Qu’est-ce qui rend parfois le Mont-Saint-Michel entouré d’eau ?', ['Les grandes marées', 'Les inondations de la Seine', 'La fonte des neiges'], 'La baie du Mont-Saint-Michel a des marées parmi les plus fortes d’Europe.'],
+        ['Quel archange est représenté tout en haut de l’abbaye ?', ['Saint Michel', 'Saint Georges', 'Saint Nicolas'], 'Une statue dorée de l’archange saint Michel terrassant un dragon domine le Mont.'],
+      ],
+      etretat: [
+        ['De quelle couleur sont les falaises d’Étretat ?', ['Blanches', 'Rouges', 'Noires'], 'Les falaises d’Étretat sont en craie blanche.'],
+        ['Quel gentleman cambrioleur cache un trésor dans l’Aiguille d’Étretat ?', ['Arsène Lupin', 'Sherlock Holmes', 'Tintin'], 'Dans « L’Aiguille creuse », Maurice Leblanc imagine que l’Aiguille d’Étretat est creuse.'],
+      ],
+      rouen: [
+        ['Quelle héroïne a été brûlée à Rouen en 1431 ?', ['Jeanne d’Arc', 'Marie-Antoinette', 'Marianne'], 'Jeanne d’Arc a été condamnée et brûlée sur la place du Vieux-Marché à Rouen.'],
+        ['Comment s’appelle la grande horloge de Rouen, au-dessus d’une rue ?', ['Le Gros-Horloge', 'Big Ben', 'La Tour de l’Horloge'], 'Le Gros-Horloge a un cadran doré sur une arche qui enjambe la rue. On dit « le » Gros-Horloge.'],
+      ],
+      paris: [
+        ['Combien de marches faut-il monter pour atteindre le 2e étage de la tour Eiffel ?', ['Environ 700', 'Environ 70', 'Environ 7 000'], 'Il y a environ 674 marches jusqu’au 2e étage. Pour le sommet, il faut prendre l’ascenseur.'],
+        ['Comment s’appelle la colline où se trouve le Sacré-Cœur ?', ['Montmartre', 'Montparnasse', 'Belleville'], 'La basilique du Sacré-Cœur domine Paris depuis la butte Montmartre.'],
+      ],
+      amiens: [
+        ['Quel écrivain des « Voyages extraordinaires » a vécu à Amiens ?', ['Jules Verne', 'Victor Hugo', 'Molière'], 'Jules Verne a vécu à Amiens et y a écrit une grande partie de ses romans.'],
+        ['Que sont les hortillonnages d’Amiens ?', ['Des jardins sur l’eau', 'Des châteaux forts', 'Des montagnes'], 'Les hortillonnages sont des jardins entourés de canaux, qu’on visite en barque.'],
+      ],
+      lille: [
+        ['Quel grand marché aux puces a lieu à Lille en septembre ?', ['La Braderie', 'La Fête des lumières', 'Le Carnaval'], 'Pendant la Braderie, on mange des moules-frites dans toute la ville.'],
+        ['Quel plat mange-t-on à la Braderie de Lille ?', ['Des moules-frites', 'De la paella', 'Des sushis'], 'Les restaurants empilent les coquilles de moules devant leur porte !'],
+      ],
+      reims: [
+        ['Quelle statue célèbre sourit sur la façade de la cathédrale de Reims ?', ['L’Ange au sourire', 'La Joconde', 'Le Penseur'], 'L’Ange au sourire, sculpté au XIIIe siècle, est devenu un symbole de Reims.'],
+        ['Quel biscuit rose se trempe dans le champagne à Reims ?', ['Le biscuit rose de Reims', 'Le macaron', 'Le spéculoos'], 'Le biscuit rose de Reims est fabriqué depuis la fin du XVIIe siècle.'],
+      ],
+      strasbourg: [
+        ['Quelle fête de fin d’année est très célèbre à Strasbourg ?', ['Le marché de Noël', 'Le carnaval', 'La fête de la musique'], 'Le marché de Noël de Strasbourg existe depuis 1570 : c’est l’un des plus anciens de France.'],
+        ['Comment s’appelle le quartier de Strasbourg aux maisons à colombages au bord de l’eau ?', ['La Petite France', 'Le Petit Paris', 'La Petite Venise'], 'La Petite France est un ancien quartier de pêcheurs et de tanneurs. La Petite Venise est à Colmar.'],
+      ],
+      colmar: [
+        ['Quel grand oiseau blanc fait son nid sur les toits d’Alsace ?', ['La cigogne', 'Le cygne', 'La mouette'], 'La cigogne blanche est le symbole de l’Alsace.'],
+        ['Comment s’appelle le quartier de Colmar traversé par des canaux ?', ['La Petite Venise', 'La Petite France', 'Le Vieux-Port'], 'La Petite Venise doit son nom à ses canaux, qu’on visite en barque.'],
+      ],
+      vesoul: [
+        ['Quel chanteur belge a écrit une chanson sur Vesoul en 1968 ?', ['Jacques Brel', 'Georges Brassens', 'Charles Aznavour'], '« T’as voulu voir Vesoul, et on a vu Vesoul » : la chanson de Jacques Brel a rendu la ville célèbre.'],
+        ['Dans quel département se trouve Vesoul ?', ['La Haute-Saône', 'Le Doubs', 'Les Vosges'], 'Vesoul est la préfecture de la Haute-Saône, voisine du Doubs.'],
+      ],
+      dijon: [
+        ['Quelle spécialité piquante est la plus célèbre de Dijon ?', ['La moutarde', 'Le ketchup', 'La mayonnaise'], 'La moutarde de Dijon est faite avec des graines de moutarde et du verjus ou du vinaigre.'],
+        ['Quel oiseau de pierre porte bonheur sur une église de Dijon ?', ['La chouette', 'Le corbeau', 'Le pigeon'], 'On caresse la chouette de l’église Notre-Dame de la main gauche en faisant un vœu.'],
+      ],
+      clermont: [
+        ['Quel volcan endormi domine Clermont-Ferrand ?', ['Le puy de Dôme', 'Le Vésuve', 'L’Etna'], 'Le puy de Dôme culmine à 1 465 mètres, au-dessus de la chaîne des Puys.'],
+        ['Quelle entreprise de pneus est née à Clermont-Ferrand ?', ['Michelin', 'Renault', 'Peugeot'], 'Les frères Michelin ont fondé leur entreprise à Clermont-Ferrand en 1889.'],
+      ],
+      lyon: [
+        ['Comment s’appellent les passages secrets entre les immeubles du Vieux Lyon ?', ['Les traboules', 'Les catacombes', 'Les ruelles'], 'Les traboules permettent de passer d’une rue à l’autre à travers les immeubles.'],
+        ['Quelle marionnette célèbre est née à Lyon ?', ['Guignol', 'Pinocchio', 'Polichinelle'], 'Guignol a été créé à Lyon vers 1808 par Laurent Mourguet.'],
+      ],
+      grenoble: [
+        ['Comment appelle-t-on les cabines du téléphérique de Grenoble ?', ['Les bulles', 'Les œufs', 'Les ballons'], 'Les « bulles » montent au fort de la Bastille. Ouvert en 1934, c’est l’un des plus anciens téléphériques urbains du monde.'],
+        ['Quels Jeux olympiques Grenoble a-t-elle accueillis en 1968 ?', ['Les Jeux d’hiver', 'Les Jeux d’été', 'Les Jeux de la mer'], 'Grenoble a accueilli les Jeux olympiques d’hiver en 1968.'],
+      ],
+      annecy: [
+        ['Pour quoi le lac d’Annecy est-il célèbre ?', ['La pureté de son eau', 'Ses crocodiles', 'Son eau salée'], 'Le lac d’Annecy est souvent présenté comme l’un des lacs les plus purs d’Europe.'],
+        ['Quel festival de cinéma d’animation a lieu à Annecy ?', ['Le festival international du film d’animation', 'Le festival de Cannes', 'Le festival de Deauville'], 'Créé en 1960, le festival d’Annecy est le plus grand festival du film d’animation au monde.'],
+      ],
+      chamonix: [
+        ['Quels premiers Jeux olympiques ont eu lieu à Chamonix en 1924 ?', ['Les premiers Jeux d’hiver', 'Les premiers Jeux d’été', 'Les premiers Jeux paralympiques'], 'Chamonix a accueilli les tout premiers Jeux olympiques d’hiver en 1924.'],
+        ['Comment s’appelle le grand glacier qu’on peut visiter près de Chamonix ?', ['La mer de Glace', 'Le lac Blanc', 'La Grande Rivière'], 'La mer de Glace est le plus grand glacier de France, mais il fond un peu plus chaque année.'],
+      ],
+      besancon: [
+        ['Quelle rivière fait une boucle autour du centre de Besançon ?', ['Le Doubs', 'La Seine', 'La Loire'], 'Le Doubs entoure presque complètement la vieille ville de Besançon.'],
+        ['Quel objet de précision a fait la réputation de Besançon ?', ['Les montres et les horloges', 'Les voitures', 'Les avions'], 'Besançon est la capitale française de l’horlogerie. On y voit une horloge astronomique dans la cathédrale.'],
+      ],
+  };
+  const SUBJECTS = { sci: 'Sciences et nature', hist: 'Histoire et géographie', fr: 'Français et maths', art: 'Arts et culture', chat: 'Les chats', en: 'Anglais', fra: 'La France' };
+  // A question keeps the same key when questions are added, so progress survives updates
+  const qKey = text => { let h = 5381; for (let i = 0; i < text.length; i++) h = (h * 33 + text.charCodeAt(i)) >>> 0; return h.toString(36); };
 
   // Mental-maths questions, generated for each group
   const randInt = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -5635,8 +6376,14 @@
 
   // ---------- Class and quiz ----------
   const GRADES = [['CP', 1], ['CE1', 1], ['CE2', 2], ['CM1', 2], ['CM2', 3], ['6e', 3], ['5e', 4], ['4e', 4], ['3e', 4], ['Lycée et +', 4]];
-  let quizState = load(QUIZ_KEY, { grade: null, adj: 0, asked: [] });
-  if (!Array.isArray(quizState.asked)) quizState.asked = [];
+  let quizState = load(QUIZ_KEY, { grade: null, adj: 0 });
+  // mastered: keys of questions answered right (they don't come back); missed: key -> quiz number when it was missed
+  if (!Array.isArray(quizState.mastered)) quizState.mastered = [];
+  if (!quizState.missed || typeof quizState.missed !== 'object') quizState.missed = {};
+  quizState.n = quizState.n || 0;
+  delete quizState.asked;
+  const MISSED_DELAY = 3; // a missed question comes back after 3 question breaks
+  let runSeen = new Set();
   const gradeName = () => quizState.grade;
   function quizGroup() {
     const g = GRADES.find(x => x[0] === quizState.grade);
@@ -5671,21 +6418,48 @@
     for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     return a;
   }
+  // Picks a question the child has not mastered yet: a missed one whose turn has come back,
+  // otherwise a new one. When every question of the level is mastered, the next level up is used;
+  // when everything is mastered, the oldest ones come back.
+  function chooseFrom(items) {
+    const mastered = new Set(quizState.mastered);
+    const open = items.filter(x => !mastered.has(x.key) && !runSeen.has(x.key));
+    const due = open.filter(x => x.key in quizState.missed && quizState.n - quizState.missed[x.key] >= MISSED_DELAY);
+    const fresh = open.filter(x => !(x.key in quizState.missed));
+    return due.length ? pick(due) : fresh.length ? pick(fresh) : null;
+  }
+  const asQuestion = (x, subj) => ({ key: x.key, subj, q: x.q[0], choices: x.q[1].slice(), expl: x.q[2], city: x.city });
+  function cityQuestion() {
+    const list = CITY_QUESTIONS[CITY().id] || [];
+    const x = chooseFrom(list.map(q => ({ q, key: qKey(q[0]), city: CITY().name })));
+    return x && asQuestion(x, 'fra');
+  }
   function pickQuestion(subj) {
     const g = quizGroup();
     if (subj === 'fr' && Math.random() < 0.5) return mathQuestion(g);
-    let pool = QUESTIONS.map((q, id) => ({ q, id })).filter(x => x.q[0] === subj && x.q[1] === g);
-    if (!pool.length) return mathQuestion(g);
-    let fresh = pool.filter(x => !quizState.asked.includes(x.id));
-    if (!fresh.length) {
-      const ids = pool.map(x => x.id);
-      quizState.asked = quizState.asked.filter(id => !ids.includes(id));
-      fresh = pool;
+    if (subj === 'fra' && Math.random() < 0.4) { const c = cityQuestion(); if (c) return c; }
+    const level = lv => QUESTIONS.filter(q => q[0] === subj && q[1] === lv).map(q => ({ q: q.slice(2), key: qKey(q[2]) }));
+    for (let lv = g; lv <= 4; lv++) {
+      const x = chooseFrom(level(lv));
+      if (x) return asQuestion(x, subj);
     }
-    const { q, id } = pick(fresh);
-    quizState.asked.push(id);
-    store(QUIZ_KEY, quizState);
-    return { id, subj, q: q[2], choices: q[3].slice(), expl: q[4] };
+    // Nothing new: first a missed question even if its turn has not come, then the oldest mastered one
+    const all = [];
+    for (let lv = g; lv <= 4; lv++) all.push(...level(lv));
+    const left = all.filter(x => !runSeen.has(x.key));
+    const missed = left.filter(x => x.key in quizState.missed);
+    if (missed.length) return asQuestion(pick(missed), subj);
+    const order = new Map(quizState.mastered.map((k, i) => [k, i]));
+    const oldest = left.filter(x => order.has(x.key)).sort((p, q) => order.get(p.key) - order.get(q.key)).slice(0, 5);
+    if (oldest.length) return asQuestion(pick(oldest), subj);
+    return subj === 'fr' ? mathQuestion(g) : asQuestion(pick(all), subj);
+  }
+  function rememberAnswer(q, ok) {
+    if (!q.key) return;
+    runSeen.add(q.key);
+    quizState.mastered = quizState.mastered.filter(k => k !== q.key);
+    if (ok) { quizState.mastered.push(q.key); delete quizState.missed[q.key]; }
+    else quizState.missed[q.key] = quizState.n;
   }
 
   let quiz = null;
@@ -5695,6 +6469,7 @@
     objs = objs.filter(o => o.z > 900);
     kibs = kibs.filter(k => k.z > 900);
     quiz = { i: 0, subjects: shuffle(Object.keys(SUBJECTS)).slice(0, 3) };
+    quizState.n++;
     $('quizLevel').textContent = 'Questions !';
     updateHudExtras();
     show('quizScreen');
@@ -5707,8 +6482,9 @@
     q.ans = q.choices.indexOf(right);
     quiz.current = q;
     quiz.answered = false;
+    if (q.key) runSeen.add(q.key);
     $('quizCount').textContent = `Question ${quiz.i + 1} sur 3`;
-    $('quizSubject').textContent = SUBJECTS[q.subj];
+    $('quizSubject').textContent = q.city ? `${SUBJECTS[q.subj]} · ${q.city}` : SUBJECTS[q.subj];
     $('quizQ').textContent = q.q;
     const box = $('quizChoices');
     box.textContent = '';
@@ -5739,6 +6515,7 @@
     if (!quiz || quiz.answered) return;
     quiz.answered = true;
     const q = quiz.current, ok = i === q.ans;
+    rememberAnswer(q, ok);
     [...$('quizChoices').children].forEach((b, k) => {
       b.disabled = true;
       if (k === q.ans) b.classList.add('right');
@@ -7291,6 +8068,12 @@
       get gold() { return gold.count; },
       get catLane() { return cat.lane; },
       place(type, lane, z) { addObstacle(type, lane, z); },
+      quizPick(subj) { return pickQuestion(subj); },
+      quizAnswer(q, ok) { rememberAnswer(q, ok); },
+      quizBreak() { quizState.n++; },
+      newRun() { runSeen = new Set(); },
+      get quizState() { return quizState; },
+      setCity(i) { applyCity(i); },
       item(special, lane, z) { kibs.push({ x: lane * LANE_W, y: 30, z, p: 0, special }); },
       get road() { return { objs: objs.map(o => o.type + (o.roll ? '*' : '')), items: kibs.filter(k => k.special).map(k => k.special) }; },
       // Peak and average level of the music over the last frame (0 to 1)
