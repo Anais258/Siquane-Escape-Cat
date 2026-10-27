@@ -244,3 +244,7 @@ Le jeu change tout seul de décor pendant les fêtes, selon la date de l'apparei
 Pour voir un thème en dehors de ses dates (par exemple pour tester), ajoute `#theme-noel` à la fin de l'adresse du jeu (ou `#theme-halloween`, `#theme-paques`, etc., et `#theme-aucun` pour le décor normal).
 
 Tout le jeu tient dans un seul fichier, `index.html` (HTML, CSS et JavaScript, dessin sur `<canvas>`, sons générés avec la Web Audio API).
+
+## Droits
+
+© 2026 Siquane Lab. Tous droits réservés. Le code, les dessins, les textes, la musique et le nom du jeu sont protégés par le droit d'auteur : le dépôt est visible publiquement, mais rien ne peut être copié ni réutilisé sans autorisation écrite. Voir [LICENSE](LICENSE).
