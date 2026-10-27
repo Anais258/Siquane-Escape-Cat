@@ -4398,12 +4398,14 @@
       c.beginPath(); c.moveTo(-12, 0); c.quadraticCurveTo(0, 10, 12, 0); c.quadraticCurveTo(0, 3, -12, 0); c.closePath();
       hatPath(c, '#ffd34d', '#8a5a00');
     },
-    fleurs(c, t) {
+    fleurs(c, t, front) {
+      // Seen from behind, the ring curves the other way
+      const fy = y => (front ? y : -4 - y);
       c.strokeStyle = '#4a8a3a'; c.lineWidth = 2.6;
-      c.beginPath(); c.ellipse(0, -2, 15, 4, 0, Math.PI, TAU); c.stroke();
-      for (const [x, y, r] of [[-11, -5, -0.6], [4, -7, 0.4], [11, -5, 0.8]]) ell(c, x, y, 3.6, 1.8, '#6cc04a', '#2f6a22', r);
+      c.beginPath(); c.ellipse(0, -2, 15, 4, 0, front ? Math.PI : 0, front ? TAU : Math.PI); c.stroke();
+      for (const [x, y, r] of [[-11, -5, -0.6], [4, -7, 0.4], [11, -5, 0.8]]) ell(c, x, fy(y), 3.6, 1.8, '#6cc04a', '#2f6a22', front ? r : -r);
       [[-14, -2, '#ff8fc7'], [-7, -6, '#fff19a'], [0, -7, '#ff6a6a'], [7, -6, '#9ad5ff'], [14, -2, '#ffffff']].forEach(([x, y, col], i) => {
-        c.save(); c.translate(x, y); c.rotate(Math.sin(t * 3 + i) * 0.25);
+        c.save(); c.translate(x, fy(y)); c.rotate(Math.sin(t * 3 + i) * 0.25);
         for (let k = 0; k < 5; k++) { const a = k / 5 * TAU; ell(c, Math.cos(a) * 2.8, Math.sin(a) * 2.8, 2.4, 2.4, col, '#8a5a6a'); }
         ell(c, 0, 0, 1.7, 1.7, '#ffcc33', '#8a5a00');
         c.restore();
