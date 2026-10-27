@@ -29,11 +29,11 @@ Les montants nets sont approximatifs : Google encaisse le prix TTC, reverse la T
 
 ## Ce qui reste gratuit, pour toujours
 
-Les 22 chats et 30 chapeaux actuels, les déguisements de fête pendant leur fête, les 35 chapitres de l'histoire et les 35 villes, toutes les questions, les missions, le cadeau du jour, le classement, les poissons d'or trouvés en jouant.
+Les 22 chats (dont les 5 chats spéciaux de l'histoire) et les 30 chapeaux actuels, les déguisements de fête pendant leur fête, le voyage complet (35 villes, 280 rues, la carte, les 35 chapitres de l'histoire), les quelque 850 questions, les missions, le cadeau du jour, le classement, les poissons d'or trouvés en jouant.
 
 ## Dans le jeu
 
-- Un nouvel onglet **« Spécial »** dans la boutique, à côté de Chats, Chapeaux et Poissons d'or. On n'y voit que les packs, avec un aperçu animé et le prix en euros.
+- Un 4e onglet **« Spécial »** dans la boutique, à côté de Chats, Chapeaux et Poissons d'or, dans la barre d'onglets qui reste en haut de l'écran. On n'y voit que les packs, avec un aperçu animé et le prix en euros.
 - Le bouton d'achat ouvre la fenêtre de paiement Google Play. Sur un compte Google enfant (Family Link), c'est le parent qui valide.
 - Les objets achetés vont dans l'album avec la mention « Exclusif ».
 - Un bouton **« Restaurer mes achats »** pour les retrouver après un changement de téléphone.
@@ -44,7 +44,8 @@ Les 22 chats et 30 chapeaux actuels, les déguisements de fête pendant leur fê
 | Quoi | Pourquoi | Coût |
 | --- | --- | --- |
 | Profil de paiement Google Play | Recevoir l'argent | Gratuit |
-| Micro-entreprise (conseillé) | Déclarer les revenus simplement | Gratuit à créer, cotisations seulement sur ce qui est gagné |
+| Micro-entreprise : modification au Guichet unique (adresse de domiciliation, nom commercial Siquane Lab, activité d'édition de jeux 58.21Z) | La micro-entreprise existe déjà : il faut qu'elle couvre l'édition de jeux et ne montre pas ton adresse personnelle | Gratuit |
+| Dépôt de la marque « Neko Odyssey » à l'INPI | Protéger le nom avant de vendre (nom vérifié libre le 27 octobre 2026) | 190 €, + 40 € pour une 2e classe |
 | Produits dans la Play Console | Déclarer chaque pack et son prix | Gratuit |
 | Achats Google Play dans le jeu (interface « Digital Goods ») | Ouvrir la fenêtre de paiement Google | Développement |
 | Petit serveur de vérification (Firebase Functions) | Vérifier chaque achat auprès de Google, sinon on pourrait tricher | Forfait Firebase Blaze, quasi gratuit à petite échelle |
@@ -55,5 +56,6 @@ Les 22 chats et 30 chapeaux actuels, les déguisements de fête pendant leur fê
 
 1. **Publier le jeu gratuit** sur le Play Store et réunir des joueurs.
 2. **Observer** quels chats et chapeaux plaisent le plus (dans le classement Collection, par exemple).
-3. **Commencer petit** : seulement le Pack Ami de Neko et le Pack Chapeaux de luxe.
-4. **Ajouter les autres packs** si les premiers marchent.
+3. **Déposer la marque** « Neko Odyssey » à l'INPI avant de vendre quoi que ce soit.
+4. **Commencer petit** : seulement le Pack Ami de Neko et le Pack Chapeaux de luxe.
+5. **Ajouter les autres packs** si les premiers marchent.
