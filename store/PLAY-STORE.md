@@ -66,7 +66,7 @@ Points à vérifier :
 > Une nuit d'orage, Neko s'est endormi dans un camion de livraison… et s'est réveillé à Marseille, à l'autre bout de la France. Pour retrouver sa famille à Besançon, il n'y a qu'un chemin : courir de toit en toit !
 >
 > 🐾 **Une course pleine de surprises**
-> Change de couloir, saute par-dessus les flaques et les antennes, roule sous les cordes à linge, grimpe sur les panneaux solaires… Plus tu montes de niveau, plus les toits réservent de surprises.
+> Change de couloir, saute par-dessus les flaques et les antennes, roule sous les cordes à linge, grimpe sur les panneaux solaires… Plus tu montes de niveau, plus les toits réservent de surprises. Tu as perdu ? Reprends ta course à la rue où tu t'es arrêté.
 >
 > 🐟 **Ramasse, collectionne, habille ton chat**
 > Ramasse des croquettes pour débloquer plus de 20 chats (siamois, calico, bengal, arc-en-ciel…), 30 chapeaux et des déguisements de fête. Attrape les rares poissons d'or pour une seconde chance.
