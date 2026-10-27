@@ -24,7 +24,7 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/pseudos/$(request.resource.data.pseudo.lower())).data.uid == uid
         && request.resource.data.best is int && request.resource.data.best >= 0 && request.resource.data.best <= 10000000
         && request.resource.data.far is int && request.resource.data.far >= 0 && request.resource.data.far <= 10000000
-        && request.resource.data.level is int && request.resource.data.level >= 1 && request.resource.data.level <= 100
+        && request.resource.data.level is int && request.resource.data.level >= 1 && request.resource.data.level <= 200
         && request.resource.data.collection is int && request.resource.data.collection >= 0 && request.resource.data.collection <= 500;
       allow delete: if request.auth != null && request.auth.uid == uid;
     }

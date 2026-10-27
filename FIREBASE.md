@@ -40,6 +40,10 @@ Tu peux aussi me donner ces deux valeurs et je fais la modification. La clé `ap
 2. Dans **Source**, choisis **Deploy from a branch**. Prends la branche `main` (ou la branche du jeu tant que la pull request n'est pas fusionnée) et le dossier `/ (root)`, puis enregistre.
 3. Après une minute, GitHub affiche le lien du jeu, du type `https://<compte>.github.io/neko-odyssey/`. Partage ce lien avec tes amis.
 
+## Mettre à jour les règles
+
+Quand le fichier [`firestore.rules`](firestore.rules) change (par exemple quand le niveau maximum du jeu passe de 100 à 175), il faut recopier son contenu dans la console Firebase : **Firestore Database › Règles**, remplacer tout le texte, puis **Publier**. Sans ça, les joueurs au-dessus de l'ancien niveau maximum ne peuvent plus envoyer leurs scores.
+
 ## Bon à savoir
 
 - Le plan gratuit de Firebase (Spark) suffit largement pour un groupe d'amis : 50 000 lectures et 20 000 écritures par jour.
