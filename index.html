@@ -1034,6 +1034,19 @@
       localStorage.setItem(RESET_KEY, RESET_ID);
     }
   } catch (e) {}
+  // Leaderboard reset: every device leaves the board once (records and progress
+  // are kept). Choosing a pseudo again puts the player back on it.
+  const BOARD_RESET_KEY = 'siquane-escape-cat-board-reset', BOARD_RESET_ID = '2026-10-27';
+  try {
+    if (localStorage.getItem(BOARD_RESET_KEY) !== BOARD_RESET_ID) {
+      const online = localStorage.getItem('siquane-escape-cat-online');
+      if (online) {
+        localStorage.setItem('siquane-escape-cat-leave', online);
+        localStorage.removeItem('siquane-escape-cat-online');
+      }
+      localStorage.setItem(BOARD_RESET_KEY, BOARD_RESET_ID);
+    }
+  } catch (e) {}
   const canvas = $('c');
   const ctx = canvas.getContext('2d');
   const TAU = Math.PI * 2;
@@ -1467,6 +1480,8 @@
     return s[(n - 1) % s.length] + (lap > 1 ? ` · ${lap}e tour` : '');
   };
   const nth = n => (n === 1 ? '1re' : `${n}e`);
+  // Meters shown as kilometers, with one decimal at most: 2400 -> "2,4"
+  const km = m => (Math.floor(m / 100) / 10).toLocaleString('fr-FR');
   // Night-time roof colors for each kind of roof: [top, middle, bottom], tile lines, parapet side and top
   const ROOFS = {
     tuile:   { roof: ['#7a4436', '#5e3029', '#43211f'], tile: '#2c1412', parSide: '#3a1d1a', parTop: '#9a5e48' },
@@ -3838,8 +3853,10 @@
     c.closePath();
   }
 
-  // Collar seen slightly from above: a thin ring around the neck. Its far half is
+  // Collar: a ring around the neck that follows the round of the head. Its far half is
   // drawn before the head (so the head hides it), its near half after.
+  // Rounded enough to hug the chin instead of hanging below it at the sides
+  const COLLAR_CY = 9.5, COLLAR_RY = 10;
   function drawCollar(c, sk, hy, half) {
     const from = half === 'far' ? Math.PI : 0, to = half === 'far' ? TAU : Math.PI;
     // Wide enough to reach the sides of the body, then clipped to it so the
@@ -3848,9 +3865,9 @@
     c.beginPath(); c.ellipse(0, hy + 27, 20 - OUTLINE_W / 2, 19 - OUTLINE_W / 2, 0, 0, TAU); c.clip();
     c.lineCap = 'butt';
     c.strokeStyle = sk.outline; c.lineWidth = 4.4;
-    c.beginPath(); c.ellipse(0, hy + 15, 17, 3.8, 0, from, to); c.stroke();
+    c.beginPath(); c.ellipse(0, hy + COLLAR_CY, 17, COLLAR_RY, 0, from, to); c.stroke();
     c.strokeStyle = sk.collar || '#e8445a'; c.lineWidth = 2.6;
-    c.beginPath(); c.ellipse(0, hy + 15, 17, 3.8, 0, from, to); c.stroke();
+    c.beginPath(); c.ellipse(0, hy + COLLAR_CY, 17, COLLAR_RY, 0, from, to); c.stroke();
     c.restore();
   }
 
@@ -4132,8 +4149,8 @@
     // Near half of the collar, with the bell in front
     drawCollar(c, sk, hy, 'near');
     c.fillStyle = '#ffd34d'; c.strokeStyle = '#8a5a00'; c.lineWidth = 1;
-    c.beginPath(); c.arc(0, hy + 21, 2.4, 0, TAU); c.fill(); c.stroke();
-    c.fillStyle = '#8a5a00'; c.fillRect(-0.5, hy + 21.5, 1, 1.5);
+    c.beginPath(); c.arc(0, hy + 21.5, 2.4, 0, TAU); c.fill(); c.stroke();
+    c.fillStyle = '#8a5a00'; c.fillRect(-0.5, hy + 22, 1, 1.5);
 
     c.fillStyle = 'rgba(255, 255, 255, 0.32)';
     c.beginPath(); c.ellipse(-8, hy - 9, 4, 2.2, -0.5, 0, TAU); c.fill();
@@ -6098,7 +6115,7 @@
     puddle:   { ev: 'puddle',  base: [5, 12, 25],       text: n => `Saute ${n} flaques` },
     kibRun:   { ev: 'kib',     base: [15, 30, 50],      text: n => `Ramasse ${n} croquettes en une partie`, run: true },
     scoreRun: { ev: 'score',   base: [400, 900, 1600],  text: n => `Fais ${n} points en une partie`, run: true, max: true },
-    meters:   { ev: 'meters',  base: [3000, 8000, 20000], text: n => `Cours ${n.toLocaleString('fr-FR')} m en tout` },
+    meters:   { ev: 'meters',  base: [3000, 8000, 20000], text: n => `Cours ${km(n)} km en tout`, km: true },
     ouf:      { ev: 'ouf',     base: [2, 5, 10],        text: n => `Fais ${n} « Ouf ! »` },
     bonus:    { ev: 'bonus',   base: [2, 5, 10],        text: n => `Attrape ${n} bonus` },
     combo:    { ev: 'combo',   base: [2, 3, 4],         text: n => `Atteins un combo x${n}`, run: true, max: true },
@@ -6185,7 +6202,9 @@
     const t = MISSION_TYPES[m.type];
     const done = m.done || m.progress >= m.target;
     const pct = Math.min(100, Math.round(100 * m.progress / m.target));
-    const prog = t.max && t.ev === 'level' ? `${Math.max(1, m.progress)}/${m.target}` : `${Math.min(m.progress, m.target).toLocaleString('fr-FR')}/${m.target.toLocaleString('fr-FR')}`;
+    const prog = t.max && t.ev === 'level' ? `${Math.max(1, m.progress)}/${m.target}`
+      : t.km ? `${km(Math.min(m.progress, m.target))}/${km(m.target)} km`
+      : `${Math.min(m.progress, m.target).toLocaleString('fr-FR')}/${m.target.toLocaleString('fr-FR')}`;
     return `<div class="mission${done ? ' done' : ''}">
       <div class="m-text">${label ? `<b>${label}</b> ` : ''}${t.text(m.target)}</div>
       <div class="m-bar"><i style="width:${pct}%"></i></div>
@@ -6861,7 +6880,7 @@
   const ONLINE_KEY = 'siquane-escape-cat-online';
   let online = load(ONLINE_KEY, null);
   let idToken = null, idTokenExp = 0, boardKind = 'best', boardReturn = 'startScreen';
-  const BOARD_UNITS = { best: v => `${v} pts`, far: v => `${v} m`, level: v => `niv. ${v}`, collection: v => `${v} objet${v > 1 ? 's' : ''}` };
+  const BOARD_UNITS = { best: v => `${v} pts`, far: v => `${km(v)} km`, level: v => `niv. ${v}`, collection: v => `${v} objet${v > 1 ? 's' : ''}` };
   const boardReady = () => !!(FIREBASE.apiKey && FIREBASE.projectId);
   const DOCS = () => `https://firestore.googleapis.com/v1/projects/${FIREBASE.projectId}/databases/(default)/documents`;
   const pseudoKey = n => n.trim().replace(/\s+/g, ' ').toLowerCase();

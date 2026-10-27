@@ -140,7 +140,7 @@ Toutes les 30 secondes, la course fait une pause et propose jusqu'à 3 questions
 
 ## Classement entre amis
 
-Le bouton **Classement** (sur l'accueil et l'écran de fin) ouvre un classement en ligne. Chaque joueur s'inscrit avec un pseudo, sans compte ni mot de passe. Quatre onglets : **Score** (meilleur score), **Plus loin** (distance la plus longue atteinte), **Niveau** (niveau du joueur) et **Collection** (chats, chapeaux et déguisements obtenus). Le jeu envoie les résultats à la fin de chaque partie. Si tu n'es pas dans les 30 premiers, ta place s'affiche en bas de la liste.
+Le bouton **Classement** (sur l'accueil et l'écran de fin) ouvre un classement en ligne. Chaque joueur s'inscrit avec un pseudo, sans compte ni mot de passe. Quatre onglets : **Score** (meilleur score), **Plus loin** (distance la plus longue atteinte, en kilomètres), **Niveau** (niveau du joueur) et **Collection** (chats, chapeaux et déguisements obtenus). Le jeu envoie les résultats à la fin de chaque partie. Si tu n'es pas dans les 30 premiers, ta place s'affiche en bas de la liste.
 
 Le classement utilise Firebase et marche sur la version publiée sur GitHub Pages. Pour l'activer, suis le guide [FIREBASE.md](FIREBASE.md).
 

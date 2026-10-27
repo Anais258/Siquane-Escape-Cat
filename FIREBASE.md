@@ -44,6 +44,11 @@ Tu peux aussi me donner ces deux valeurs et je fais la modification. La clé `ap
 
 Quand le fichier [`firestore.rules`](firestore.rules) change (par exemple quand le niveau maximum du jeu passe de 100 à 175), il faut recopier son contenu dans la console Firebase : **Firestore Database › Règles**, remplacer tout le texte, puis **Publier**. Sans ça, les joueurs au-dessus de l'ancien niveau maximum ne peuvent plus envoyer leurs scores.
 
+## Vider le classement
+
+1. Dans le code du jeu (`index.html`), change la date de `BOARD_RESET_ID`. À leur prochaine ouverture du jeu, les joueurs retirent leur entrée et libèrent leur pseudo, sans perdre leurs records ni leur progression. Pour revenir dans le classement, il leur suffit de choisir un pseudo.
+2. Pour effacer aussi les joueurs qui n'ouvrent plus le jeu, va dans la console Firebase : **Firestore Database › Données**, puis supprime les collections `players` et `pseudos` (les trois points à côté du nom de la collection › **Supprimer la collection**). Elles se recréent toutes seules quand un joueur choisit un pseudo.
+
 ## Bon à savoir
 
 - Le plan gratuit de Firebase (Spark) suffit largement pour un groupe d'amis : 50 000 lectures et 20 000 écritures par jour.
