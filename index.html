@@ -624,6 +624,14 @@
     box-shadow: 0 4px 12px rgba(5, 6, 20, 0.5);
   }
   .sheet-x[hidden] { display: none; }
+  /* The cross is drawn with two bars, so it sits exactly in the middle whatever the font */
+  .sheet-x, .bar-x { position: relative; font-size: 0; }
+  .sheet-x { position: sticky; }
+  .sheet-x::before, .sheet-x::after, .bar-x::before, .bar-x::after {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 14px; height: 2.5px; border-radius: 2px;
+    background: currentColor; transform: translate(-50%, -50%) rotate(45deg);
+  }
+  .sheet-x::after, .bar-x::after { transform: translate(-50%, -50%) rotate(-45deg); }
   /* Sound toggles: icon, name, and whether it is on */
   .toggle { display: flex; align-items: center; justify-content: center; gap: var(--s2); }
   .toggle svg { width: 20px; height: 20px; flex: none; color: var(--accent); }
@@ -1432,7 +1440,7 @@
       fact: "Gordes est un village perché sur une colline du Luberon, avec ses maisons en pierre serrées autour d'un château. Autour, les champs de lavande deviennent violets au début de l'été." },
     { id: 'avignon', name: 'Avignon', region: 'Provence', lon: 4.81, lat: 43.95, roof: 'tuile', style: 'medieval', marks: ['papes', 'bridge'], extras: ['river'],
       fact: "Au Moyen Âge, les papes ont vécu à Avignon pendant près de 70 ans, dans l'immense Palais des Papes. Et sur le célèbre pont, on chante « on y danse, tous en rond » !" },
-    { id: 'arles', name: 'Arles', region: 'Provence', lon: 4.63, lat: 43.68, roof: 'tuile', style: 'provence', marks: ['arena'], extras: [],
+    { id: 'arles', name: 'Arles', region: 'Provence', lon: 4.63, lat: 43.68, roof: 'tuile', style: 'provence', marks: ['arenaTowers'], extras: [],
       fact: "Le peintre Vincent van Gogh a vécu à Arles et y a peint plus de 200 tableaux, dont ses célèbres « Tournesols ». La ville a aussi des arènes romaines vieilles de 2 000 ans." },
     { id: 'nimes', name: 'Nîmes', region: 'Gard', lon: 4.36, lat: 43.84, roof: 'tuile', style: 'provence', marks: ['temple', 'arena'], extras: [],
       fact: "Le tissu « denim » des jeans tire son nom de la ville : « de Nîmes » ! Ses arènes romaines sont parmi les mieux conservées au monde." },
@@ -1597,6 +1605,51 @@
     if (cone) shape(b, [[x - w / 2 - 1, base - h], [x, base - h - roofH], [x + w / 2 + 1, base - h]], col);
     else { for (let k = 0; k < 3; k++) b.fillRect(x - w / 2 + k * w / 2.5, base - h - roofH * 0.25, w / 5, roofH * 0.25); }
   }
+  // Snow on a mountain ridge: under each peak, down both slopes, with a ragged lower edge
+  function snowCaps(b, pts, col, depth) {
+    for (let i = 1; i < pts.length - 1; i++) {
+      const [px, py] = pts[i], [lx, ly] = pts[i - 1], [rx, ry] = pts[i + 1];
+      if (py > ly || py > ry) continue;
+      const fl = Math.min(0.55, depth / Math.max(1, ly - py)), fr = Math.min(0.55, depth / Math.max(1, ry - py));
+      const a = [px + (lx - px) * fl, py + (ly - py) * fl], z = [px + (rx - px) * fr, py + (ry - py) * fr];
+      const poly = [a, [px, py], z];
+      for (let k = 1; k < 6; k++) {
+        const t = k / 6;
+        poly.push([z[0] + (a[0] - z[0]) * t, z[1] + (a[1] - z[1]) * t + (k % 2 ? depth * 0.35 : -depth * 0.08)]);
+      }
+      shape(b, poly, col);
+    }
+  }
+  // Roman arena seen from the side: two tiers of arches that narrow toward the
+  // ends (the wall curves away), cornices and an attic; Arles adds its medieval towers
+  function drawArena(b, x, base, u, c, lit, towers) {
+    const R = 64 * u, h1 = 19 * u, h2 = 17 * u, attic = 7 * u, top = base - h1 - h2 - attic;
+    const dark = mixColor(c, '#000000', 0.5), line = mixColor(c, '#000000', 0.22);
+    if (towers) {
+      for (const th of [-0.95, 0.05, 0.9]) {
+        const tx = x + R * 0.94 * Math.sin(th), tw = 13 * u * Math.max(0.55, Math.cos(th));
+        b.fillStyle = c; b.fillRect(tx - tw / 2, top - 22 * u, tw, 24 * u);
+        for (let k = 0; k < 3; k++) b.fillRect(tx - tw / 2 + k * tw * 0.4, top - 25 * u, tw * 0.2, 3 * u);
+        b.fillStyle = dark; b.fillRect(tx - 1 * u, top - 16 * u, 2 * u, 4 * u);
+      }
+    }
+    b.fillStyle = c; b.beginPath();
+    b.moveTo(x - R, base); b.lineTo(x - R, top + 3 * u);
+    b.quadraticCurveTo(x, top - 3 * u, x + R, top + 3 * u); b.lineTo(x + R, base); b.closePath(); b.fill();
+    b.fillStyle = line;
+    b.fillRect(x - R, base - h1 - 1 * u, 2 * R, 1.6 * u);
+    b.fillRect(x - R, base - h1 - h2 - 1 * u, 2 * R, 1.6 * u);
+    for (let k = 0; k < 13; k++) {
+      const th = -1.38 + k * 2.76 / 12, ax = x + R * 0.95 * Math.sin(th), aw = 7.5 * u * Math.cos(th);
+      if (aw < 1.4 * u) continue;
+      for (const [yb, hh] of [[base - 1 * u, h1 - 4 * u], [base - h1 - 2.5 * u, h2 - 5 * u]]) {
+        b.fillStyle = hash(k * 3.7 + yb) < 0.18 ? mixColor(lit, dark, 0.35) : dark;
+        b.beginPath(); b.moveTo(ax - aw / 2, yb); b.lineTo(ax - aw / 2, yb - hh + 3.5 * u);
+        b.ellipse(ax, yb - hh + 3.5 * u, aw / 2, 3.5 * u, 0, Math.PI, TAU); b.lineTo(ax + aw / 2, yb); b.closePath(); b.fill();
+      }
+      if (k % 2 === 0) { b.fillStyle = dark; b.fillRect(ax - aw * 0.18, top + 2.5 * u, aw * 0.36, 2.5 * u); }
+    }
+  }
   const LANDMARKS = {
     garde(b, x, base, u, c, lit) {
       b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 70 * u, 30 * u, 0, Math.PI, TAU); b.fill();
@@ -1669,19 +1722,8 @@
       for (let k = 0; k <= 9; k++) b.fillRect(x - 90 * u + k * 20 * u - 2 * u, base - 12 * u, 4 * u, 12 * u);
       for (let k = 0; k < 10; k++) cityLight(b, x - 80 * u + k * 20 * u, base - 15 * u, 1.4 * u, lit);
     },
-    arena(b, x, base, u, c, lit) {
-      b.fillStyle = c; b.beginPath(); b.ellipse(x, base - 10 * u, 62 * u, 36 * u, 0, Math.PI, TAU); b.fill();
-      b.fillRect(x - 62 * u, base - 10 * u, 124 * u, 10 * u);
-      b.fillStyle = mixColor(c, '#000000', 0.45);
-      for (let row = 0; row < 2; row++) {
-        for (let k = -5; k <= 5; k++) {
-          const ax = x + k * 10 * u, ay = base - 8 * u - row * 14 * u;
-          if (Math.abs(k) * 10 > 58 - row * 10) continue;
-          b.beginPath(); b.moveTo(ax - 3 * u, ay); b.lineTo(ax - 3 * u, ay - 6 * u); b.arc(ax, ay - 6 * u, 3 * u, Math.PI, TAU); b.lineTo(ax + 3 * u, ay); b.fill();
-        }
-      }
-      cityLight(b, x - 20 * u, base - 30 * u, 1.6 * u, lit); cityLight(b, x + 24 * u, base - 28 * u, 1.6 * u, lit);
-    },
+    arena(b, x, base, u, c, lit) { drawArena(b, x, base, u, c, lit, false); },
+    arenaTowers(b, x, base, u, c, lit) { drawArena(b, x, base, u, c, lit, true); },
     temple(b, x, base, u, c) {
       b.fillStyle = c; b.fillRect(x - 30 * u, base - 8 * u, 60 * u, 8 * u);
       for (let k = 0; k < 6; k++) b.fillRect(x - 27 * u + k * 10.5 * u, base - 34 * u, 4 * u, 26 * u);
@@ -1758,15 +1800,31 @@
       b.beginPath(); b.moveTo(x - 27 * u, base - 8 * u); b.quadraticCurveTo(x, base - 2 * u, x + 25 * u, base - 8 * u); b.stroke();
       cityLight(b, x - 40 * u, base - 50 * u, 1.8 * u, lit); cityLight(b, x + 40 * u, base - 40 * u, 1.8 * u, lit);
     },
-    elephant(b, x, base, u, c) {
+    elephant(b, x, base, u, c, lit) {
+      // The Great Elephant of Nantes: a wooden machine with its trunk raised and a deck on its back
+      const dark = mixColor(c, '#000000', 0.3), light = mixColor(c, '#ffffff', 0.35);
+      b.fillStyle = mixColor(c, '#000000', 0.12);
+      for (const dx of [-12, 14]) { b.beginPath(); b.roundRect(x + dx * u - 4 * u, base - 30 * u, 8 * u, 30 * u, 2 * u); b.fill(); }
       b.fillStyle = c;
-      b.beginPath(); b.ellipse(x, base - 34 * u, 24 * u, 16 * u, 0, 0, TAU); b.fill();
-      b.beginPath(); b.ellipse(x + 24 * u, base - 40 * u, 11 * u, 10 * u, 0, 0, TAU); b.fill();
-      for (const dx of [-16, -6, 6, 16]) b.fillRect(x + dx * u - 3 * u, base - 22 * u, 6 * u, 22 * u);
-      b.strokeStyle = c; b.lineWidth = 4 * u; b.lineCap = 'round';
-      b.beginPath(); b.moveTo(x + 32 * u, base - 38 * u); b.quadraticCurveTo(x + 42 * u, base - 26 * u, x + 36 * u, base - 14 * u); b.stroke();
-      b.fillRect(x - 12 * u, base - 58 * u, 24 * u, 10 * u);
-      cityLight(b, x - 6 * u, base - 54 * u, 1.4 * u, '#ffd27a'); cityLight(b, x + 6 * u, base - 54 * u, 1.4 * u, '#ffd27a');
+      for (const dx of [-22, 4]) { b.beginPath(); b.roundRect(x + dx * u - 4.5 * u, base - 30 * u, 9 * u, 30 * u, 2 * u); b.fill(); }
+      for (const dx of [-22, -12, 4, 14]) { b.beginPath(); b.roundRect(x + dx * u - 6 * u, base - 4 * u, 12 * u, 4 * u, 1.5 * u); b.fill(); }
+      b.beginPath(); b.ellipse(x - 4 * u, base - 38 * u, 30 * u, 16 * u, 0, 0, TAU); b.fill();
+      b.beginPath(); b.ellipse(x + 26 * u, base - 44 * u, 12 * u, 13 * u, 0, 0, TAU); b.fill();
+      b.strokeStyle = c; b.lineCap = 'round';
+      b.lineWidth = 7 * u; b.beginPath(); b.moveTo(x + 33 * u, base - 40 * u); b.quadraticCurveTo(x + 46 * u, base - 34 * u, x + 47 * u, base - 50 * u); b.stroke();
+      b.lineWidth = 4.5 * u; b.beginPath(); b.moveTo(x + 47 * u, base - 50 * u); b.quadraticCurveTo(x + 47 * u, base - 60 * u, x + 54 * u, base - 62 * u); b.stroke();
+      b.strokeStyle = light; b.lineWidth = 2 * u;
+      b.beginPath(); b.moveTo(x + 33 * u, base - 37 * u); b.quadraticCurveTo(x + 40 * u, base - 32 * u, x + 44 * u, base - 34 * u); b.stroke();
+      b.fillStyle = mixColor(c, '#000000', 0.15); b.strokeStyle = dark; b.lineWidth = 1 * u;
+      b.beginPath(); b.ellipse(x + 19 * u, base - 43 * u, 9 * u, 12 * u, 0.2, 0, TAU); b.fill(); b.stroke();
+      b.strokeStyle = dark; b.lineWidth = 1 * u;
+      for (const dx of [-24, -14, -4, 6]) { b.beginPath(); b.moveTo(x + dx * u, base - 52 * u); b.quadraticCurveTo(x + (dx + 4) * u, base - 38 * u, x + dx * u, base - 24 * u); b.stroke(); }
+      cityLight(b, x + 30 * u, base - 48 * u, 1.4 * u, lit);
+      b.fillStyle = c; b.fillRect(x - 26 * u, base - 57 * u, 42 * u, 4 * u);
+      b.fillRect(x - 26 * u, base - 64 * u, 42 * u, 1.2 * u);
+      for (let k = 0; k <= 7; k++) b.fillRect(x - 26 * u + k * 5.8 * u, base - 64 * u, 1 * u, 7 * u);
+      shape(b, [[x - 22 * u, base - 66 * u], [x - 5 * u, base - 74 * u], [x + 12 * u, base - 66 * u]], c);
+      for (let k = 0; k < 4; k++) cityLight(b, x - 20 * u + k * 10 * u, base - 60 * u, 1.2 * u, lit);
     },
     menhirs(b, x, base, u, c) {
       b.fillStyle = c;
@@ -1828,18 +1886,40 @@
       b.fillStyle = '#e8c45a'; b.beginPath(); b.arc(x, base - 23 * u, 4.5 * u, 0, TAU); b.fill();
     },
     eiffel(b, x, base, u, c, lit) {
-      b.fillStyle = c;
-      b.beginPath();
-      b.moveTo(x - 34 * u, base); b.quadraticCurveTo(x - 14 * u, base - 50 * u, x - 4 * u, base - 120 * u);
-      b.lineTo(x - 1.5 * u, base - 150 * u); b.lineTo(x + 1.5 * u, base - 150 * u); b.lineTo(x + 4 * u, base - 120 * u);
-      b.quadraticCurveTo(x + 14 * u, base - 50 * u, x + 34 * u, base);
-      b.lineTo(x + 18 * u, base); b.quadraticCurveTo(x, base - 26 * u, x - 18 * u, base); b.closePath(); b.fill();
-      b.fillRect(x - 20 * u, base - 36 * u, 40 * u, 4 * u); b.fillRect(x - 11 * u, base - 76 * u, 22 * u, 3 * u);
-      for (let k = 0; k < 18; k++) {
-        const t = k / 17, wy = base - t * 140 * u, ww = (30 - t * 27) * u;
-        cityLight(b, x + (hash(k * 9.1) - 0.5) * ww, wy, 1.1 * u, '#ffd76a');
+      // Curved legs, the big arch, two platforms, a lattice of cross-braces and the antenna
+      const P1 = base - 46 * u, P2 = base - 88 * u, TOP = base - 146 * u;
+      const tower = () => {
+        b.beginPath(); b.moveTo(x - 38 * u, base);
+        b.quadraticCurveTo(x - 27 * u, base - 22 * u, x - 21 * u, P1);
+        b.quadraticCurveTo(x - 13 * u, base - 68 * u, x - 9 * u, P2);
+        b.quadraticCurveTo(x - 4 * u, base - 120 * u, x - 2.4 * u, TOP);
+        b.lineTo(x + 2.4 * u, TOP);
+        b.quadraticCurveTo(x + 4 * u, base - 120 * u, x + 9 * u, P2);
+        b.quadraticCurveTo(x + 13 * u, base - 68 * u, x + 21 * u, P1);
+        b.quadraticCurveTo(x + 27 * u, base - 22 * u, x + 38 * u, base);
+        b.lineTo(x + 25 * u, base);
+        b.quadraticCurveTo(x + 23 * u, base - 30 * u, x, base - 30 * u);
+        b.quadraticCurveTo(x - 23 * u, base - 30 * u, x - 25 * u, base);
+        b.closePath();
+      };
+      b.fillStyle = c; tower(); b.fill();
+      b.save(); tower(); b.clip();
+      b.strokeStyle = mixColor(c, '#000000', 0.35); b.lineWidth = 0.8 * u;
+      for (let y = base; y > TOP; y -= 7 * u) {
+        b.beginPath(); b.moveTo(x - 40 * u, y); b.lineTo(x + 40 * u, y - 7 * u); b.moveTo(x + 40 * u, y); b.lineTo(x - 40 * u, y - 7 * u); b.stroke();
       }
-      cityLight(b, x, base - 152 * u, 2 * u, '#fff3c4');
+      b.restore();
+      b.fillStyle = c;
+      b.fillRect(x - 26 * u, P1 - 5 * u, 52 * u, 5 * u); b.fillRect(x - 26 * u, P1 - 9 * u, 52 * u, 1.2 * u);
+      for (let k = 0; k <= 8; k++) b.fillRect(x - 26 * u + k * 6.5 * u, P1 - 9 * u, 1 * u, 4 * u);
+      b.fillRect(x - 14 * u, P2 - 4 * u, 28 * u, 4 * u);
+      b.fillRect(x - 4.5 * u, TOP - 7 * u, 9 * u, 7 * u);
+      b.fillRect(x - 0.8 * u, TOP - 20 * u, 1.6 * u, 14 * u);
+      for (let k = 0; k < 22; k++) {
+        const t = k / 21, wy = base - t * 140 * u, ww = (34 - t * 31) * u;
+        cityLight(b, x + (k % 2 ? 1 : -1) * ww * (0.4 + 0.5 * hash(k * 9.1)), wy, 1.1 * u, '#ffd76a');
+      }
+      cityLight(b, x, TOP - 20 * u, 2 * u, '#fff3c4');
     },
     sacrecoeur(b, x, base, u, c, lit) {
       b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 60 * u, 18 * u, 0, Math.PI, TAU); b.fill();
@@ -1879,6 +1959,7 @@
     },
     storks(b, x, base, u, c, lit) {
       const facades = ['#d98a5a', '#8ab0d9', '#e0c25a', '#b07ac0', '#7ac08a'];
+      let peak = null;
       for (let k = 0; k < 6; k++) {
         const hx = x - 75 * u + k * 25 * u, h = (34 + hash(k * 4.4) * 14) * u;
         b.fillStyle = mixColor(c, facades[k % 5], 0.35); b.fillRect(hx, base - h, 22 * u, h);
@@ -1886,13 +1967,22 @@
         b.strokeStyle = c; b.lineWidth = 1.2 * u;
         b.beginPath(); b.moveTo(hx, base - h * 0.5); b.lineTo(hx + 22 * u, base - h * 0.5); b.moveTo(hx + 4 * u, base - h); b.lineTo(hx + 18 * u, base - h * 0.5); b.stroke();
         b.fillStyle = lit; if (hash(k) < 0.7) b.fillRect(hx + 8 * u, base - h * 0.4, 5 * u, 5 * u);
+        if (!peak || h > peak.h) peak = { x: hx + 11 * u, y: base - h - 18 * u, h };
       }
-      // A stork in its nest on a roof
-      const sx = x + 1 * u, sy = base - 70 * u;
-      b.fillStyle = c; b.fillRect(sx - 6 * u, sy, 12 * u, 3 * u);
-      b.fillStyle = '#f4f1ff'; b.beginPath(); b.ellipse(sx, sy - 5 * u, 5 * u, 3 * u, -0.3, 0, TAU); b.fill();
-      b.fillRect(sx + 3 * u, sy - 12 * u, 1.4 * u, 7 * u); b.beginPath(); b.arc(sx + 4 * u, sy - 12 * u, 1.8 * u, 0, TAU); b.fill();
-      b.fillStyle = '#ff8a3c'; b.fillRect(sx + 5 * u, sy - 12.6 * u, 4 * u, 1.2 * u);
+      // A stork standing in its nest, right on the top of the highest roof
+      const nx = peak.x, ny = peak.y + 1.5 * u;
+      b.strokeStyle = '#ff7a3c'; b.lineWidth = 1 * u;
+      b.beginPath(); b.moveTo(nx - 1 * u, ny - 8 * u); b.lineTo(nx - 1 * u, ny - 2 * u); b.moveTo(nx + 1.5 * u, ny - 8 * u); b.lineTo(nx + 1.5 * u, ny - 2 * u); b.stroke();
+      b.fillStyle = '#f4f1ff'; b.beginPath(); b.ellipse(nx, ny - 10 * u, 6 * u, 3.4 * u, -0.15, 0, TAU); b.fill();
+      b.fillStyle = '#1d1630'; b.beginPath(); b.ellipse(nx - 3.5 * u, ny - 9.4 * u, 4 * u, 2 * u, -0.15, 0, TAU); b.fill();
+      b.strokeStyle = '#f4f1ff'; b.lineWidth = 1.8 * u;
+      b.beginPath(); b.moveTo(nx + 4 * u, ny - 11 * u); b.quadraticCurveTo(nx + 6 * u, ny - 15 * u, nx + 5 * u, ny - 19 * u); b.stroke();
+      b.fillStyle = '#f4f1ff'; b.beginPath(); b.arc(nx + 5.5 * u, ny - 19.5 * u, 2 * u, 0, TAU); b.fill();
+      b.strokeStyle = '#ff7a3c'; b.lineWidth = 1.2 * u;
+      b.beginPath(); b.moveTo(nx + 7 * u, ny - 19.5 * u); b.lineTo(nx + 12 * u, ny - 18 * u); b.stroke();
+      b.fillStyle = mixColor(c, '#8a6a3a', 0.5); b.beginPath(); b.ellipse(nx, ny - 1.5 * u, 8.5 * u, 3.4 * u, 0, 0, TAU); b.fill();
+      b.strokeStyle = mixColor(c, '#5a4020', 0.5); b.lineWidth = 0.8 * u;
+      for (let k = -3; k <= 3; k++) { b.beginPath(); b.moveTo(nx + k * 2.4 * u - 2 * u, ny - 3 * u); b.lineTo(nx + k * 2.4 * u + 2 * u, ny); b.stroke(); }
     },
     chapel(b, x, base, u, c, lit) {
       b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 80 * u, 50 * u, 0, Math.PI, TAU); b.fill();
@@ -1936,15 +2026,33 @@
       cityLight(b, x + 56 * u, base - 98 * u, 1.6 * u, '#ff5a5a');
     },
     bulles(b, x, base, u, c, lit) {
-      b.fillStyle = c; b.beginPath(); b.ellipse(x + 60 * u, base, 60 * u, 70 * u, 0, Math.PI, TAU); b.fill();
-      b.fillRect(x + 50 * u, base - 82 * u, 30 * u, 14 * u);
-      for (let k = 0; k < 30; k += 5) b.fillRect(x + (50 + k) * u, base - 86 * u, 3 * u, 4 * u);
-      b.strokeStyle = mixColor(c, '#c9d1e6', 0.4); b.lineWidth = 1 * u;
-      b.beginPath(); b.moveTo(x - 60 * u, base - 10 * u); b.lineTo(x + 50 * u, base - 74 * u); b.stroke();
-      for (const t of [0.3, 0.55, 0.8]) {
-        const bx = x - 60 * u + t * 110 * u, by = base - 10 * u - t * 64 * u;
-        b.fillStyle = mixColor(c, '#9ad5ff', 0.5); b.beginPath(); b.arc(bx, by + 5 * u, 4.5 * u, 0, TAU); b.fill();
-        cityLight(b, bx, by + 5 * u, 1.6 * u, lit);
+      // La Bastille: a rocky hill with the fort's walls climbing the slope, and the
+      // "bubbles" of the cable car hanging under their cable, up from the river
+      const hx = x + 52 * u, dark = mixColor(c, '#000000', 0.3), wall = mixColor(c, '#c8ccf0', 0.22);
+      b.fillStyle = c; b.beginPath(); b.moveTo(hx - 66 * u, base);
+      b.lineTo(hx - 58 * u, base - 26 * u); b.lineTo(hx - 50 * u, base - 34 * u);
+      b.quadraticCurveTo(hx - 40 * u, base - 74 * u, hx - 8 * u, base - 82 * u);
+      b.quadraticCurveTo(hx + 30 * u, base - 84 * u, hx + 60 * u, base - 46 * u);
+      b.quadraticCurveTo(hx + 76 * u, base - 22 * u, hx + 96 * u, base); b.closePath(); b.fill();
+      b.strokeStyle = dark; b.lineWidth = 1 * u;
+      for (const [x0, y0, x1, y1] of [[-62, -6, -55, -24], [-56, -14, -50, -30], [-48, -40, -42, -56]]) { b.beginPath(); b.moveTo(hx + x0 * u, base + y0 * u); b.lineTo(hx + x1 * u, base + y1 * u); b.stroke(); }
+      b.strokeStyle = wall; b.lineWidth = 2.6 * u; b.lineJoin = 'round';
+      b.beginPath();
+      [[-46, -36], [-40, -48], [-32, -50], [-27, -62], [-18, -66], [-12, -78]].forEach(([dx, dy], k) => (k ? b.lineTo : b.moveTo).call(b, hx + dx * u, base + dy * u));
+      b.stroke();
+      b.fillStyle = wall; b.fillRect(hx - 14 * u, base - 92 * u, 36 * u, 12 * u);
+      b.fillRect(hx + 12 * u, base - 100 * u, 9 * u, 9 * u);
+      for (let k = 0; k < 4; k++) cityLight(b, hx - 10 * u + k * 8 * u, base - 86 * u, 1.2 * u, lit);
+      const x0 = x - 72 * u, y0 = base - 8 * u, x1 = hx - 8 * u, y1 = base - 92 * u;
+      b.fillStyle = c; b.fillRect(x0 - 6 * u, y0 - 2 * u, 12 * u, 10 * u);
+      b.strokeStyle = mixColor(c, '#c9d1e6', 0.45); b.lineWidth = 0.9 * u;
+      b.beginPath(); b.moveTo(x0, y0 - 2 * u); b.lineTo(x1, y1); b.stroke();
+      for (const t of [0.22, 0.44, 0.66, 0.86]) {
+        const cx = x0 + (x1 - x0) * t, cy = y0 - 2 * u + (y1 - y0 + 2 * u) * t;
+        b.beginPath(); b.moveTo(cx, cy); b.lineTo(cx, cy + 4 * u); b.stroke();
+        b.fillStyle = mixColor(c, '#9ad5ff', 0.55); b.beginPath(); b.arc(cx, cy + 8.5 * u, 4.6 * u, 0, TAU); b.fill();
+        b.fillStyle = dark; b.fillRect(cx - 4.6 * u, cy + 8 * u, 9.2 * u, 1 * u);
+        cityLight(b, cx - 1.4 * u, cy + 6.6 * u, 1.3 * u, lit);
       }
     },
     palaisile(b, x, base, u, c, lit) {
@@ -1956,19 +2064,39 @@
       b.globalAlpha = 0.3; b.fillRect(x - 40 * u, base + 2 * u, 84 * u, 12 * u); b.globalAlpha = 1;
     },
     montblanc(b, x, base, u, c) {
-      const snow = mixColor(c, '#f4f8ff', 0.75);
-      shape(b, [[x - 160 * u, base], [x - 70 * u, base - 90 * u], [x - 30 * u, base - 70 * u], [x + 10 * u, base - 130 * u], [x + 70 * u, base - 80 * u], [x + 160 * u, base]], mixColor(c, '#5a6a9a', 0.25));
-      shape(b, [[x - 88 * u, base - 72 * u], [x - 70 * u, base - 90 * u], [x - 52 * u, base - 80 * u]], snow);
-      shape(b, [[x - 24 * u, base - 92 * u], [x + 10 * u, base - 130 * u], [x + 46 * u, base - 102 * u], [x + 20 * u, base - 108 * u], [x + 4 * u, base - 96 * u]], snow);
+      // The Mont-Blanc massif: sharp needles on the left, the big rounded summit, snow down every peak
+      const rock = mixColor(c, '#5a6a9a', 0.25), snow = mixColor(c, '#f4f8ff', 0.8);
+      const ridge = [[-170, 0], [-120, -38], [-104, -32], [-84, -66], [-72, -51], [-58, -73], [-46, -57], [-20, -82],
+        [12, -96], [34, -90], [60, -67], [88, -76], [120, -42], [170, 0]].map(([dx, dy]) => [x + dx * u, base + dy * 1.35 * u]);
+      shape(b, ridge, rock);
+      snowCaps(b, ridge, snow, 30 * u);
     },
     citadel(b, x, base, u, c, lit) {
-      b.fillStyle = c; b.beginPath(); b.ellipse(x, base, 110 * u, 60 * u, 0, Math.PI, TAU); b.fill();
-      b.fillRect(x - 70 * u, base - 70 * u, 140 * u, 14 * u);
-      for (let k = -70; k < 70; k += 6) b.fillRect(x + k * u, base - 74 * u, 3 * u, 4 * u);
-      for (const dx of [-70, -20, 30, 70]) { b.fillRect(x + dx * u - 8 * u, base - 84 * u, 16 * u, 18 * u); }
-      b.fillRect(x - 4 * u, base - 100 * u, 10 * u, 20 * u);
-      b.fillStyle = '#e8c45a'; b.beginPath(); b.arc(x + 1 * u, base - 94 * u, 3.2 * u, 0, TAU); b.fill();
-      for (let k = 0; k < 12; k++) cityLight(b, x - 66 * u + k * 12 * u, base - 63 * u, 1.3 * u, lit);
+      // Vauban's citadel on its rock above the Doubs: steep sides, ramparts with
+      // sentry boxes on the corner bastions, walls going down the slopes, barracks on top
+      const wall = mixColor(c, '#c8ccf0', 0.2), dark = mixColor(c, '#000000', 0.3);
+      shape(b, [[x - 130 * u, base], [x - 100 * u, base - 18 * u], [x - 84 * u, base - 38 * u], [x - 68 * u, base - 46 * u],
+        [x + 68 * u, base - 48 * u], [x + 86 * u, base - 38 * u], [x + 102 * u, base - 18 * u], [x + 130 * u, base]], c);
+      b.strokeStyle = dark; b.lineWidth = 1 * u;
+      for (const [x0, y0, x1, y1] of [[-110, -8, -100, -22], [-98, -20, -90, -34], [104, -10, 96, -24], [96, -22, 88, -34]]) { b.beginPath(); b.moveTo(x + x0 * u, base + y0 * u); b.lineTo(x + x1 * u, base + y1 * u); b.stroke(); }
+      b.strokeStyle = wall; b.lineWidth = 2.4 * u; b.lineJoin = 'round';
+      for (const side of [-1, 1]) {
+        b.beginPath(); b.moveTo(x + side * 80 * u, base - 46 * u); b.lineTo(x + side * 92 * u, base - 30 * u);
+        b.lineTo(x + side * 104 * u, base - 14 * u); b.lineTo(x + side * 118 * u, base - 5 * u); b.stroke();
+      }
+      shape(b, [[x - 74 * u, base - 45 * u], [x - 88 * u, base - 51 * u], [x - 72 * u, base - 57 * u], [x + 72 * u, base - 59 * u],
+        [x + 90 * u, base - 53 * u], [x + 74 * u, base - 47 * u]], wall);
+      for (const [sx, sy] of [[-88, -51], [90, -53]]) {
+        b.fillStyle = wall; b.fillRect(x + sx * u - 2.5 * u, base + sy * u - 6 * u, 5 * u, 6 * u);
+        shape(b, [[x + sx * u - 3.5 * u, base + sy * u - 6 * u], [x + sx * u, base + sy * u - 11 * u], [x + sx * u + 3.5 * u, base + sy * u - 6 * u]], wall);
+      }
+      for (const [dx, w] of [[-58, 36], [-12, 30], [28, 34]]) {
+        b.fillStyle = c; b.fillRect(x + dx * u, base - 69 * u, w * u, 11 * u);
+        shape(b, [[x + dx * u - 2 * u, base - 69 * u], [x + (dx + 4) * u, base - 74 * u], [x + (dx + w - 4) * u, base - 74 * u], [x + (dx + w + 2) * u, base - 69 * u]], dark);
+        for (let k = 0; k < Math.floor(w / 7); k++) cityLight(b, x + (dx + 4 + k * 7) * u, base - 64 * u, 1.2 * u, lit);
+      }
+      b.fillStyle = c; b.fillRect(x + 20 * u, base - 84 * u, 6 * u, 15 * u);
+      shape(b, [[x + 19 * u, base - 84 * u], [x + 23 * u, base - 91 * u], [x + 27 * u, base - 84 * u]], c);
     },
   };
   // Horizon extras, drawn behind the city
@@ -1976,15 +2104,11 @@
     const ex = CITY().extras;
     if (which === 'back') {
       if (ex.includes('mountains')) {
-        const c = mixColor(P.far, '#7a8ac0', 0.22), snow = mixColor(P.far, '#e8f0ff', 0.55);
+        const c = mixColor(P.far, '#7a8ac0', 0.32), snow = mixColor(P.far, '#e8f0ff', 0.6);
         const peaks = [[0.0, 0.10], [0.12, 0.22], [0.26, 0.14], [0.4, 0.26], [0.55, 0.16], [0.7, 0.24], [0.86, 0.13], [1.0, 0.2]];
-        b.fillStyle = c; b.beginPath(); b.moveTo(0, horizon);
-        peaks.forEach(([px, ph]) => b.lineTo(px * W, horizon - ph * H * 0.9));
-        b.lineTo(W, horizon); b.fill();
-        peaks.forEach(([px, ph]) => {
-          const tx = px * W, ty = horizon - ph * H * 0.9, s = ph * H * 0.12;
-          shape(b, [[tx - s, ty + s * 0.9], [tx, ty], [tx + s, ty + s * 0.9], [tx + s * 0.3, ty + s * 0.6], [tx - s * 0.2, ty + s * 0.8]], snow);
-        });
+        const ridge = [[-0.05 * W, horizon]].concat(peaks.map(([px, ph]) => [px * W, horizon - ph * H * 0.9]), [[1.05 * W, horizon]]);
+        shape(b, ridge, c);
+        snowCaps(b, ridge, snow, H * 0.04);
       }
       if (ex.includes('volcanoes')) {
         const c = mixColor(P.far, '#6a5a8a', 0.25);
@@ -7287,6 +7411,7 @@
   let mapSel = 0, mapReturn = 'startScreen';
 
   // Night illustration of a city for its card in the map: sky, landmarks, roofs and a little cat
+  const SCENE_SCALE = { montblanc: 0.72 };
   function drawCityScene(cv, i) {
     const w = 320, h = 180;
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
@@ -7315,8 +7440,10 @@
         const halo = b.createRadialGradient(lx, waterTop - 40 * mu, 0, lx, waterTop - 40 * mu, 90 * mu);
         halo.addColorStop(0, `rgba(${P.haze}, 0.4)`); halo.addColorStop(1, `rgba(${P.haze}, 0)`);
         b.fillStyle = halo; b.fillRect(0, 0, w, h);
-        LANDMARKS[m](b, lx + 1.2, waterTop - 1, mu, rimCol, rimCol);
-        LANDMARKS[m](b, lx, waterTop, mu, markCol, P.windows[0]);
+        // The tallest landmarks are drawn a little smaller so they fit in the picture
+        const lu = mu * (SCENE_SCALE[m] || 1);
+        LANDMARKS[m](b, lx + 1.2, waterTop - 1, lu, rimCol, rimCol);
+        LANDMARKS[m](b, lx, waterTop, lu, markCol, P.windows[0]);
       });
       drawCityExtras(b, horizon, u, 'water');
       drawCityExtras(b, horizon, u, 'fields');
