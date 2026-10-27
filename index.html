@@ -4157,7 +4157,7 @@
 
     if (cos) drawCostume(c, cos, 'head', { by, hy, bob: 0, t, air: false, front: true });
     // Hats sit a bit higher than from behind so their brims stay clear of the eyes
-    if (o.hat) { c.save(); c.translate(0, hy - (HAT_FRONT_LIFT[o.hat] ?? 13)); drawHat(c, o.hat, t); c.restore(); }
+    if (o.hat) { c.save(); c.translate(0, hy - (HAT_FRONT_LIFT[o.hat] ?? 13)); drawHat(c, o.hat, t, true); c.restore(); }
   }
 
   function drawCatBall(c, sk, o) {
@@ -4212,6 +4212,14 @@
     c.beginPath(); c.ellipse(x, y, rx, ry, rot || 0, 0, TAU); hatPath(c, fill, outline);
   }
 
+  // Thin headband that follows the round of the head, with an outline
+  function headband(c, fill, line) {
+    c.lineCap = 'round';
+    c.strokeStyle = line; c.lineWidth = 5.4;
+    c.beginPath(); c.arc(0, 10, 15, Math.PI * 1.15, Math.PI * 1.85); c.stroke();
+    c.strokeStyle = fill; c.lineWidth = 3.4;
+    c.beginPath(); c.arc(0, 10, 15, Math.PI * 1.15, Math.PI * 1.85); c.stroke();
+  }
   const HAT_DRAW = {
     pompon(c) {
       c.beginPath(); c.moveTo(-14, 2); c.quadraticCurveTo(-14, -18, 0, -18); c.quadraticCurveTo(14, -18, 14, 2); c.closePath();
@@ -4293,7 +4301,7 @@
       hatPath(c, '#3b4cc0', '#16205c');
       drawStar(c, -4, -10, 2.4, '#ffd34d');
       drawStar(c, 6, -15, 2, '#ffd34d');
-      ell(c, 0, 0, 15, 4, '#f4f1ff', '#9a98b8');
+      c.beginPath(); c.roundRect(-15, -4, 30, 8, 4); hatPath(c, '#f4f1ff', '#9a98b8');
       drawStar(c, 24 + flop, -8, 5, '#ffd34d');
     },
     antenne(c, t) {
@@ -4311,13 +4319,15 @@
         for (const r of [6, 10]) { c.beginPath(); c.arc(0, -28, r, -Math.PI * 0.8, -Math.PI * 0.2); c.stroke(); }
       }
     },
-    ramoneur(c, t) {
-      // Headlamp beam lighting the way ahead
-      const beam = c.createLinearGradient(0, -8, 0, -70);
-      beam.addColorStop(0, 'rgba(255, 240, 170, 0.45)');
-      beam.addColorStop(1, 'rgba(255, 240, 170, 0)');
-      c.fillStyle = beam;
-      c.beginPath(); c.moveTo(-4, -10); c.lineTo(-22, -70); c.lineTo(22, -70); c.lineTo(4, -10); c.closePath(); c.fill();
+    ramoneur(c, t, front) {
+      // Headlamp beam lighting the way ahead (seen from the front, the lamp just glows)
+      if (!front) {
+        const beam = c.createLinearGradient(0, -8, 0, -70);
+        beam.addColorStop(0, 'rgba(255, 240, 170, 0.45)');
+        beam.addColorStop(1, 'rgba(255, 240, 170, 0)');
+        c.fillStyle = beam;
+        c.beginPath(); c.moveTo(-4, -10); c.lineTo(-22, -70); c.lineTo(22, -70); c.lineTo(4, -10); c.closePath(); c.fill();
+      }
       ell(c, 0, 0, 18, 4, '#2a2a33', '#000');
       c.beginPath(); c.moveTo(-14, 0); c.quadraticCurveTo(-14, -19, 0, -19); c.quadraticCurveTo(14, -19, 14, 0); c.closePath();
       hatPath(c, '#2a2a33', '#000');
@@ -4326,6 +4336,12 @@
       ell(c, 0, -14, 4, 3.5, '#ffe9a0', '#000');
       c.fillStyle = 'rgba(0, 0, 0, 0.35)';
       c.beginPath(); c.ellipse(-7, -6, 3, 2, 0.4, 0, TAU); c.fill();
+      if (front) {
+        const glow = c.createRadialGradient(0, -14, 2, 0, -14, 13);
+        glow.addColorStop(0, 'rgba(255, 240, 170, 0.6)');
+        glow.addColorStop(1, 'rgba(255, 240, 170, 0)');
+        c.fillStyle = glow; c.beginPath(); c.arc(0, -14, 13, 0, TAU); c.fill();
+      }
     },
     sorciere(c) {
       ell(c, 0, 0, 22, 5, '#3a1f5c', '#140726');
@@ -4461,7 +4477,7 @@
         c.fillStyle = '#ffb3d1'; c.beginPath(); c.ellipse(0, -16, 2.6, 12, 0, 0, TAU); c.fill();
         c.restore();
       }
-      c.beginPath(); c.roundRect(-13, -3, 26, 5, 2.5); hatPath(c, '#ffb3d1', '#a85a7a');
+      headband(c, '#ffb3d1', '#a85a7a');
     },
     fete(c, t) {
       c.beginPath(); c.moveTo(-11, 0); c.lineTo(0, -32); c.lineTo(11, 0); c.closePath();
@@ -4536,21 +4552,21 @@
       c.restore();
     },
     souris(c) {
-      c.beginPath(); c.roundRect(-13, -3, 26, 5, 2.5); hatPath(c, '#2a2a36', '#000');
       for (const sd of [-1, 1]) {
-        ell(c, sd * 13, -15, 10, 10, '#9a9fb0', '#2e3140');
-        ell(c, sd * 13, -15, 6, 6, '#ffb3d1', '#ffb3d1');
+        ell(c, sd * 13, -13, 10, 10, '#9a9fb0', '#2e3140');
+        ell(c, sd * 13, -13, 6, 6, '#ffb3d1', '#ffb3d1');
       }
+      headband(c, '#2a2a36', '#000');
     },
   };
 
-  function drawHat(c, id, t) {
+  function drawHat(c, id, t, front) {
     const fn = HAT_DRAW[id];
     if (!fn) return;
     c.save();
     c.lineJoin = 'round';
     c.lineCap = 'round';
-    fn(c, t);
+    fn(c, t, front);
     c.restore();
   }
 
@@ -6860,7 +6876,7 @@
       drawCatFront(c, skinPaint(it, 0), { t: 0 });
     } else {
       c.translate(38, 54); c.scale(1.5, 1.5);
-      drawHat(c, it.id, 0);
+      drawHat(c, it.id, 0, true);
     }
     if (!has) {
       // Silhouette for what is still missing
