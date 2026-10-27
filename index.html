@@ -479,9 +479,9 @@
   .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--s1); padding: var(--s1); border-radius: var(--r-md); background: var(--surface); }
   .tab { min-height: var(--tap); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border: 0; border-radius: var(--r-sm); background: transparent; color: var(--muted); cursor: pointer; }
   /* Shop: a close button in the corner, and the tabs stay at the top while scrolling */
-  .shop-card { position: relative; }
-  .shop-card .sheet-x { top: var(--s3); right: var(--s3); z-index: 3; }
-  .shop-tabs { position: sticky; top: calc(-1 * var(--s4) - env(safe-area-inset-top, 0px)); z-index: 2; background: #1b2152; box-shadow: 0 8px 16px rgba(5, 6, 20, 0.55); }
+  .shop-bar { position: sticky; top: calc(-1 * var(--s4)); z-index: 3; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--s2); padding: var(--s1) 0; background: #10153a; box-shadow: 0 10px 14px -8px rgba(5, 6, 20, 0.8); }
+  .shop-tabs { background: #1b2152; }
+  .bar-x { width: var(--tap); height: var(--tap); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.25); background: #1b2152; color: var(--ink); font-size: var(--fs-lg); cursor: pointer; display: grid; place-items: center; }
   .tab.active { background: linear-gradient(to bottom, #ffbe7a, var(--accent)); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-edge); }
   .bank { justify-self: center; display: flex; align-items: center; gap: var(--s2); font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
   .bank svg { width: 26px; height: 17px; }
@@ -563,7 +563,15 @@
   .link-quiet:hover { color: var(--ink); }
   /* Close cross in the corner of the home sheets */
   .home-sheet .card { position: relative; }
-  .sheet-x { position: absolute; top: var(--s4); right: var(--s4); width: var(--tap); height: var(--tap); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2); background: rgba(5, 6, 20, 0.4); color: var(--ink); font-size: var(--fs-lg); cursor: pointer; display: grid; place-items: center; }
+  /* Close button in the top corner of every window; it stays visible while scrolling */
+  .sheet-x {
+    position: sticky; top: calc(-1 * var(--s4) + var(--s2)); z-index: 4;
+    justify-self: end; margin: calc(-1 * var(--s3)) calc(-1 * var(--s3)) calc(-1 * var(--tap)) 0;
+    width: var(--tap); height: var(--tap); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.25);
+    background: #1b2152; color: var(--ink); font-size: var(--fs-lg); cursor: pointer; display: grid; place-items: center;
+    box-shadow: 0 4px 12px rgba(5, 6, 20, 0.5);
+  }
+  .sheet-x[hidden] { display: none; }
   /* Sound toggles: icon, name, and whether it is on */
   .toggle { display: flex; align-items: center; justify-content: center; gap: var(--s2); }
   .toggle svg { width: 20px; height: 20px; flex: none; color: var(--accent); }
@@ -853,6 +861,7 @@
 
   <div class="overlay" id="storyScreen" hidden>
     <div class="card story">
+      <button class="sheet-x" data-back="storyBack" aria-label="Fermer">✕</button>
       <h2>Histoire</h2>
       <form class="rename" id="renameForm">
         <label class="label" for="renameInput">Nom de ton chat</label>
@@ -866,6 +875,7 @@
 
   <div class="overlay" id="albumScreen" hidden>
     <div class="card wide">
+      <button class="sheet-x" data-back="albumBack" aria-label="Fermer">✕</button>
       <h2>Album</h2>
       <p class="album-count" id="albumCount"></p>
       <div class="label">Chats</div>
@@ -880,6 +890,7 @@
 
   <div class="overlay" id="shareScreen" hidden>
     <div class="card">
+      <button class="sheet-x" data-back="shareBack" aria-label="Fermer">✕</button>
       <h2>Ton score</h2>
       <img class="share-img" id="shareImg" alt="Image du score avec ton chat">
       <button class="btn" id="shareNative" hidden>Partager</button>
@@ -891,6 +902,7 @@
 
   <div class="overlay" id="mapScreen" hidden>
     <div class="card wide map-card">
+      <button class="sheet-x" data-back="mapBack" aria-label="Fermer">✕</button>
       <h2 class="map-title" id="mapTitle">Le voyage de Neko</h2>
       <div class="map-progress"><span id="mapProgress"></span><span class="bar"><i id="mapProgressBar"></i></span></div>
       <svg class="france-map" id="franceMap" viewBox="0 0 102 102" role="group" aria-label="Carte du voyage à travers la France"></svg>
@@ -910,6 +922,7 @@
 
   <div class="overlay" id="boardScreen" hidden>
     <div class="card">
+      <button class="sheet-x" data-back="boardBack" aria-label="Fermer">✕</button>
       <h2>Classement</h2>
       <form class="rename" id="joinForm" hidden>
         <p>Choisis un pseudo pour apparaître dans le classement avec tes amis. Pas ton vrai nom : tout le monde pourra le voir.</p>
@@ -932,6 +945,7 @@
 
   <div class="overlay" id="choiceScreen" hidden>
     <div class="card">
+      <button class="sheet-x" data-back="choiceBack" aria-label="Fermer">✕</button>
       <h2>D'où repars-tu ?</h2>
       <p>Tu as déjà atteint la <b class="good"><span id="choiceBest">2e rue</span></b>. Les points ne comptent que pour la distance que tu cours vraiment.</p>
       <button class="btn big" id="choiceResume">Reprendre à la <span id="choiceQ">2e rue</span></button>
@@ -952,6 +966,7 @@
 
   <div class="overlay" id="classScreen" hidden>
     <div class="card">
+      <button class="sheet-x" data-back="classClose" aria-label="Fermer">✕</button>
       <h2>Ta classe</h2>
       <p>Toutes les 30 secondes de course, le jeu te pose jusqu'à 3 questions. Choisis ta classe pour avoir des questions à ton niveau. Le jeu s'adapte ensuite à tes réponses.</p>
       <div class="grades" id="gradeGrid"></div>
@@ -977,17 +992,19 @@
 
   <div class="overlay" id="shopScreen" hidden>
     <div class="card wide shop-card">
-      <button class="sheet-x" id="shopClose" aria-label="Fermer la boutique">✕</button>
       <h2>Boutique</h2>
       <div class="bank">
         <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
         <span id="bankShop">0</span> croquettes
       </div>
       <p>Dépense tes croquettes pour de nouveaux chats et chapeaux.</p>
-      <div class="tabs shop-tabs" role="tablist">
-        <button class="tab active" id="tab-cats" role="tab" aria-selected="true">Chats</button>
-        <button class="tab" id="tab-hats" role="tab" aria-selected="false">Chapeaux</button>
-        <button class="tab" id="tab-fish" role="tab" aria-selected="false">Poissons d'or</button>
+      <div class="shop-bar">
+        <div class="tabs shop-tabs" role="tablist">
+          <button class="tab active" id="tab-cats" role="tab" aria-selected="true">Chats</button>
+          <button class="tab" id="tab-hats" role="tab" aria-selected="false">Chapeaux</button>
+          <button class="tab" id="tab-fish" role="tab" aria-selected="false">Poissons d'or</button>
+        </div>
+        <button class="bar-x" id="shopClose" aria-label="Fermer la boutique">✕</button>
       </div>
       <div class="skins" id="skinGrid"></div>
       <button class="btn" id="shopBack">Retour</button>
@@ -4948,7 +4965,7 @@
       shopTab = tab;
       buildShop();
       // Back to the start of the new list when the tabs were stuck at the top
-      const scr = $('shopScreen'), tabs = document.querySelector('.shop-tabs');
+      const scr = $('shopScreen'), tabs = document.querySelector('.shop-bar');
       const start = scr.scrollTop + $('skinGrid').getBoundingClientRect().top - scr.getBoundingClientRect().top - tabs.offsetHeight - 12;
       if (scr.scrollTop > start) scr.scrollTop = start;
     });
@@ -4958,6 +4975,11 @@
   $('nextShopBtn').addEventListener('click', openShop);
   $('shopBack').addEventListener('click', closeShop);
   $('shopClose').addEventListener('click', closeShop);
+  // Every corner ✕ does the same as the window's own "Retour" button
+  document.querySelectorAll('.sheet-x[data-back]').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.back === 'classClose') { show(classReturn); return; }
+    $(b.dataset.back).click();
+  }));
   updateBank();
 
   // ---------- General-knowledge questions ----------
@@ -6422,6 +6444,8 @@
       });
       grid.append(b);
     }
+    // The class can only be closed once one has been chosen
+    document.querySelector('[data-back="classClose"]').hidden = !quizState.grade;
     show('classScreen');
     const first = grid.querySelector('.selected') || grid.firstChild;
     if (first) first.focus({ preventScroll: true });
