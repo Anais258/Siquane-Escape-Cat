@@ -6,9 +6,7 @@ Ce dossier contient tout ce qu'il faut pour la fiche du Play Store :
 | --- | --- |
 | `icone-512.png` | Fiche principale › Icône de l'appli (512 × 512) |
 | `banniere-1024x500.png` | Fiche principale › Image de présentation (1024 × 500) |
-| `capture-1-accueil.png` … `capture-4-questions.png` | Fiche principale › Captures d'écran du téléphone (1080 × 2160) |
-
-Les captures d'écran datent d'avant le voyage en France : les refaire avec les nouveaux écrans (villes et monuments, carte de France, noms de rues, histoire) avant d'envoyer la fiche.
+| `capture-1-accueil.png` … `capture-5-boutique.png` (accueil, course à Paris, carte de France, questions, boutique) | Fiche principale › Captures d'écran du téléphone (1080 × 2160), dans cet ordre |
 
 Politique de confidentialité : `https://siquane.github.io/Neko-Odyssey/confidentialite.html`
 
