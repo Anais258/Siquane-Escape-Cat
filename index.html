@@ -3290,7 +3290,7 @@
     shake(cause === 'puddle' ? 6 : 11, 0.35);
     if (cause === 'puddle') {
       sfx.splash();
-      burst(cat.x, 4, 10, 34, { colors: PUD.splash, spread: 160, vyMin: 160, vyMax: 420, life: 0.9, size: 5 });
+      burst(cat.x, 4, 10, 48, { colors: PUD.splash, spread: 190, vyMin: 200, vyMax: 520, life: 1.1, size: 5.5 });
     } else {
       sfx.crash();
       burst(cat.x, CAT_H, 0, 10, { colors: ['#ffe066', '#ffffff'], spread: 120, vyMin: 60, vyMax: 200, life: 0.7, size: 4, kind: 'star', g: 300 });
@@ -3414,8 +3414,18 @@
       if (o.z > 18 || o.z + o.d < -18) continue;
       if (Math.abs(cat.x - o.x) > o.hw + 16) continue;
       if (o.type === 'puddle' && cat.y < 6) {
-        if (!active.umbrella) return die('puddle');
-        if (!o.shielded) { o.shielded = true; popup('Parapluie !', '#5bb8ff', 22); }
+        const safe = active.umbrella || shieldT > 0 || debugGod || tuto;
+        if (!safe) return die('puddle');
+        if (active.umbrella && !o.shielded) { o.shielded = true; popup('Parapluie !', '#5bb8ff', 22); }
+        // Splash on the way in, then little drops while running through it
+        if (!o.splashed) {
+          o.splashed = true; o.dripT = 0;
+          sfx.splash();
+          burst(cat.x, 4, 40, 30, { colors: PUD.splash, spread: 150, vyMin: 180, vyMax: 380, life: 0.75, size: 4.5 });
+        } else if ((o.dripT -= 1 / 60) <= 0) {
+          o.dripT = 0.09;
+          burst(cat.x, 4, 30, 4, { colors: PUD.splash, spread: 80, vyMin: 90, vyMax: 200, life: 0.45, size: 3.5 });
+        }
       }
       if (o.type === 'antLow') {
         if (cat.y < 46) return die('antenna');
