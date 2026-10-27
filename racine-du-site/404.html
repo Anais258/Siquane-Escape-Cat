@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neko Odyssey</title>
+<meta name="theme-color" content="#0b1030">
+<script>
+  // GitHub Pages addresses are case-sensitive: send "neko-odyssey", "NEKO-ODYSSEY"…
+  // to the game's real address, keeping the rest of the address.
+  (function () {
+    var m = location.pathname.match(/^\/neko-odyssey(\/.*)?$/i);
+    if (m) location.replace('/Neko-Odyssey' + (m[1] || '/') + location.search + location.hash);
+  })();
+</script>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-content: center; gap: 16px; padding: 16px; text-align: center;
+    background: #0b1030; color: #f4f1ff; font: 400 1.0625rem/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  h1 { margin: 0; color: #ffa24c; font-size: 1.8rem; }
+  a { color: #0b1030; background: #ffa24c; padding: 12px 24px; border-radius: 999px; font-weight: 700; text-decoration: none; justify-self: center; }
+</style>
+</head>
+<body>
+  <h1>Oups, cette page n'existe pas</h1>
+  <p>Le chat s'est trompé de toit…</p>
+  <a href="/Neko-Odyssey/">Jouer à Neko Odyssey</a>
+</body>
+</html>
