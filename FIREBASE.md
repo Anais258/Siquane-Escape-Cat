@@ -38,7 +38,7 @@ Tu peux aussi me donner ces deux valeurs et je fais la modification. La clé `ap
 
 1. Sur GitHub, ouvre le dépôt, puis **Settings › Pages**.
 2. Dans **Source**, choisis **Deploy from a branch**. Prends la branche `main` (ou la branche du jeu tant que la pull request n'est pas fusionnée) et le dossier `/ (root)`, puis enregistre.
-3. Après une minute, GitHub affiche le lien du jeu, du type `https://<compte>.github.io/neko-odyssey/`. Partage ce lien avec tes amis.
+3. Après une minute, GitHub affiche le lien du jeu, du type `https://<compte>.github.io/Neko-Odyssey/` (attention aux majuscules : c'est le nom exact du dépôt). Partage ce lien avec tes amis.
 
 ## Mettre à jour les règles
 
