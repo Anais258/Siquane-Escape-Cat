@@ -1,6 +1,8 @@
 # Neko Odyssey
 
-Un petit jeu de course (*runner*) où tu incarnes un chat qui court la nuit sur les toits de la ville.
+Un petit jeu de course (*runner*) où tu incarnes un chat qui court la nuit sur les toits, à travers toute la France, de Marseille à Besançon, pour retrouver sa famille.
+
+Jeu en ligne : <https://siquane.github.io/Neko-Odyssey/>
 
 ## Comment jouer
 
@@ -23,7 +25,7 @@ L'accueil s'inspire de Subway Surfers, avec le style de Neko Odyssey. Ton chat e
 
 - **En haut** : les croquettes, les poissons d'or, la musique et les bruitages.
 - **À gauche** : le meilleur score avec le portrait du chat, le niveau et sa barre d'expérience, le cadeau du jour (quand il est disponible) et l'album.
-- **À droite** : la fête en cours, le défi du jour avec sa progression et le classement.
+- **À droite** : la fête en cours, le défi du jour avec sa progression, le classement et la carte du voyage (avec la ville actuelle).
 - **En bas** : quatre gros boutons, **Missions** (défi du jour et missions, avec le nombre de missions en cours), **Moi** (nom du chat, classe, album, comment jouer), **Boutique** et **Histoire**.
 
 ## Sur les toits
@@ -38,13 +40,14 @@ La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreu
 
 ## Interface
 
-- **Accueil** : le bouton **Jouer** reste toujours visible en bas de l'écran. Les missions, le défi du jour, la bannière de fête et « Comment jouer » se déplient d'un geste. Boutique, Album, Histoire et Classe sont des tuiles avec icône. Les boutons de musique et de bruitages sont en haut à droite.
-- **Fin de partie** : le score et le bouton **Rejouer** d'abord, puis l'expérience, le prochain chat à débloquer et les missions.
+- **Accueil** : voir « Écran d'accueil » plus haut. Téléphone couché, les cartes passent sur les côtés, avec le titre, le chat et « Touche pour jouer » au milieu.
+- **Fenêtres** : chaque fenêtre (Histoire, Album, Carte, Classement, Boutique, Missions, Moi, Ta classe, Partage, « D'où repars-tu ? ») a une croix ✕ en haut à droite pour la fermer. Elle reste visible quand on fait défiler et fait la même chose que le bouton « Retour ». Dans la boutique, les onglets Chats, Chapeaux et Poissons d'or restent en haut de l'écran avec la croix quand on descend.
+- **Fin de partie** : le chat de face, la ville et la rue atteintes, le score et le bouton **Rejouer** d'abord, puis l'expérience, la nouvelle ville éventuelle, le prochain chat à débloquer et les missions.
 - **Système de design** : toutes les couleurs, tailles de texte (7), arrondis (4) et espacements viennent de variables CSS. Les textes font au moins 13 px et chaque bouton au moins 44 px de haut.
 
 ## L'histoire
 
-Une nuit d'orage, un petit chat s'abrite dans un camion de livraison et se réveille au cœur d'une ville inconnue, loin de sa famille. Pour rentrer, il court de toit en toit. Au premier lancement, le joueur donne un nom à son chat (« Neko » par défaut). Pour le changer ensuite, il suffit de toucher le nom sur l'écran d'accueil.
+Au premier lancement, le joueur donne un nom à son chat (« Neko » par défaut). Pour le changer ensuite, il suffit de toucher le nom sur l'écran d'accueil.
 
 L'histoire suit le voyage à travers la France et compte **35 chapitres, un par ville** : une nuit d'orage, Neko s'endort dans un camion à Besançon et se réveille au port de Marseille. Il suit la piste de Plume, sa petite sœur, le long de la Méditerranée et jusqu'à Bordeaux, remonte la côte atlantique et la Bretagne avec le Capitaine, passe par Paris, le Nord et l'Alsace, puis rattrape Maman Chat dans les Alpes avant de rentrer à Besançon au niveau 171. En chemin : Gaston le pigeon, Filou le chat errant, la chouette du Capitole, l'éléphant de Nantes, les cigognes de Colmar… Chaque chapitre se lit aussi depuis la fiche de sa ville sur la carte.
 
@@ -141,7 +144,9 @@ Le bouton **Classement** (sur l'accueil et l'écran de fin) ouvre un classement 
 
 Le classement utilise Firebase et marche sur la version publiée sur GitHub Pages. Pour l'activer, suis le guide [FIREBASE.md](FIREBASE.md).
 
-Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Lycée et + »). Elle se change avec la tuile **Classe** de l'écran d'accueil. Le jeu ajuste ensuite un peu la difficulté : après 3 bonnes réponses d'affilée, les questions deviennent plus difficiles, et après 2 erreurs d'affilée, plus faciles. Les calculs sont générés automatiquement et changent à chaque fois.
+## Classe et difficulté des questions
+
+Au premier lancement, le joueur choisit sa classe (du CP à la 3e, ou « Lycée et + »). Elle se change dans **Moi › Classe**, sur l'écran d'accueil. Le jeu ajuste ensuite un peu la difficulté : après 3 bonnes réponses d'affilée, les questions deviennent plus difficiles, et après 2 erreurs d'affilée, plus faciles. Les calculs sont générés automatiquement et changent à chaque fois.
 
 ## Missions, défi du jour et cadeau du jour
 
