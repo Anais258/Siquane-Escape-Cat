@@ -141,6 +141,8 @@
   .btn-row.three .btn { font-size: var(--fs-sm); padding-inline: var(--s1); }
   .btn.small { font-size: var(--fs-md); padding: var(--s2) var(--s4); }
   .btn.big { font-size: var(--fs-xl); padding: var(--s3) var(--s4); }
+  /* "Fermer" / "Retour" at the bottom of a window: a small centered button */
+  .btn.close-btn { justify-self: center; min-width: 140px; min-height: 40px; font-size: var(--fs-sm); padding: var(--s2) var(--s5); }
   a.btn { text-decoration: none; text-align: center; display: grid; place-items: center; }
   .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
   .btn-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -481,7 +483,7 @@
   /* Shop: a close button in the corner, and the tabs stay at the top while scrolling */
   .shop-bar { position: sticky; top: calc(-1 * var(--s4)); z-index: 3; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--s2); padding: var(--s1) 0; background: #10153a; box-shadow: 0 10px 14px -8px rgba(5, 6, 20, 0.8); }
   .shop-tabs { background: #1b2152; }
-  .bar-x { width: var(--tap); height: var(--tap); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.25); background: #1b2152; color: var(--ink); font-size: var(--fs-lg); cursor: pointer; display: grid; place-items: center; }
+  .bar-x { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.25); background: #1b2152; color: var(--ink); font-size: var(--fs-sm); line-height: 1; cursor: pointer; display: grid; place-items: center; }
   .tab.active { background: linear-gradient(to bottom, #ffbe7a, var(--accent)); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-edge); }
   .bank { justify-self: center; display: flex; align-items: center; gap: var(--s2); font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
   .bank svg { width: 26px; height: 17px; }
@@ -566,9 +568,9 @@
   /* Close button in the top corner of every window; it stays visible while scrolling */
   .sheet-x {
     position: sticky; top: calc(-1 * var(--s4) + var(--s2)); z-index: 4;
-    justify-self: end; margin: calc(-1 * var(--s3)) calc(-1 * var(--s3)) calc(-1 * var(--tap)) 0;
-    width: var(--tap); height: var(--tap); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.25);
-    background: #1b2152; color: var(--ink); font-size: var(--fs-lg); cursor: pointer; display: grid; place-items: center;
+    justify-self: end; margin: calc(-1 * var(--s3)) calc(-1 * var(--s3)) -32px 0;
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.25);
+    background: #1b2152; color: var(--ink); font-size: var(--fs-sm); line-height: 1; cursor: pointer; display: grid; place-items: center;
     box-shadow: 0 4px 12px rgba(5, 6, 20, 0.5);
   }
   .sheet-x[hidden] { display: none; }
@@ -681,7 +683,7 @@
         <div id="dailyStart"></div>
         <div class="label">Missions</div>
         <div class="missions" id="missionsStart"></div>
-        <button class="btn ghost" data-close>Fermer</button>
+        <button class="btn ghost close-btn" data-close>Fermer</button>
       </div>
     </div>
 
@@ -783,7 +785,7 @@
         <div class="label">Rues et questions</div>
         <p class="small-text">Toutes les 30 secondes, la course fait une pause et te pose jusqu'à 3 questions adaptées à ta classe. Une question bien répondue ne revient plus ; une question ratée revient un peu plus tard, pour bien retenir la réponse. Pendant la course, tu passes de rue en rue, avec leurs vrais noms : la première fait 1 km, puis chacune est un peu plus longue. Chaque bonne réponse rapporte 1 croquette, chaque question passée en coûte 2. Ramasse des croquettes d'affilée pour faire des combos, et évite un obstacle de justesse pour faire un « Ouf ! ».</p>
       </details>
-        <button class="btn ghost" data-close>Fermer</button>
+        <button class="btn ghost close-btn" data-close>Fermer</button>
         <p class="fine-print"><a class="link-quiet" href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>
       </div>
     </div>
@@ -869,7 +871,7 @@
       </form>
       <p class="small-text">Chaque partie te donne de l'expérience. À chaque nouvelle ville, un nouveau chapitre se débloque, et en chemin, cinq chats spéciaux te sont offerts. L'histoire se termine à Besançon, au niveau 171.</p>
       <div class="chapters" id="chapterList"></div>
-      <button class="btn" id="storyBack">Retour</button>
+      <button class="btn ghost close-btn" id="storyBack">Retour</button>
     </div>
   </div>
 
@@ -884,7 +886,7 @@
       <div class="skins" id="albumHats"></div>
       <div class="label">Déguisements</div>
       <div class="skins" id="albumCostumes"></div>
-      <button class="btn" id="albumBack">Retour</button>
+      <button class="btn ghost close-btn" id="albumBack">Retour</button>
     </div>
   </div>
 
@@ -896,7 +898,7 @@
       <button class="btn" id="shareNative" hidden>Partager</button>
       <a class="btn ghost" id="shareSave" href="#" download="neko-odyssey.png">Enregistrer l'image</a>
       <p class="small-text center">Sur téléphone, tu peux aussi faire un appui long sur l'image pour l'enregistrer ou la partager.</p>
-      <button class="btn ghost" id="shareBack">Retour</button>
+      <button class="btn ghost close-btn" id="shareBack">Retour</button>
     </div>
   </div>
 
@@ -916,7 +918,7 @@
         <p class="city-fact" id="cityFact"></p>
         <div class="city-actions"><button class="btn" id="cityPlay">Refaire le niveau</button><button class="btn ghost" id="cityStory">Lire le chapitre</button></div>
       </article>
-      <button class="btn ghost" id="mapBack">Retour</button>
+      <button class="btn ghost close-btn" id="mapBack">Retour</button>
     </div>
   </div>
 
@@ -938,7 +940,7 @@
       </div>
       <p class="small-text" id="boardStatus" role="status"></p>
       <div class="board" id="boardList"></div>
-      <button class="btn" id="boardBack">Retour</button>
+      <button class="btn ghost close-btn" id="boardBack">Retour</button>
       <p class="fine-print"><button class="link-quiet" id="boardLeave" hidden>Supprimer mes données du classement</button> <a class="link-quiet" href="confidentialite.html" target="_blank" rel="noopener">Confidentialité</a></p>
     </div>
   </div>
@@ -950,7 +952,7 @@
       <p>Tu as déjà atteint la <b class="good"><span id="choiceBest">2e rue</span></b>. Les points ne comptent que pour la distance que tu cours vraiment.</p>
       <button class="btn big" id="choiceResume">Reprendre à la <span id="choiceQ">2e rue</span></button>
       <button class="btn ghost" id="choiceFresh">Repartir de la 1re rue</button>
-      <button class="btn ghost small" id="choiceBack">Retour</button>
+      <button class="btn ghost close-btn" id="choiceBack">Retour</button>
     </div>
   </div>
 
@@ -1007,7 +1009,7 @@
         <button class="bar-x" id="shopClose" aria-label="Fermer la boutique">✕</button>
       </div>
       <div class="skins" id="skinGrid"></div>
-      <button class="btn" id="shopBack">Retour</button>
+      <button class="btn ghost close-btn" id="shopBack">Retour</button>
     </div>
   </div>
 </div>
