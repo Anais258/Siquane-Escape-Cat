@@ -47,11 +47,12 @@ Quand le fichier [`firestore.rules`](firestore.rules) change (par exemple quand 
 ## Vider le classement
 
 1. Dans le code du jeu (`index.html`), change la date de `BOARD_RESET_ID`. À leur prochaine ouverture du jeu, les joueurs retirent leur entrée et libèrent leur pseudo, sans perdre leurs records ni leur progression. Pour revenir dans le classement, il leur suffit de choisir un pseudo.
-2. Pour effacer aussi les joueurs qui n'ouvrent plus le jeu, va dans la console Firebase : **Firestore Database › Données**, puis supprime les collections `players` et `pseudos` (les trois points à côté du nom de la collection › **Supprimer la collection**). Elles se recréent toutes seules quand un joueur choisit un pseudo.
+2. Pour effacer aussi les joueurs qui n'ouvrent plus le jeu, va dans la console Firebase : **Firestore Database › Données**, puis supprime les collections `players` et `pseudos` (les trois points à côté du nom de la collection › **Supprimer la collection**, retape le nom puis **Supprimer**). Vérifie d'être dans le projet `neko-odyssey` et la base `(default)` : si la fenêtre de confirmation est fermée sans valider, rien n'est effacé. Les collections se recréent toutes seules quand un joueur choisit un pseudo.
 
 ## Bon à savoir
 
 - Le plan gratuit de Firebase (Spark) suffit largement pour un groupe d'amis : 50 000 lectures et 20 000 écritures par jour.
 - Un pseudo fait 3 à 16 caractères (lettres, chiffres, espaces, `-` et `_`) et ne peut appartenir qu'à un seul joueur. On peut le changer depuis l'écran du classement.
 - Pour retirer un joueur, supprime son document dans `players` (et son pseudo dans `pseudos`) depuis la console Firestore.
+- La distance est enregistrée en mètres dans la base ; le jeu l'affiche en kilomètres dans l'onglet « Plus loin ».
 - Les scores sont envoyés par le jeu lui-même : un joueur très motivé qui sait programmer pourrait tricher. Les règles limitent seulement les valeurs possibles.
