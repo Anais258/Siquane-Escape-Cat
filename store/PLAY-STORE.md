@@ -8,6 +8,8 @@ Ce dossier contient tout ce qu'il faut pour la fiche du Play Store :
 | `banniere-1024x500.png` | Fiche principale › Image de présentation (1024 × 500) |
 | `capture-1-accueil.png` … `capture-4-questions.png` | Fiche principale › Captures d'écran du téléphone (1080 × 2160) |
 
+Les captures d'écran datent d'avant le voyage en France : les refaire avec les nouveaux écrans (villes et monuments, carte de France, noms de rues, histoire) avant d'envoyer la fiche.
+
 Politique de confidentialité : `https://siquane.github.io/Neko-Odyssey/confidentialite.html`
 
 ## Avant de commencer : protéger ta vie privée (micro-entreprise)
@@ -22,8 +24,9 @@ Avec un compte développeur **entreprise**, Google affiche sur la fiche le nom e
    C'est gratuit pour une micro-entreprise.
 3. **Attendre le nouvel avis de situation INSEE** (sur <https://avis-situation-sirene.insee.fr>) avec la nouvelle adresse et le nom commercial. Comptez une à quelques semaines.
 4. **Demander le numéro D-U-N-S** une fois l'avis à jour, depuis le lien proposé par la Play Console à la création du compte (gratuit, quelques jours à 2 semaines). Le nom et l'adresse doivent être **exactement** ceux de l'avis INSEE.
+5. **Déposer la marque « Neko Odyssey »** à l'INPI (190 € pour une classe, + 40 € pour la 2e : classes 9 et 41), idéalement avant la sortie sur le Play Store, au plus tard juste après.
 
-Où on en est : ✅ domiciliation prise. Prochaine étape : la modification au Guichet unique.
+Où on en est : ✅ domiciliation prise, ✅ nom « Neko Odyssey » vérifié libre à l'INPI et jeu archivé (Software Heritage, Wayback Machine) le 27 octobre 2026. Prochaine étape : la modification au Guichet unique.
 
 Détail de la modification au Guichet unique :
 - *Modifier une entreprise* › choisir la micro-entreprise, cocher les trois changements dans la même demande.
@@ -71,7 +74,7 @@ Points à vérifier :
 > Ramasse des croquettes pour débloquer plus de 20 chats (siamois, calico, bengal, arc-en-ciel…), 30 chapeaux et des déguisements de fête. Attrape les rares poissons d'or pour une seconde chance.
 >
 > 🧠 **Apprends en jouant**
-> Toutes les 30 secondes, la course fait une pause pour 3 questions adaptées à ta classe, du CP au lycée : sciences, histoire, français, maths, arts, anglais… et les chats !
+> Toutes les 30 secondes, la course fait une pause pour 3 questions adaptées à ta classe, du CP au lycée. Près de 850 questions : sciences, histoire, français, maths, arts, anglais, la France (avec des questions sur chaque ville traversée)… et les chats !
 >
 > 🗺️ **Un voyage à travers la France**
 > De Marseille à Besançon, 35 villes à traverser : la Côte d'Azur, la Provence, le Pays basque, la Bretagne, le Mont-Saint-Michel, Paris, l'Alsace, les Alpes… Chaque ville a ses monuments, ses toits et une anecdote à découvrir sur la carte.
