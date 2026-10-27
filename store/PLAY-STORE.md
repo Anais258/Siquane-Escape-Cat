@@ -59,7 +59,7 @@ Points à vérifier :
 > Neko Odyssey
 
 **Description courte** (80 caractères max)
-> Cours sur les toits, saute les obstacles et ramène ton chat perdu chez lui !
+> Traverse la France de toit en toit et ramène ton chat chez lui !
 
 **Description complète**
 > Une nuit d'orage, Neko s'est endormi dans un camion de livraison… et s'est réveillé à Marseille, à l'autre bout de la France. Pour retrouver sa famille à Besançon, il n'y a qu'un chemin : courir de toit en toit !
