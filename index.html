@@ -478,6 +478,10 @@
   /* ---------- Shop, album, tabs ---------- */
   .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--s1); padding: var(--s1); border-radius: var(--r-md); background: var(--surface); }
   .tab { min-height: var(--tap); font-weight: 800; font-size: var(--fs-sm); padding: var(--s2); border: 0; border-radius: var(--r-sm); background: transparent; color: var(--muted); cursor: pointer; }
+  /* Shop: a close button in the corner, and the tabs stay at the top while scrolling */
+  .shop-card { position: relative; }
+  .shop-card .sheet-x { top: var(--s3); right: var(--s3); z-index: 3; }
+  .shop-tabs { position: sticky; top: calc(-1 * var(--s4) - env(safe-area-inset-top, 0px)); z-index: 2; background: #1b2152; box-shadow: 0 8px 16px rgba(5, 6, 20, 0.55); }
   .tab.active { background: linear-gradient(to bottom, #ffbe7a, var(--accent)); color: var(--accent-ink); box-shadow: 0 3px 0 var(--accent-edge); }
   .bank { justify-self: center; display: flex; align-items: center; gap: var(--s2); font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
   .bank svg { width: 26px; height: 17px; }
@@ -972,14 +976,15 @@
   <div class="countdown" id="countdown" hidden></div>
 
   <div class="overlay" id="shopScreen" hidden>
-    <div class="card wide">
+    <div class="card wide shop-card">
+      <button class="sheet-x" id="shopClose" aria-label="Fermer la boutique">✕</button>
       <h2>Boutique</h2>
       <div class="bank">
         <svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7c3-5 10-6 14-1l4-4v10l-4-4c-4 5-11 4-14-1z" fill="#e0a458" stroke="#7a4512" stroke-width="1.4"/><circle cx="6" cy="6" r="1.2" fill="#3a1d05"/></svg>
         <span id="bankShop">0</span> croquettes
       </div>
       <p>Dépense tes croquettes pour de nouveaux chats et chapeaux.</p>
-      <div class="tabs" role="tablist">
+      <div class="tabs shop-tabs" role="tablist">
         <button class="tab active" id="tab-cats" role="tab" aria-selected="true">Chats</button>
         <button class="tab" id="tab-hats" role="tab" aria-selected="false">Chapeaux</button>
         <button class="tab" id="tab-fish" role="tab" aria-selected="false">Poissons d'or</button>
@@ -4939,12 +4944,20 @@
     show(shopReturn);
   }
   for (const tab of ['cats', 'hats', 'fish']) {
-    $('tab-' + tab).addEventListener('click', () => { shopTab = tab; buildShop(); });
+    $('tab-' + tab).addEventListener('click', () => {
+      shopTab = tab;
+      buildShop();
+      // Back to the start of the new list when the tabs were stuck at the top
+      const scr = $('shopScreen'), tabs = document.querySelector('.shop-tabs');
+      const start = scr.scrollTop + $('skinGrid').getBoundingClientRect().top - scr.getBoundingClientRect().top - tabs.offsetHeight - 12;
+      if (scr.scrollTop > start) scr.scrollTop = start;
+    });
   }
   $('shopBtnStart').addEventListener('click', openShop);
   $('shopBtnOver').addEventListener('click', openShop);
   $('nextShopBtn').addEventListener('click', openShop);
   $('shopBack').addEventListener('click', closeShop);
+  $('shopClose').addEventListener('click', closeShop);
   updateBank();
 
   // ---------- General-knowledge questions ----------
