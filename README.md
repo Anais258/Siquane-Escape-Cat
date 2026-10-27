@@ -19,13 +19,15 @@ Ouvre `index.html` dans un navigateur (sur ordinateur ou sur téléphone).
 
 Pendant un saut, la roulade fait retomber le chat plus vite et il roule dès qu'il touche le toit. Après une pause, un compte à rebours 3-2-1 relance la course.
 
+**Première partie** : un petit tutoriel montre les gestes un par un, avec une main animée (changer de couloir, sauter, rouler). Le toit reste vide et le chat ne peut pas tomber tant que le tutoriel n'est pas fini. Les joueurs qui avaient déjà joué ne le voient pas.
+
 ## Écran d'accueil
 
 L'accueil s'inspire de Subway Surfers, avec le style de Neko Odyssey. Ton chat est debout en grand sur le toit, avec son chapeau et son déguisement, sous le titre **Neko Odyssey**. Il suffit de toucher le décor (ou « Touche pour jouer », ou `Espace`) pour lancer une partie.
 
 - **En haut** : les croquettes, les poissons d'or, la musique et les bruitages.
 - **À gauche** : le meilleur score avec le portrait du chat, le niveau et sa barre d'expérience, le cadeau du jour (quand il est disponible) et l'album.
-- **À droite** : la fête en cours, le défi du jour avec sa progression, le classement et la carte du voyage (avec la ville actuelle).
+- **À droite** : la fête en cours, le défi du jour avec sa progression, le classement et la carte du voyage (avec la prochaine ville et une barre qui montre le chemin qu'il reste).
 - **En bas** : quatre gros boutons, **Missions** (défi du jour et missions, avec le nombre de missions en cours), **Moi** (nom du chat, classe, album, comment jouer), **Boutique** et **Histoire**.
 
 ## Sur les toits
@@ -55,7 +57,7 @@ L'histoire suit le voyage à travers la France et compte **35 chapitres, un par 
 
 ## Niveau du joueur
 
-Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut quelques parties par niveau. Arriver à Besançon (niveau 171) demande environ une fois et demie le temps qu'il fallait pour l'ancien niveau 100. Le niveau maximum est 175. Chaque nouveau niveau rapporte des croquettes (50 + 5 par niveau, au maximum 250).
+Chaque partie donne de l'expérience (XP) selon la distance parcourue, les croquettes, les bonnes réponses et les missions réussies. Il faut quelques parties par niveau. Les 10 premiers niveaux vont plus vite (40 % de l'XP au niveau 1, puis de plus en plus jusqu'au niveau 11), pour découvrir vite les premières villes. Arriver à Besançon (niveau 171) demande environ une fois et demie le temps qu'il fallait pour l'ancien niveau 100. Le niveau maximum est 175. Chaque nouveau niveau rapporte des croquettes (50 + 5 par niveau, au maximum 250).
 
 ### Le voyage à travers la France
 
@@ -63,7 +65,7 @@ Neko traverse la France de toit en toit : **35 villes, une nouvelle tous les 5 n
 
 Marseille, Saint-Tropez, Nice, Gordes, Avignon, Arles, Nîmes, Montpellier, Carcassonne, Toulouse, Lourdes, Biarritz, Bordeaux, La Rochelle, Nantes, Carnac, Quimper, Saint-Malo, le Mont-Saint-Michel, Étretat, Rouen, Paris, Amiens, Lille, Reims, Strasbourg, Colmar, Vesoul, Dijon, Clermont-Ferrand, Lyon, Grenoble, Annecy, Chamonix, Besançon.
 
-Chaque ville a son décor : ses monuments à l'horizon (la Bonne Mère, la tour Eiffel, le Mont-Saint-Michel, le mont Blanc…), la mer, un lac, une rivière, des montagnes ou des champs de lavande, la forme de ses toits (toits provençaux, haussmanniens, pignons flamands, maisons alsaciennes, chalets…) et la couleur des toits sur lesquels court le chat (tuiles, ardoise, zinc, briques…). Pendant la course, le compteur affiche la ville et la rue où court le chat. Les rues sont de vrais lieux connus de chaque ville, 8 par ville (la Canebière, la promenade des Anglais, les Champs-Élysées, la Petite France…), et une bulle annonce chaque nouvelle rue. L'écran de fin rappelle la ville et la rue atteintes, et annonce chaque nouvelle ville avec un bouton « Voir la carte ». Pendant les fêtes, le décor de la fête garde ses couleurs et ses objets, et la ville garde ses monuments et ses toits.
+Chaque ville a son décor : ses monuments à l'horizon (la Bonne Mère, la tour Eiffel, le Mont-Saint-Michel, le mont Blanc…), la mer, un lac, une rivière, des montagnes ou des champs de lavande, la forme de ses toits (toits provençaux, haussmanniens, pignons flamands, maisons alsaciennes, chalets…) et la couleur des toits sur lesquels court le chat (tuiles, ardoise, zinc, briques…). Pendant la course, le compteur affiche la ville et la rue où court le chat. Les rues sont de vrais lieux connus de chaque ville, 8 par ville (la Canebière, la promenade des Anglais, les Champs-Élysées, la Petite France…), et une bulle annonce chaque nouvelle rue. L'écran de fin rappelle la ville et la rue atteintes, et annonce chaque nouvelle ville avec un bouton « Voir la carte ». Elle indique aussi la prochaine ville et le nombre de niveaux qu'il reste (« Prochaine ville : Nice · encore 3 niveaux »), avec une barre. À l'arrivée dans une nouvelle ville, une fête s'affiche : un grand tampon de la ville (« Étape 2 sur 35 »), des confettis et une fanfare. Pendant les fêtes, le décor de la fête garde ses couleurs et ses objets, et la ville garde ses monuments et ses toits.
 
 Au départ de chaque course, le nom de la ville et sa région s'affichent en grand.
 

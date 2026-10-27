@@ -445,6 +445,56 @@
   .city-actions { display: grid; gap: var(--s2); }
   .city-fact { margin: 0; font-size: var(--fs-sm); line-height: 1.5; }
 
+  /* ---------- First-run tutorial ---------- */
+  .tuto {
+    position: absolute; left: 0; right: 0; top: 30%; display: grid; justify-items: center; gap: var(--s2);
+    pointer-events: none; text-align: center; z-index: 4; padding: 0 var(--s4);
+  }
+  .tuto p {
+    margin: 0; max-width: 320px; padding: var(--s2) var(--s4); border-radius: var(--r-md);
+    background: rgba(11, 16, 48, 0.82); border: 2px solid var(--accent);
+    font-weight: 800; font-size: var(--fs-md); line-height: 1.3; color: var(--ink);
+  }
+  .tuto-hand { font-size: 3rem; line-height: 1; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.35)); }
+  .tuto[data-dir="lr"] .tuto-hand { animation: tuto-lr 1.2s ease-in-out infinite; }
+  .tuto[data-dir="up"] .tuto-hand { animation: tuto-up 1.1s ease-in-out infinite; }
+  .tuto[data-dir="down"] .tuto-hand { animation: tuto-down 1.1s ease-in-out infinite; }
+  .tuto[data-dir=""] .tuto-hand { display: none; }
+  @keyframes tuto-lr { 0%, 100% { transform: translateX(-40px); } 50% { transform: translateX(40px); } }
+  @keyframes tuto-up { 0% { transform: translateY(30px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-30px); opacity: 0; } }
+  @keyframes tuto-down { 0% { transform: translateY(-30px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(30px); opacity: 0; } }
+
+  /* ---------- Party for a new city: stamp and confetti ---------- */
+  .party {
+    position: absolute; inset: 0; z-index: 20; display: grid; place-content: center; justify-items: center; gap: var(--s4);
+    padding: var(--s4); text-align: center; overflow: hidden;
+    background: radial-gradient(ellipse at center, rgba(27, 33, 82, 0.97), rgba(11, 16, 48, 0.99));
+  }
+  .party-title { margin: 0; font-family: var(--font-display); font-size: clamp(1.8rem, 8vw, 2.6rem); line-height: 1.1; color: var(--ink); }
+  .party-sub { margin: 0; font-weight: 800; color: var(--muted); }
+  .stamp {
+    width: 190px; height: 190px; border-radius: 50%; display: grid; place-content: center; gap: 2px;
+    border: 5px solid var(--accent); outline: 2px dashed var(--accent); outline-offset: -14px;
+    color: var(--accent); background: #1b2152; transform: rotate(-12deg);
+  }
+  .stamp small { font-weight: 800; font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; }
+  .stamp b { font-family: var(--font-display); font-weight: 400; font-size: 1.7rem; line-height: 1.05; padding: 0 18px; }
+  .stamp span { font-weight: 800; font-size: var(--fs-xs); }
+  .party:not([hidden]) .stamp { animation: stamp-in 0.55s cubic-bezier(0.2, 1.6, 0.4, 1) both 0.2s; }
+  @keyframes stamp-in { 0% { transform: scale(2.6) rotate(8deg); opacity: 0; } 100% { transform: scale(1) rotate(-12deg); opacity: 1; } }
+  .confetti { position: absolute; top: -20px; width: 9px; height: 14px; border-radius: 2px; animation: confetti-fall linear forwards; }
+  @keyframes confetti-fall { to { transform: translateY(110vh) rotate(720deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .tuto .tuto-hand, .party:not([hidden]) .stamp, .confetti { animation: none !important; }
+    .confetti { display: none; }
+  }
+
+  /* Next city of the trip */
+  .next-city { display: grid; gap: var(--s1); font-size: var(--fs-sm); font-weight: 800; color: var(--muted); }
+  .next-city b { color: var(--ink); }
+  .hc-bar { display: block; height: 4px; margin-top: 3px; border-radius: var(--r-pill); background: var(--surface-strong); overflow: hidden; }
+  .hc-bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: var(--r-pill); }
+
   /* ---------- City title at the start of a run ---------- */
   .city-intro {
     position: absolute; left: 0; right: 0; top: 20%; display: grid; justify-items: center; gap: 2px;
@@ -659,7 +709,7 @@
           <span class="hc-text"><span class="hc-title">Défi du jour</span><span class="bar"><i id="dailyBar"></i></span><span class="hc-sub" id="dailyMini"></span></span>
         </button>
         <button class="home-card" id="boardBtn"><span class="hc-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 27V17h7v10M12.5 27V9h7v18M21 27V13h7v14M3 27h26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M16 3l1.3 2.6 2.7.4-2 1.9.5 2.7-2.5-1.3-2.5 1.3.5-2.7-2-1.9 2.7-.4z" fill="currentColor"/></svg></span><span class="hc-text"><span class="hc-title">Classement</span></span></button>
-        <button class="home-card" id="mapBtn"><span class="hc-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 8l7-3 10 3 7-3v19l-7 3-10-3-7 3z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M11 5v19M21 8v19" stroke="currentColor" stroke-width="2.4"/></svg></span><span class="hc-text"><span class="hc-title">Carte</span><span class="hc-sub" id="mapSub">Marseille</span></span></button>
+        <button class="home-card" id="mapBtn"><span class="hc-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 8l7-3 10 3 7-3v19l-7 3-10-3-7 3z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M11 5v19M21 8v19" stroke="currentColor" stroke-width="2.4"/></svg></span><span class="hc-text"><span class="hc-title">Carte</span><span class="hc-sub" id="mapSub">Marseille</span><span class="hc-bar"><i id="mapBar"></i></span></span></button>
       </div>
     </div>
 
@@ -834,6 +884,7 @@
           <span class="pin-chip"><svg viewBox="0 0 12 16" aria-hidden="true"><path d="M6 15s5-5.6 5-9A5 5 0 0 0 1 6c0 3.4 5 9 5 9z" fill="currentColor"/><circle cx="6" cy="6" r="1.9" fill="var(--night)"/></svg><span>Nouvelle ville : <b id="newCityName"></b></span></span>
           <button class="btn small" id="newCityMap">Voir la carte</button>
         </div>
+        <div class="next-city" id="nextCityBox" hidden><span id="nextCityText"></span><div class="bar gold"><i id="nextCityBar"></i></div></div>
       </div>
       <div class="box accent" id="chapterBox" hidden>
         <div class="box-head"><b id="chapterTitle">Nouveau chapitre</b><button class="btn small" id="chapterRead">Lire</button></div>
@@ -989,6 +1040,13 @@
     </div>
   </div>
 
+  <div class="tuto" id="tuto" hidden><div class="tuto-hand" aria-hidden="true">👆</div><p id="tutoText"></p></div>
+  <div class="party" id="cityParty" role="dialog" aria-labelledby="partyTitle" hidden>
+    <div class="stamp"><small id="partyRegion"></small><b id="partyCity"></b><span id="partyStep"></span></div>
+    <p class="party-title" id="partyTitle"></p>
+    <p class="party-sub">Un nouveau tampon pour ton voyage !</p>
+    <button class="btn big" id="partyOk">Super !</button>
+  </div>
   <div class="city-intro" id="cityIntro" hidden><small id="cityIntroRegion"></small><b id="cityIntroName"></b></div>
   <div class="toast" id="toast" hidden></div>
   <div class="countdown" id="countdown" hidden></div>
@@ -2977,6 +3035,7 @@
   }
 
   function spawnRow(z) {
+    if (tuto) return; // nothing on the roofs while learning the gestures
     // Lanes still covered by a solar panel stay free of anything else
     const busy = [-1, 0, 1].map(l => objs.some(o => o.type === 'solar' && o.lane === l && o.z + o.d > z - 150));
     // Now and then, a gap between two roofs across the whole width
@@ -3071,7 +3130,7 @@
   function moveLane(dir) {
     if (state !== 'play') return;
     const target = Math.max(-1, Math.min(1, cat.lane + dir));
-    if (target !== cat.lane) { cat.prevLane = cat.lane; cat.laneT = elapsed; cat.lane = target; sfx.lane(); track('lane'); }
+    if (target !== cat.lane) { cat.prevLane = cat.lane; cat.laneT = elapsed; cat.lane = target; sfx.lane(); track('lane'); tutoAction('lane'); }
   }
   function jump() {
     if (state !== 'play') return;
@@ -3082,6 +3141,7 @@
       cat.fastFall = false;
       cat.rollQueued = false;
       sfx.jump();
+      tutoAction('jump');
     }
   }
   function roll() {
@@ -3089,6 +3149,7 @@
     if (cat.onGround) {
       if (cat.rollT <= 0) sfx.roll();
       cat.rollT = ROLL_TIME;
+      tutoAction('roll');
     } else {
       cat.fastFall = true;
       cat.rollQueued = true;
@@ -3096,7 +3157,7 @@
   }
 
   function die(cause) {
-    if (state !== 'play' || debugGod || shieldT > 0) return;
+    if (state !== 'play' || debugGod || shieldT > 0 || tuto) return;
     state = 'dying';
     deathCause = cause;
     deathT = 0;
@@ -3131,7 +3192,7 @@
     if (state === 'revive') { updateRevive(dt); return; }
 
     elapsed += dt;
-    quizClock += dt;
+    if (!tuto) quizClock += dt;
     if (shieldT > 0) shieldT -= dt;
     speed = Math.min(MAX_SPEED, START_SPEED + 80 * playerDiff() + elapsed * 7);
     const dz = speed * dt;
@@ -4735,10 +4796,46 @@
     show(choiceFrom === 'over' ? 'overScreen' : 'startScreen');
   }
 
+  // ---------- First-run tutorial: one gesture at a time, with nothing to bump into ----------
+  const TUTO_STEPS = [
+    { act: 'lane', dir: 'lr', touch: 'Glisse ton doigt à gauche ou à droite pour changer de couloir', keys: 'Appuie sur ← ou → pour changer de couloir' },
+    { act: 'jump', dir: 'up', touch: 'Glisse ton doigt vers le haut pour sauter', keys: 'Appuie sur ↑ ou Espace pour sauter' },
+    { act: 'roll', dir: 'down', touch: 'Glisse ton doigt vers le bas pour rouler', keys: 'Appuie sur ↓ pour rouler' },
+  ];
+  const touchFirst = matchMedia('(pointer: coarse)').matches;
+  let tuto = null;
+  // Players who already ran before this tutorial existed don't need it
+  const tutoNeeded = () => !profile.tutoDone && !(profile.farM > 0);
+  function showTuto() {
+    if (!tuto) return;
+    const step = TUTO_STEPS[tuto.step], el = $('tuto');
+    if (step) {
+      el.dataset.dir = step.dir;
+      $('tutoText').textContent = touchFirst ? step.touch : step.keys;
+    } else {
+      el.dataset.dir = '';
+      $('tutoText').textContent = 'Bravo ! Maintenant, évite les obstacles et ramasse les croquettes.';
+      profile.tutoDone = true; saveProfile();
+      const done = tuto;
+      setTimeout(() => { if (tuto === done) endTuto(); }, 2600);
+    }
+    el.hidden = false;
+  }
+  function tutoAction(act) {
+    if (!tuto || tuto.wait || !TUTO_STEPS[tuto.step] || TUTO_STEPS[tuto.step].act !== act) return;
+    tuto.wait = true;
+    sfx.right();
+    const cur = tuto;
+    setTimeout(() => { if (tuto !== cur) return; tuto.step++; tuto.wait = false; showTuto(); }, 700);
+  }
+  function endTuto() { tuto = null; $('tuto').hidden = true; }
+
   function startGame(fromQ = 1) {
     initAudio();
     runSeen = new Set();
     closeSheets();
+    endTuto();
+    if (tutoNeeded() && playCity == null && fromQ === 1) tuto = { step: 0 };
     resetWorld();
     runLevel = profile.level;
     const ci = playCity ?? cityIndexFor(profile.level);
@@ -4761,7 +4858,33 @@
     lastScore = lastKib = -1;
     meow(false);
     showCityIntro();
+    if (tuto) { const t = tuto; setTimeout(() => { if (tuto === t) showTuto(); }, 2500); }
   }
+  // A new city: a big stamp with confetti and a fanfare, over the end-of-run screen
+  function cityParty(i) {
+    const c = CITIES[i], el = $('cityParty');
+    $('partyRegion').textContent = c.region;
+    $('partyCity').textContent = c.name;
+    $('partyStep').textContent = `Étape ${i + 1} sur ${CITIES.length}`;
+    $('partyTitle').textContent = `Bienvenue à ${c.name.replace(/-/g, '\u2011')}\u00a0!`;
+    el.querySelectorAll('.confetti').forEach(e => e.remove());
+    const colors = FX_COLORS.confetti.concat(['#ffa24c']);
+    for (let k = 0; k < 48; k++) {
+      const d = document.createElement('i');
+      d.className = 'confetti';
+      d.style.left = Math.random() * 100 + '%';
+      d.style.background = colors[k % colors.length];
+      d.style.animationDuration = (1.8 + Math.random() * 1.6) + 's';
+      d.style.animationDelay = Math.random() * 0.8 + 's';
+      el.appendChild(d);
+    }
+    el.hidden = false;
+    sfx.fanfare();
+    setTimeout(() => sfx.fanfare(), 650);
+    $('partyOk').focus({ preventScroll: true });
+  }
+  $('partyOk').addEventListener('click', () => { $('cityParty').hidden = true; });
+
   let cityIntroTimer = 0;
   function showCityIntro() {
     const el = $('cityIntro');
@@ -4854,6 +4977,7 @@
     last = performance.now();
   }
   function toMenu() {
+    endTuto();
     playCity = null;
     if (cityIdx !== cityIndexFor(profile.level)) applyCity(cityIndexFor(profile.level));
     resetWorld();
@@ -6744,9 +6868,11 @@
   applyCity(cityIndexFor(profile.level));
   const catName = () => profile.name || 'Neko';
   // A few runs per level; one new city every 5 levels. Reaching Besançon (level 171)
-  // takes about one and a half times as long as level 100 used to.
+  // takes about one and a half times as long as level 100 used to. The first 10
+  // levels need less XP (40 % at level 1, the full amount from level 11), so the
+  // first cities come quickly.
   const MAX_LEVEL = CITIES.length * LEVELS_PER_CITY;
-  const xpNeed = L => 200 + 10 * (L - 1);
+  const xpNeed = L => Math.round((200 + 10 * (L - 1)) * Math.min(1, 0.4 + 0.06 * (L - 1)));
   const xpPercent = () => (profile.level >= MAX_LEVEL ? 100 : Math.min(100, 100 * profile.xp / xpNeed(profile.level)));
   const saveProfile = () => store(PROFILE_KEY, profile);
 
@@ -6791,11 +6917,30 @@
   const fillName = t => t.replace(/\{name\}/g, catName());
   const unlockedChapters = () => CHAPTERS.filter(c => c[0] <= profile.level).length;
 
+  // Next city of the trip, how many levels are left and how far along the way we are
+  function nextCityInfo() {
+    const ci = cityIndexFor(profile.level);
+    if (ci >= CITIES.length - 1) return null;
+    const left = (ci + 1) * LEVELS_PER_CITY + 1 - profile.level;
+    return { city: CITIES[ci + 1], left, pct: 100 * (LEVELS_PER_CITY - left + xpPercent() / 100) / LEVELS_PER_CITY };
+  }
+  function renderNextCity() {
+    const next = nextCityInfo();
+    $('nextCityBox').hidden = !next;
+    if (!next) return;
+    $('nextCityText').innerHTML = next.left === 1
+      ? `Prochaine ville : <b>${next.city.name}</b>, au prochain niveau !`
+      : `Prochaine ville : <b>${next.city.name}</b> · encore ${next.left} niveaux`;
+    $('nextCityBar').style.width = next.pct + '%';
+  }
+
   function renderPlayer() {
     $('playerNameText').textContent = catName();
     $('playerLevel').textContent = profile.level >= MAX_LEVEL ? 'Niveau max' : `Niveau ${profile.level}`;
     $('xpBar').style.width = xpPercent() + '%';
-    $('mapSub').textContent = CITIES[cityIndexFor(profile.level)].name;
+    const here = CITIES[cityIndexFor(profile.level)].name, next = nextCityInfo();
+    $('mapSub').textContent = next ? `→ ${next.city.name}` : here;
+    $('mapBar').style.width = (next ? next.pct : 100) + '%';
     const fresh = unlockedChapters() > (profile.read || 0);
     $('storyBadge').hidden = !fresh;
   }
@@ -7326,7 +7471,9 @@
       + gifts.map(g => ` · Nouveau chat offert : ${g.name} !`).join('')
       + news.map(u => ` · Nouveau sur les toits : ${u.name} (${u.text})`).join('');
     if (newCity) { playCity = null; applyCity(cityNow); }
-    if (reward) { sfx.fanfare(); }
+    renderNextCity();
+    if (newCity) cityParty(cityNow);
+    else if (reward) sfx.fanfare();
     $('chapterBox').hidden = !newChapter;
     if (newChapter) {
       $('chapterTitle').textContent = `Nouveau chapitre : ${CHAPTERS[newChapter - 1][1]}`;
@@ -8203,6 +8350,11 @@
     if (e.target && e.target.tagName === 'INPUT') return;
     const k = e.key.toLowerCase();
     const code = e.code;
+    // The new-city party takes the keys until it is closed
+    if (!$('cityParty').hidden) {
+      if (['Escape', 'Enter', 'Space'].includes(code)) { e.preventDefault(); $('cityParty').hidden = true; }
+      return;
+    }
     for (const [scr, back] of [['storyScreen', () => show(storyReturn)], ['albumScreen', () => show(albumReturn)], ['shareScreen', () => show('overScreen')], ['boardScreen', () => show(boardReturn)], ['mapScreen', () => show(mapReturn)], ['introScreen', null]]) {
       if (!$(scr).hidden) { if (code === 'Escape' && back) back(); return; }
     }
