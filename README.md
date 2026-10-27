@@ -4,6 +4,8 @@ Un petit jeu de course (*runner*) où tu incarnes un chat qui court la nuit sur 
 
 Jeu en ligne : <https://siquane.github.io/Neko-Odyssey/>
 
+Attention aux majuscules : l'adresse est `Neko-Odyssey`, avec un N et un O majuscules. Les adresses en minuscules (`neko-odyssey`) renvoient vers le jeu dès que le dépôt `siquane.github.io` est en place (voir le dossier `racine-du-site/`).
+
 ## Comment jouer
 
 Ouvre `index.html` dans un navigateur (sur ordinateur ou sur téléphone).
