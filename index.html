@@ -950,7 +950,7 @@
     <div class="card">
       <button class="sheet-x" data-back="choiceBack" aria-label="Fermer">✕</button>
       <h2>D'où repars-tu ?</h2>
-      <p>Tu as déjà atteint la <b class="good"><span id="choiceBest">2e rue</span></b>. Les points ne comptent que pour la distance que tu cours vraiment.</p>
+      <p>Ta dernière partie s'est arrêtée à la <b class="good"><span id="choiceBest">2e rue</span></b>. Les points ne comptent que pour la distance que tu cours vraiment.</p>
       <button class="btn big" id="choiceResume">Reprendre à la <span id="choiceQ">2e rue</span></button>
       <button class="btn ghost" id="choiceFresh">Repartir de la 1re rue</button>
       <button class="btn ghost close-btn" id="choiceBack">Retour</button>
@@ -4663,15 +4663,17 @@
     for (const s of ['startScreen', 'pauseScreen', 'overScreen', 'shopScreen', 'classScreen', 'quizScreen', 'introScreen', 'storyScreen', 'albumScreen', 'shareScreen', 'reviveScreen', 'choiceScreen', 'boardScreen', 'mapScreen']) $(s).hidden = s !== id;
   }
 
-  // Highest quarter ever reached: runs can restart from there.
-  const bestQuarter = () => Math.max(1, profile.bestQ || 1);
+  // Street where the last run stopped: the next run can restart from there.
+  // City replays from the map don't change it.
+  const lastQuarter = () => Math.max(1, profile.lastQ ?? profile.bestQ ?? 1);
   function reachQuarter(q) {
-    if (q > bestQuarter()) { profile.bestQ = q; store(PROFILE_KEY, profile); }
+    if (playCity != null || profile.lastQ === q) return;
+    profile.lastQ = q; store(PROFILE_KEY, profile);
   }
   let choiceFrom = 'start', choiceAt = 0;
   function requestStart() {
     if (playCity != null) { startGame(1); return; }
-    const q = bestQuarter();
+    const q = lastQuarter();
     if (q < 2) { startGame(1); return; }
     choiceFrom = state;
     choiceAt = performance.now();
@@ -4701,6 +4703,7 @@
       elapsed = Math.min(60, (fromQ - 1) * 12);
       shieldT = 3;
     }
+    reachQuarter(level);
     resetRunMissions();
     applyRunPowers();
     transpose = 0;
@@ -4820,7 +4823,7 @@
   $('againBtn').addEventListener('click', requestStart);
   // Ignore the key release that opened the choice (Space clicks on keyup).
   const choiceReady = () => performance.now() - choiceAt > 350;
-  $('choiceResume').addEventListener('click', () => { if (choiceReady()) startGame(bestQuarter()); });
+  $('choiceResume').addEventListener('click', () => { if (choiceReady()) startGame(lastQuarter()); });
   $('choiceFresh').addEventListener('click', () => { if (choiceReady()) startGame(1); });
   $('choiceBack').addEventListener('click', closeChoice);
   $('resumeBtn').addEventListener('click', resume);
