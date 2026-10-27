@@ -4283,11 +4283,12 @@
     couronne(c, t) {
       c.beginPath();
       c.moveTo(-14, 1); c.lineTo(-14, -16); c.lineTo(-8, -8); c.lineTo(-3.5, -19); c.lineTo(0, -9);
-      c.lineTo(3.5, -19); c.lineTo(8, -8); c.lineTo(14, -16); c.lineTo(14, 1); c.closePath();
+      // Rounded bottom edge that wraps around the head
+      c.lineTo(3.5, -19); c.lineTo(8, -8); c.lineTo(14, -16); c.lineTo(14, 1); c.quadraticCurveTo(0, 7, -14, 1); c.closePath();
       hatPath(c, '#ffcc33', '#8a5a00');
-      ell(c, -7, -3, 2.2, 2.2, '#e8445a', '#8a5a00');
-      ell(c, 0, -3, 2.4, 2.4, '#3d7bff', '#8a5a00');
-      ell(c, 7, -3, 2.2, 2.2, '#2fb7a5', '#8a5a00');
+      ell(c, -7, -1.5, 2.2, 2.2, '#e8445a', '#8a5a00');
+      ell(c, 0, -0.5, 2.4, 2.4, '#3d7bff', '#8a5a00');
+      ell(c, 7, -1.5, 2.2, 2.2, '#2fb7a5', '#8a5a00');
       c.globalAlpha = 0.5 + 0.5 * Math.sin(t * 4);
       drawStar(c, -10, -14, 3, '#ffffff');
       c.globalAlpha = 1;
