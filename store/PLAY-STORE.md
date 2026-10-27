@@ -66,7 +66,7 @@ Points à vérifier :
 > Une nuit d'orage, Neko s'est endormi dans un camion de livraison… et s'est réveillé à Marseille, à l'autre bout de la France. Pour retrouver sa famille à Besançon, il n'y a qu'un chemin : courir de toit en toit !
 >
 > 🐾 **Une course pleine de surprises**
-> Change de couloir, saute par-dessus les flaques et les antennes, roule sous les cordes à linge, grimpe sur les panneaux solaires… Plus tu montes de niveau, plus les toits réservent de surprises. Tu as perdu ? Reprends ta course à la rue où tu t'es arrêté.
+> Un petit tutoriel t'apprend les gestes, puis c'est parti ! Change de couloir, saute par-dessus les flaques et les antennes, roule sous les cordes à linge, grimpe sur les panneaux solaires… Plus tu montes de niveau, plus les toits réservent de surprises. Tu as perdu ? Reprends ta course à la rue où tu t'es arrêté.
 >
 > 🐟 **Ramasse, collectionne, habille ton chat**
 > Ramasse des croquettes pour débloquer plus de 20 chats (siamois, calico, bengal, arc-en-ciel…), 30 chapeaux et des déguisements de fête. Attrape les rares poissons d'or pour une seconde chance.
@@ -75,7 +75,7 @@ Points à vérifier :
 > Toutes les 30 secondes, la course fait une pause pour 3 questions adaptées à ta classe, du CP au lycée. Près de 850 questions : sciences, histoire, français, maths, arts, anglais, la France (avec des questions sur chaque ville traversée)… et les chats !
 >
 > 🗺️ **Un voyage à travers la France**
-> De Marseille à Besançon, 35 villes à traverser : la Côte d'Azur, la Provence, le Pays basque, la Bretagne, le Mont-Saint-Michel, Paris, l'Alsace, les Alpes… Chaque ville a ses monuments, ses toits et une anecdote à découvrir sur la carte.
+> De Marseille à Besançon, 35 villes à traverser : la Côte d'Azur, la Provence, le Pays basque, la Bretagne, le Mont-Saint-Michel, Paris, l'Alsace, les Alpes… Chaque ville a ses monuments, ses toits et une anecdote à découvrir sur la carte. À chaque nouvelle ville, un grand tampon et des confettis fêtent ton arrivée !
 >
 > 📖 **Une histoire en 35 chapitres**
 > Un chapitre par ville. Rencontre Gaston le pigeon, Filou le chat errant, le vieux Capitaine et bien d'autres, retrouve Plume ta petite sœur, et gagne des chats spéciaux en chemin.
