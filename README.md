@@ -41,7 +41,7 @@ La vitesse augmente au fil de la partie et les obstacles deviennent plus nombreu
 ## Interface
 
 - **Accueil** : voir « Écran d'accueil » plus haut. Téléphone couché, les cartes passent sur les côtés, avec le titre, le chat et « Touche pour jouer » au milieu.
-- **Fenêtres** : chaque fenêtre (Histoire, Album, Carte, Classement, Boutique, Missions, Moi, Ta classe, Partage, « D'où repars-tu ? ») a une croix ✕ en haut à droite pour la fermer. Elle reste visible quand on fait défiler et fait la même chose que le bouton « Retour ». Dans la boutique, les onglets Chats, Chapeaux et Poissons d'or restent en haut de l'écran avec la croix quand on descend.
+- **Fenêtres** : chaque fenêtre (Histoire, Album, Carte, Classement, Boutique, Missions, Moi, Ta classe, Partage, « D'où repars-tu ? ») a une petite croix ✕ en haut à droite pour la fermer. Elle reste visible quand on fait défiler et fait la même chose que le petit bouton « Retour » (ou « Fermer ») centré en bas de la fenêtre. Dans la boutique, les onglets Chats, Chapeaux et Poissons d'or restent en haut de l'écran avec la croix quand on descend.
 - **Fin de partie** : le chat de face, la ville et la rue atteintes, le score et le bouton **Rejouer** d'abord, puis l'expérience, la nouvelle ville éventuelle, le prochain chat à débloquer et les missions.
 - **Système de design** : toutes les couleurs, tailles de texte (7), arrondis (4) et espacements viennent de variables CSS. Les textes font au moins 13 px et chaque bouton au moins 44 px de haut.
 
