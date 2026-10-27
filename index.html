@@ -1255,10 +1255,11 @@
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // Fit the roof to the width, then raise the camera on tall screens so the roof fills the view.
-    F = Math.min(0.42 * H * CAM_D / 170, 0.47 * W * CAM_D / ROOF_HALF);
-    camH = Math.max(150, Math.min(420, 0.4 * H * CAM_D / F));
-    horizon = H * 0.86 - camH * F / CAM_D;
+    // Fit the roof to the width (its edges may slip just off screen), then raise the
+    // camera on tall screens; it stays fairly low so the cat feels close.
+    F = Math.min(0.42 * H * CAM_D / 170, 0.585 * W * CAM_D / ROOF_HALF);
+    camH = Math.max(110, Math.min(420, 0.24 * H * CAM_D / F));
+    horizon = H * 0.845 - camH * F / CAM_D;
     buildBackground();
   }
 
