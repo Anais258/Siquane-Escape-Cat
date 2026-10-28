@@ -3414,7 +3414,9 @@
     for (const o of objs) {
       if (o.z > 18 || o.z + o.d < -18) continue;
       if (Math.abs(cat.x - o.x) > o.hw + 16) continue;
-      if (o.type === 'puddle' && cat.y < 6) {
+      // Puddles: only when the cat's paws are really inside the drawn oval (a bit smaller
+      // than it, so landing just in front, behind or beside it is safe)
+      if (o.type === 'puddle' && cat.y < 6 && ((cat.x - o.x) / (o.hw * 0.85)) ** 2 + ((o.z + o.d / 2) / (o.d * 0.42)) ** 2 < 1) {
         const safe = active.umbrella || shieldT > 0 || debugGod || tuto;
         if (!safe) return die('puddle');
         if (active.umbrella && !o.shielded) { o.shielded = true; popup('Parapluie !', '#5bb8ff', 22); }
